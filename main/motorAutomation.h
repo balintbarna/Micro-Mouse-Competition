@@ -41,7 +41,14 @@ void SetSpeed(double goSpeed0, double goSpeed1)
   double speed0 = getSpeed0(_time);
   double speed1 = getSpeed1(_time);
   lastTime = micros();
+  
+  double error0 = goSpeed0-speed0;
+  double P=0.1;
+  speed0=speed0+error0*P;
+  
   SetMotorPower(speed0, speed1);
+
+  
 }
 
 
