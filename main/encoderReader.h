@@ -3,19 +3,27 @@
 //jobb motor encoder bemenet
 #define irptP1 3
 //bal motor encoder számláló
-long encoder0 = 0;
-long lastPos0 = 0;
+signed long encoder0 = 0;
+signed long lastPos0 = 0;
 //jobb motor encoder számláló
-long encoder1 = 0;
-long lastPos1 = 0;
+signed long encoder1 = 0;
+signed long lastPos1 = 0;
+
+#include "motorControl.h"
 
 //bal motor számláló függvény
 void add0() {
-  encoder0++;
+  if (s0 > 0)
+    encoder0++;
+  else
+    encoder0--;
 }
 //jobb motor számláló függvény
 void add1() {
-  encoder1++;
+  if (s1 > 0)
+    encoder1++;
+  else
+    encoder1--;
 }
 
 //Call this to setup pins for encoders
