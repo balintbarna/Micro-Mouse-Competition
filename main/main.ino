@@ -1,5 +1,7 @@
-#include "motorAutomation.h"
+#define DEBUG
 byte overflower = 0;
+#include "motorAutomation.h"
+int outputValue = 0;
 
 void setup() {
   //Initialize Serial Comm
@@ -9,20 +11,21 @@ void setup() {
 }
 
 void loop() {
-  if (overflower == 0)
-    displaySpeeds();
+//  if (overflower == 0)
+//    displaySpeeds();
   serialToMotors();
-  overflower++;
+//  overflower++;
   delay(10);
 }
 
 void serialToMotors() {
   if (Serial.available()) {
     delay(10);
-    int outputValue = Serial.parseInt();
-    SetMotorPower(outputValue, outputValue);
+    outputValue = Serial.parseInt();
+    //SetMotorPower(outputValue, outputValue);
     Serial.println(outputValue);
   }
+  SetSpeed(outputValue, outputValue);
 }
 
 void displaySpeeds() {
