@@ -1,11 +1,16 @@
+//bal motor pwm
 #define aOutP0 9
+//jobb motor pwm
 #define aOutP1 10
+//bal motor enable
 #define motorE0 5
+//jobb motor enable
 #define motorE1 6
+//holt tartomány sugara
 #define blockRadius 15
 
 //Call this in setup so you can use the motors
-void setupMotors() {
+void SetupMotors() {
   pinMode(aOutP0, OUTPUT);
   pinMode(aOutP1, OUTPUT);
   pinMode(motorE0, OUTPUT);
@@ -13,7 +18,7 @@ void setupMotors() {
 }
 
 //Speed from -100 to 100, turns off at 0
-void setMotorPower(int speed0, int speed1)
+void SetMotorPower(int speed0, int speed1)
 {
   double s0, s1;
   if (speed0 == 0)
