@@ -1,13 +1,18 @@
 //bal motor pwm
-#define aOutP0 9
+#define aOutP0 22
 //jobb motor pwm
-#define aOutP1 10
+#define aOutP1 23
 //bal motor enable
-#define motorE0 5
+#define motorE0 6
 //jobb motor enable
-#define motorE1 6
+#define motorE1 5
 //holt tartomány sugara
-#define blockRadius 15
+#define blockRadius 240
+//maximum érték
+#define maxPower 100
+
+const int negLowBound = 2048 - blockRadius;
+const int posLowBound = 2048 + blockRadius;
 
 double s0 = 0, s1 = 0;
 
@@ -20,14 +25,24 @@ void SetupMotors() {
 }
 
 //Speed from -100 to 100, turns off at 0
-void SetMotorPower(int speed0, int speed1)
+void SetMotorPower(double speed0, double speed1)
 {
+  if (abs(speed0) > maxPower)
+  {
+    double ratio = maxPower / abs(speed0);
+    speed0 *= ratio;
+    speed1 *= ratio;
+  }
+  if (abs(speed1) > maxPower)
+  {
+    double ratio = maxPower / abs(speed1);
+    speed0 *= ratio;
+    speed1 *= ratio;
+  }
   s0 = speed0;
   s1 = speed1;
-  double _s0, _s1;
   if (speed0 == 0)
   {
-    _s0 = 0;
     digitalWrite(motorE0, 0);
     analogWrite(aOutP0, 127);
   }
@@ -36,21 +51,17 @@ void SetMotorPower(int speed0, int speed1)
     digitalWrite(motorE0, 1);
     if (speed0 < 0)
     {
-      _s0 = (double)speed0 * (128 - blockRadius) / 100;
-      _s0 += (128 - blockRadius);
+      speed0 = map(speed0, -100, -1, 0, negLowBound);
     }
     else
     {
-      _s0 = (double)speed0 * (129 - blockRadius) / 100;
-      _s0 += 126 + blockRadius;
+      speed0 = map(speed0, 1, 100, posLowBound, 4096);
     }
-    _s0 = round(_s0);
-    analogWrite(aOutP0, _s0);
+    analogWrite(aOutP0, speed0);
   }
 
   if (speed1 == 0)
   {
-    _s1 = 0;
     digitalWrite(motorE1, 0);
     analogWrite(aOutP1, 127);
   }
@@ -59,16 +70,13 @@ void SetMotorPower(int speed0, int speed1)
     digitalWrite(motorE1, 1);
     if (speed1 < 0)
     {
-      _s1 = (double)speed1 * (128 - blockRadius) / 100;
-      _s1 += (128 - blockRadius);
+      speed1 = map(speed1, -100, -1, 0, negLowBound);
     }
     else
     {
-      _s1 = (double)speed1 * (129 - blockRadius) / 100;
-      _s1 += 126 + blockRadius;
+      speed1 = map(speed1, 1, 100, posLowBound, 4096);
     }
-    _s1 = round(_s1);
-    analogWrite(aOutP1, _s1);
+    analogWrite(aOutP1, speed1);
   }
 }
 
