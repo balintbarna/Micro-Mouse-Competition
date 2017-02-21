@@ -16,7 +16,7 @@
 const int negLowBound = 2048 - blockRadius;
 const int posLowBound = 2048 + blockRadius;
 
-double s0 = 0, s1 = 0;
+volatile double s0 = 0, s1 = 0;
 
 //Call this in setup so you can use the motors
 void SetupMotors() {

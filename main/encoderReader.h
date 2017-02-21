@@ -3,11 +3,11 @@
 //jobb motor encoder bemenet
 #define irptP1 18
 //bal motor encoder számláló
-signed long encoder0 = 0;
-signed long lastPos0 = 0;
+volatile signed long encoder0 = 0;
+volatile signed long lastPos0 = 0;
 //jobb motor encoder számláló
-signed long encoder1 = 0;
-signed long lastPos1 = 0;
+volatile signed long encoder1 = 0;
+volatile signed long lastPos1 = 0;
 
 #include "motorControl.h"
 
@@ -34,6 +34,7 @@ void SetupEncoders() {
   attachInterrupt(digitalPinToInterrupt(irptP1), add1, RISING);
 }
 
+//Resets encoder values
 void ResetEncoders() {
   encoder0 = 0;
   lastPos0 = 0;

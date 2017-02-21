@@ -1,15 +1,16 @@
 #define multiplier 1.68
 #define P 0.001
 
-#include "encoderReader.h"
+elapsedMicros elapsedTime;
 
-unsigned long lastTime = 0;
+
+#include "encoderReader.h"
 
 //Call this to setup drive system
 void SetupMotorAutomation() {
   SetupMotors();
   SetupEncoders();
-  lastTime = micros();
+  elapsedTime=0;
 }
 
 //Gets left wheel's speed in mm/s
@@ -36,30 +37,20 @@ double getSpeed1(double Time)
 //Sets speed in mm/sec
 void SetSpeed(double goSpeed0, double goSpeed1)
 {
-  double _time = (micros() - lastTime) / 1000000.0;
+  double _time = elapsedTime / 1000000.0;
   double speed0 = getSpeed0(_time);
   double speed1 = getSpeed1(_time);
-  lastTime = micros();
+  elapsedTime=0;
 #ifdef DEBUG
   if (!overflower) {
+    Serial.println("Speed");
     Serial.print("Left: ");
     Serial.print(speed0);
     Serial.print(" Right: ");
     Serial.println(speed1);
   }
 #endif
-  if (speed1 == goSpeed0)
-  {
-    speed0 = s0;
-  }
-  else if (speed0 < goSpeed0)
-  {
-    speed0 = s0 + 0.1;
-  }
-  else
-  {
-    speed0 = s0 - 0.1;
-  }
+
   //speed0 = s0 + (goSpeed0 - speed0) * P;
   //speed1 = s1 + (goSpeed1 - speed1) * P;
 
@@ -70,7 +61,8 @@ void SetSpeed(double goSpeed0, double goSpeed1)
 
 #ifdef DEBUG
   if (!overflower) {
-    Serial.print("Level Left: ");
+    Serial.println("Level");
+    Serial.print("Left: ");
     Serial.print(speed0);
     Serial.print(" Right: ");
     Serial.println(speed1);
