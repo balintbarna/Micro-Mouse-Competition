@@ -59,7 +59,8 @@ void SetMotorPower(double speed0, double speed1)
     {
       speed0 = mapfloat(speed0, 1, 100, posLowBound, 4096);
     }
-    analogWrite(aOutP0, speed0);
+    int _speed0=round(speed0);
+    analogWrite(aOutP0, _speed0);
   }
 
   if (speed1 == 0)
@@ -78,7 +79,8 @@ void SetMotorPower(double speed0, double speed1)
     {
       speed1 = mapfloat(speed1, 1, 100, posLowBound, 4096);
     }
-    analogWrite(aOutP1, speed1);
+    int _speed1=round(speed1);
+    analogWrite(aOutP1, _speed1);
   }
 }
 

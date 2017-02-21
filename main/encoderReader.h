@@ -1,7 +1,7 @@
 //bal motor encoder bemenet
 #define irptP0 16
 //jobb motor encoder bemenet
-#define irptP1 19
+#define irptP1 18
 //bal motor encoder számláló
 signed long encoder0 = 0;
 signed long lastPos0 = 0;

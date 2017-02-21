@@ -48,17 +48,17 @@ void SetSpeed(double goSpeed0, double goSpeed1)
     Serial.println(speed1);
   }
 #endif
-  if (speed1 == goSpeed1)
+  if (speed1 == goSpeed0)
   {
-    speed1 = s1;
+    speed0 = s0;
   }
-  else if (speed1 < goSpeed1)
+  else if (speed0 < goSpeed0)
   {
-    speed1 = s1 + 1;
+    speed0 = s0 + 0.1;
   }
   else
   {
-    speed1 = s1 - 1;
+    speed0 = s0 - 0.1;
   }
   //speed0 = s0 + (goSpeed0 - speed0) * P;
   //speed1 = s1 + (goSpeed1 - speed1) * P;

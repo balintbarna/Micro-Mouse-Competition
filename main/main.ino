@@ -6,8 +6,13 @@ int outputValue = 0;
 void setup() {
   //Initialize Serial Comm
   Serial.begin(115200);
+  //Analog frekvencia
+  analogWriteFrequency(aOutP0, 8789.062);
+  analogWriteFrequency(aOutP1, 8789.062);
+  //Analog 12 biten
+  analogWriteResolution(12);
   //Initialize Motor Automation
-  SetupMororAutomation();
+  SetupMotorAutomation();
 }
 
 void loop() {
@@ -15,17 +20,17 @@ void loop() {
 //    displaySpeeds();
   serialToMotors();
 //  overflower++;
-  delay(10);
+  delay(30);
 }
 
 void serialToMotors() {
   if (Serial.available()) {
     delay(10);
-    outputValue = Serial.parseInt();
+    outputValue = Serial.parseFloat();
     //SetMotorPower(outputValue, outputValue);
     Serial.println(outputValue);
   }
-  SetSpeed(outputValue, outputValue);
+  SetSpeed(outputValue, 0);
 }
 
 void displaySpeeds() {
