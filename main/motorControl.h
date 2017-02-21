@@ -11,6 +11,8 @@
 //maximum érték
 #define maxPower 100
 
+#include "myFunctions.h"
+
 const int negLowBound = 2048 - blockRadius;
 const int posLowBound = 2048 + blockRadius;
 
@@ -51,11 +53,11 @@ void SetMotorPower(double speed0, double speed1)
     digitalWrite(motorE0, 1);
     if (speed0 < 0)
     {
-      speed0 = map(speed0, -100, -1, 0, negLowBound);
+      speed0 = mapfloat(speed0, -100, -1, 0, negLowBound);
     }
     else
     {
-      speed0 = map(speed0, 1, 100, posLowBound, 4096);
+      speed0 = mapfloat(speed0, 1, 100, posLowBound, 4096);
     }
     analogWrite(aOutP0, speed0);
   }
@@ -70,11 +72,11 @@ void SetMotorPower(double speed0, double speed1)
     digitalWrite(motorE1, 1);
     if (speed1 < 0)
     {
-      speed1 = map(speed1, -100, -1, 0, negLowBound);
+      speed1 = mapfloat(speed1, -100, -1, 0, negLowBound);
     }
     else
     {
-      speed1 = map(speed1, 1, 100, posLowBound, 4096);
+      speed1 = mapfloat(speed1, 1, 100, posLowBound, 4096);
     }
     analogWrite(aOutP1, speed1);
   }
