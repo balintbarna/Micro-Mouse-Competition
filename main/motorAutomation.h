@@ -1,13 +1,12 @@
 #define multiplier 1.68
-#define maxPower 100
-#define P 0.01
+#define P 0.001
 
 #include "encoderReader.h"
 
 unsigned long lastTime = 0;
 
 //Call this to setup drive system
-void SetupMororAutomation() {
+void SetupMotorAutomation() {
   SetupMotors();
   SetupEncoders();
   lastTime = micros();
@@ -42,21 +41,40 @@ void SetSpeed(double goSpeed0, double goSpeed1)
   double speed1 = getSpeed1(_time);
   lastTime = micros();
 #ifdef DEBUG
-  if (!overflower);
-  Serial.print("Left: ");
-  Serial.print(speed0);
-  Serial.print(" Right: ");
-  Serial.println(speed1);
+  if (!overflower) {
+    Serial.print("Left: ");
+    Serial.print(speed0);
+    Serial.print(" Right: ");
+    Serial.println(speed1);
+  }
 #endif
-  double error0 = goSpeed0 - speed0;
-  speed0 = s0 + error0 * P;
+  if (speed1 == goSpeed1)
+  {
+    speed1 = s1;
+  }
+  else if (speed1 < goSpeed1)
+  {
+    speed1 = s1 + 1;
+  }
+  else
+  {
+    speed1 = s1 - 1;
+  }
+  //speed0 = s0 + (goSpeed0 - speed0) * P;
+  //speed1 = s1 + (goSpeed1 - speed1) * P;
 
-  SetMotorPower(speed0, 0);
+  if (!goSpeed0) speed0 = 0;
+  if (!goSpeed1) speed1 = 0;
+  SetMotorPower(speed0, speed1);
+
 
 #ifdef DEBUG
-  if (!overflower);
-  Serial.print("Level: ");
-  Serial.println(speed0);
+  if (!overflower) {
+    Serial.print("Level Left: ");
+    Serial.print(speed0);
+    Serial.print(" Right: ");
+    Serial.println(speed1);
+  }
 #endif
   overflower++;
 
