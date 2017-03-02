@@ -1,45 +1,51 @@
 //bal motor encoder bemenet
-#define irptP0 16
+#define encoderA0 18
+#define encoderA1 19
 //jobb motor encoder bemenet
-#define irptP1 18
+#define encoderB0 16
+#define encoderB1 17
 //bal motor encoder számláló
-volatile signed long encoder0 = 0;
-volatile signed long lastPos0 = 0;
+volatile double distanceA = 0;
+volatile double pastA = 0;
 //jobb motor encoder számláló
-volatile signed long encoder1 = 0;
-volatile signed long lastPos1 = 0;
+volatile double distanceB = 0;
+volatile double pastB = 0;
 
 #include "motorControl.h"
 
 //bal motor számláló függvény
-void add0() {
-  if (s0 > 0)
-    encoder0++;
+void addA() {
+  if (sA > 0)
+    distanceA+=0.84;
   else
-    encoder0--;
+    distanceA-=0.84;
 }
 //jobb motor számláló függvény
-void add1() {
-  if (s1 > 0)
-    encoder1++;
+void addB() {
+  if (sB > 0)
+    distanceB+=0.84;
   else
-    encoder1--;
+    distanceB-=0.84;
 }
 
 //Call this to setup pins for encoders
 void SetupEncoders() {
-  pinMode(irptP0, INPUT_PULLUP);
-  pinMode(irptP1, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(irptP0), add0, RISING);
-  attachInterrupt(digitalPinToInterrupt(irptP1), add1, RISING);
+  pinMode(encoderA0, INPUT_PULLUP);
+  pinMode(encoderA1, INPUT_PULLUP);
+  pinMode(encoderB0, INPUT_PULLUP);
+  pinMode(encoderB1, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(encoderA0), addA, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderA1), addA, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderB0), addB, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderB1), addB, CHANGE);
 }
 
 //Resets encoder values
 void ResetEncoders() {
-  encoder0 = 0;
-  lastPos0 = 0;
-  encoder1 = 0;
-  lastPos1 = 0;
+  distanceA = 0;
+  pastA = 0;
+  distanceB = 0;
+  pastB = 0;
 }
 
 

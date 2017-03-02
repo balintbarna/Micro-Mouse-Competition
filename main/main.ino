@@ -1,34 +1,54 @@
 #define DEBUG
-volatile byte overflower = 0;
+double setPoint = 0;
 #include "motorAutomation.h"
-int outputValue = 0;
+short overF = 0;
 
 void setup() {
-  //Initialize Serial Comm
-  Serial.begin(115200);
+  //Initialize Serial3 Comm
+  Serial.begin(9600);
+  Serial3.begin(9600);
   //Analog frekvencia
-  analogWriteFrequency(aOutP0, 8789.062);
-  analogWriteFrequency(aOutP1, 8789.062);
+  analogWriteFrequency(motorA, 8789.062);
+  analogWriteFrequency(motorB, 8789.062);
   //Analog 12 biten
   analogWriteResolution(12);
   //Initialize Motor Automation
-  SetupMotorAutomation();
+  SetupMotorAutomation();  
 }
 
 void loop()
 {
-  serialToMotors();
-  delay(30);
+  SerialToValue();
+  displayData();
+  SetMotorPower(setPoint, setPoint);
 }
 
-void serialToMotors() {
-  if (Serial.available()) {
-    delay(10);
-    outputValue = Serial.parseFloat();
-    //SetMotorPower(outputValue, outputValue);
-    Serial.println(outputValue);
+void SerialToValue() {
+  if (Serial.available())
+  {
+    delay(1);
+    setPoint = Serial.parseFloat();
+    Serial.println(setPoint);
   }
-  SetSpeed(outputValue, 0);
+  if (Serial3.available())
+  {
+    delay(1);
+    setPoint = Serial3.parseFloat();
+    Serial3.println(setPoint);
+  }
+}
+
+void displayData()
+{
+  if (!overF)
+  {
+    String serialop = (distanceA);
+    serialop += "\t";
+    serialop += distanceB;
+    Serial.println(serialop);
+    Serial3.println(serialop);
+  }
+  overF++;
 }
 
 //void displaySpeeds() {
@@ -36,9 +56,9 @@ void serialToMotors() {
 //  double speed0 = getSpeed0(_time);
 //  double speed1 = getSpeed1(_time);
 //  lastTime = micros();
-//  Serial.print("Left: ");
-//  Serial.print(speed0);
-//  Serial.print(" Right: ");
-//  Serial.println(speed1);
+//  Serial3.print("Left: ");
+//  Serial3.print(speed0);
+//  Serial3.print(" Right: ");
+//  Serial3.println(speed1);
 //}
 

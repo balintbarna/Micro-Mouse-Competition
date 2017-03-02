@@ -1,86 +1,95 @@
 //bal motor pwm
-#define aOutP0 22
+#define motorA 23
 //jobb motor pwm
-#define aOutP1 23
+#define motorB 22
 //bal motor enable
-#define motorE0 6
+#define motorEA 5
 //jobb motor enable
-#define motorE1 5
+#define motorEB 6
 //holt tartomány sugara
-#define blockRadius 240
-//maximum érték
-#define maxPower 100
+#define blockRadius 300
+//maximum érték (max 100)
+#define maxPower 30
+//maximum gyorsulás
+#define maxAccel 0.002
 
 #include "myFunctions.h"
 
 const int negLowBound = 2048 - blockRadius;
 const int posLowBound = 2048 + blockRadius;
 
-volatile double s0 = 0, s1 = 0;
+volatile double sA = 0, sB = 0;
 
 //Call this in setup so you can use the motors
 void SetupMotors() {
-  pinMode(aOutP0, OUTPUT);
-  pinMode(aOutP1, OUTPUT);
-  pinMode(motorE0, OUTPUT);
-  pinMode(motorE1, OUTPUT);
+  pinMode(motorA, OUTPUT);
+  pinMode(motorB, OUTPUT);
+  pinMode(motorEA, OUTPUT);
+  pinMode(motorEB, OUTPUT);
 }
 
 //Speed from -100 to 100, turns off at 0
-void SetMotorPower(double speed0, double speed1)
+void SetMotorPower(double speedA, double speedB)
 {
-  if (abs(speed0) > maxPower)
+  //Comparing and setting the values to maxPower
+  if (abs(speedA) > maxPower)
   {
-    double ratio = maxPower / abs(speed0);
-    speed0 *= ratio;
-    speed1 *= ratio;
+    double ratio = maxPower / abs(speedA);
+    speedA *= ratio;
+    speedB *= ratio;
   }
-  if (abs(speed1) > maxPower)
+  if (abs(speedB) > maxPower)
   {
-    double ratio = maxPower / abs(speed1);
-    speed0 *= ratio;
-    speed1 *= ratio;
-  }
-  s0 = speed0;
-  s1 = speed1;
-  if (speed0 == 0)
-  {
-    digitalWrite(motorE0, 0);
-    analogWrite(aOutP0, 127);
-  }
-  else
-  {
-    digitalWrite(motorE0, 1);
-    if (speed0 < 0)
-    {
-      speed0 = mapfloat(speed0, -100, -1, 0, negLowBound);
-    }
-    else
-    {
-      speed0 = mapfloat(speed0, 1, 100, posLowBound, 4096);
-    }
-    int _speed0=round(speed0);
-    analogWrite(aOutP0, _speed0);
+    double ratio = maxPower / abs(speedB);
+    speedA *= ratio;
+    speedB *= ratio;
   }
 
-  if (speed1 == 0)
+  //Making sure that velocity doesn't increase too fast
+  if (abs(speedA - sA) > maxAccel) speedA = sA + sign(speedA - sA) * maxAccel;
+  if (abs(speedB - sB) > maxAccel) speedB = sB + sign(speedB - sB) * maxAccel;
+
+
+  sA = speedA;
+  sB = speedB;
+  if (abs(speedA) < 1)
   {
-    digitalWrite(motorE1, 0);
-    analogWrite(aOutP1, 127);
+    digitalWrite(motorEA, 0);
+    analogWrite(motorA, 127);
   }
   else
   {
-    digitalWrite(motorE1, 1);
-    if (speed1 < 0)
+    digitalWrite(motorEA, 1);
+    if (speedA < 0)
     {
-      speed1 = mapfloat(speed1, -100, -1, 0, negLowBound);
+      speedA = mapfloat(speedA, -100, -1, 0, negLowBound);
     }
     else
     {
-      speed1 = mapfloat(speed1, 1, 100, posLowBound, 4096);
+      speedA = mapfloat(speedA, 1, 100, posLowBound, 4096);
     }
-    int _speed1=round(speed1);
-    analogWrite(aOutP1, _speed1);
+    int _speedA = round(speedA);
+    analogWrite(motorA, _speedA);
+  }
+
+  if (speedB == 0)
+  {
+    digitalWrite(motorEB, 0);
+    analogWrite(motorB, 127);
+  }
+  else
+  {
+    digitalWrite(motorEB, 1);
+    if (speedB < 0)
+    {
+      speedB = mapfloat(speedB, -100, -1, 0, negLowBound);
+    }
+    else
+    {
+      speedB = mapfloat(speedB, 1, 100, posLowBound, 4096);
+    }
+    int _speedB = round(speedB);
+    analogWrite(motorB, _speedB);
   }
 }
 
