@@ -7,16 +7,18 @@
 //jobb motor enable
 #define motorEB 6
 //holt tartomány sugara
-#define blockRadius 300
+#define blockRadius 58
 //maximum érték (max 100)
 #define maxPower 30
 //maximum gyorsulás
-#define maxAccel 0.002
+//#define maxTorqueC 0.0002
+#define maxTorqueC 0.0005
+const double maxTorque = myinterval * maxTorqueC;
 
 #include "myFunctions.h"
 
-const int negLowBound = 2048 - blockRadius;
-const int posLowBound = 2048 + blockRadius;
+const int negLowBound = pwmMid - blockRadius;
+const int posLowBound = pwmMid + blockRadius;
 
 volatile double sA = 0, sB = 0;
 
@@ -28,7 +30,8 @@ void SetupMotors() {
   pinMode(motorEB, OUTPUT);
 }
 
-//Speed from -100 to 100, turns off at 0
+
+//Torque from -100 to 100, turns off at 0
 void SetMotorPower(double speedA, double speedB)
 {
   //Comparing and setting the values to maxPower
@@ -46,8 +49,8 @@ void SetMotorPower(double speedA, double speedB)
   }
 
   //Making sure that velocity doesn't increase too fast
-  if (abs(speedA - sA) > maxAccel) speedA = sA + sign(speedA - sA) * maxAccel;
-  if (abs(speedB - sB) > maxAccel) speedB = sB + sign(speedB - sB) * maxAccel;
+  //if (abs(speedA - sA) > maxTorque) speedA = sA + sign(speedA - sA) * maxTorque;
+  //if (abs(speedB - sB) > maxTorque) speedB = sB + sign(speedB - sB) * maxTorque;
 
 
   sA = speedA;
@@ -66,7 +69,7 @@ void SetMotorPower(double speedA, double speedB)
     }
     else
     {
-      speedA = mapfloat(speedA, 1, 100, posLowBound, 4096);
+      speedA = mapfloat(speedA, 1, 100, posLowBound, pwmMax);
     }
     int _speedA = round(speedA);
     analogWrite(motorA, _speedA);
@@ -86,7 +89,7 @@ void SetMotorPower(double speedA, double speedB)
     }
     else
     {
-      speedB = mapfloat(speedB, 1, 100, posLowBound, 4096);
+      speedB = mapfloat(speedB, 1, 100, posLowBound, pwmMax);
     }
     int _speedB = round(speedB);
     analogWrite(motorB, _speedB);
