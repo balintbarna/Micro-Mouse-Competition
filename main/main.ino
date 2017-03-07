@@ -1,4 +1,7 @@
 #define DEBUG
+#define pwmRes 10
+const int pwmMax = pow(2, pwmRes);
+const int pwmMid = pwmMax / 2;
 double setPoint = 0;
 #include "motorAutomation.h"
 short overF = 0;
@@ -8,19 +11,18 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
   //Analog frekvencia
-  analogWriteFrequency(motorA, 8789.062);
-  analogWriteFrequency(motorB, 8789.062);
+  analogWriteFrequency(motorA, 35156.25);
+  analogWriteFrequency(motorB, 35156.25);
   //Analog 12 biten
-  analogWriteResolution(12);
+  analogWriteResolution(pwmRes);
   //Initialize Motor Automation
-  SetupMotorAutomation();  
+  SetupMotorAutomation();
 }
 
 void loop()
 {
   SerialToValue();
   displayData();
-  SetMotorPower(setPoint, setPoint);
 }
 
 void SerialToValue() {
@@ -41,10 +43,16 @@ void SerialToValue() {
 void displayData()
 {
   if (!overF)
+  //if(1)
   {
-    String serialop = (distanceA);
-    serialop += "\t";
+    String serialop = (aggrSpeedA);
+    serialop += ";";
+    serialop += aggrSpeedB;
+    serialop += ";";
+    serialop += distanceA;
+    serialop += ";";
     serialop += distanceB;
+
     Serial.println(serialop);
     Serial3.println(serialop);
   }
