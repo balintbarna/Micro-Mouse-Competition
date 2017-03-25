@@ -1,9 +1,21 @@
 #define DEBUG
+
 #define pwmRes 10
+
+//timer interval (microsec)
+#define myinterval 1000
+
+//timer
+IntervalTimer myTimer;
+
 const int pwmMax = pow(2, pwmRes);
 const int pwmMid = pwmMax / 2;
-double setPoint = 0;
+
+int setPoint = 0;
+
 #include "motorAutomation.h"
+
+//overflower variable
 short overF = 0;
 
 void setup() {
@@ -11,12 +23,13 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(9600);
   //Analog frekvencia
-  analogWriteFrequency(motorA, 35156.25);
-  analogWriteFrequency(motorB, 35156.25);
-  //Analog 12 biten
+  analogWriteFrequency(motorLeft, 35156.25);
+  analogWriteFrequency(motorRight, 35156.25);
+  //Analog 10 biten
   analogWriteResolution(pwmRes);
   //Initialize Motor Automation
   SetupMotorAutomation();
+  myTimer.begin(onTimerTick, myinterval);
 }
 
 void loop()
@@ -29,13 +42,13 @@ void SerialToValue() {
   if (Serial.available())
   {
     delay(1);
-    setPoint = Serial.parseFloat();
+    setPoint = Serial.parseInt();
     Serial.println(setPoint);
   }
   if (Serial3.available())
   {
     delay(1);
-    setPoint = Serial3.parseFloat();
+    setPoint = Serial3.parseInt();
     Serial3.println(setPoint);
   }
 }
@@ -43,15 +56,17 @@ void SerialToValue() {
 void displayData()
 {
   if (!overF)
-  //if(1)
+    //if(1)
   {
-    String serialop = (aggrSpeedA);
-    serialop += ";";
-    serialop += aggrSpeedB;
-    serialop += ";";
-    serialop += distanceA;
-    serialop += ";";
-    serialop += distanceB;
+    String serialop = aggrSpeedLeft;
+    serialop += "\t";
+    serialop += aggrSpeedRight;
+    serialop += "\t";
+    serialop += encoderLeft.read();
+    serialop += "\t";
+    serialop += encoderRight.read();
+    serialop += "\t";
+    serialop += analogRead(A14);
 
     Serial.println(serialop);
     Serial3.println(serialop);
@@ -59,14 +74,11 @@ void displayData()
   overF++;
 }
 
-//void displaySpeeds() {
-//  double _time = (micros() - lastTime) / 1000000.0;
-//  double speed0 = getSpeed0(_time);
-//  double speed1 = getSpeed1(_time);
-//  lastTime = micros();
-//  Serial3.print("Left: ");
-//  Serial3.print(speed0);
-//  Serial3.print(" Right: ");
-//  Serial3.println(speed1);
-//}
 
+//Functions gets called by timer ticks
+void onTimerTick()
+{
+  //SetPos(setPoint, setPoint);
+  SetMotorSpeed(setPoint, setPoint);
+  //SetMotorPower(setPoint,setPoint);
+}

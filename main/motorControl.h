@@ -1,15 +1,18 @@
 //bal motor pwm
-#define motorA 23
+#define motorLeft 3
 //jobb motor pwm
-#define motorB 22
+#define motorRight 5
 //bal motor enable
-#define motorEA 5
+#define motorLeftE 4
 //jobb motor enable
-#define motorEB 6
+#define motorRightE 6
 //holt tartomány sugara
-#define blockRadius 58
-//maximum érték (max 100)
-#define maxPower 30
+#define blockRadius 50
+//max power stuff
+#define powerDuty 0.3
+#define absoluteMaxPower 1000000
+//maximum érték (max 1000000)
+const int maxPower = absoluteMaxPower * powerDuty;
 //maximum gyorsulás
 //#define maxTorqueC 0.0002
 #define maxTorqueC 0.0005
@@ -20,32 +23,36 @@ const double maxTorque = myinterval * maxTorqueC;
 const int negLowBound = pwmMid - blockRadius;
 const int posLowBound = pwmMid + blockRadius;
 
-volatile double sA = 0, sB = 0;
+volatile int powerLeftOld = 0, powerRightOld = 0;
 
 //Call this in setup so you can use the motors
 void SetupMotors() {
-  pinMode(motorA, OUTPUT);
-  pinMode(motorB, OUTPUT);
-  pinMode(motorEA, OUTPUT);
-  pinMode(motorEB, OUTPUT);
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+  pinMode(motorLeftE, OUTPUT);
+  pinMode(motorRightE, OUTPUT);
 }
 
 
-//Torque from -100 to 100, turns off at 0
-void SetMotorPower(double speedA, double speedB)
+//Torque from -100000 to 100000, turns off at 0
+void SetMotorPower(int powerLeft, int powerRight)
 {
   //Comparing and setting the values to maxPower
-  if (abs(speedA) > maxPower)
+  if (abs(powerLeft) > maxPower)
   {
-    double ratio = maxPower / abs(speedA);
-    speedA *= ratio;
-    speedB *= ratio;
+    int ratio = 1000 * maxPower / abs(powerLeft);
+    powerLeft *= ratio;
+    powerLeft /= 1000;
+    powerRight *= ratio;
+    powerRight /= 1000;
   }
-  if (abs(speedB) > maxPower)
+  if (abs(powerRight) > maxPower)
   {
-    double ratio = maxPower / abs(speedB);
-    speedA *= ratio;
-    speedB *= ratio;
+    int ratio = 1000 * maxPower / abs(powerRight);
+    powerLeft *= ratio;
+    powerLeft /= 1000;
+    powerRight *= ratio;
+    powerRight /= 1000;
   }
 
   //Making sure that velocity doesn't increase too fast
@@ -53,46 +60,44 @@ void SetMotorPower(double speedA, double speedB)
   //if (abs(speedB - sB) > maxTorque) speedB = sB + sign(speedB - sB) * maxTorque;
 
 
-  sA = speedA;
-  sB = speedB;
-  if (abs(speedA) < 1)
+  powerLeftOld = powerLeft;
+  powerRightOld = powerRight;
+  if (abs(powerLeft) == 0)
   {
-    digitalWrite(motorEA, 0);
-    analogWrite(motorA, 127);
+    digitalWrite(motorLeftE, 0);
+    analogWrite(motorLeft, 127);
   }
   else
   {
-    digitalWrite(motorEA, 1);
-    if (speedA < 0)
+    digitalWrite(motorLeftE, 1);
+    if (powerLeft < 0)
     {
-      speedA = mapfloat(speedA, -100, -1, 0, negLowBound);
+      powerLeft = map(powerLeft, -absoluteMaxPower, -1, pwmMax, posLowBound);
     }
     else
     {
-      speedA = mapfloat(speedA, 1, 100, posLowBound, pwmMax);
+      powerLeft = map(powerLeft, 1, absoluteMaxPower, negLowBound, 0);
     }
-    int _speedA = round(speedA);
-    analogWrite(motorA, _speedA);
+    analogWrite(motorLeft, powerLeft);
   }
 
-  if (speedB == 0)
+  if (powerRight == 0)
   {
-    digitalWrite(motorEB, 0);
-    analogWrite(motorB, 127);
+    digitalWrite(motorRightE, 0);
+    analogWrite(motorRight, 127);
   }
   else
   {
-    digitalWrite(motorEB, 1);
-    if (speedB < 0)
+    digitalWrite(motorRightE, 1);
+    if (powerRight < 0)
     {
-      speedB = mapfloat(speedB, -100, -1, 0, negLowBound);
+      powerRight = map(powerRight, -absoluteMaxPower, -1, pwmMax, posLowBound);
     }
     else
     {
-      speedB = mapfloat(speedB, 1, 100, posLowBound, pwmMax);
+      powerRight = map(powerRight, 1, absoluteMaxPower, negLowBound, 0);
     }
-    int _speedB = round(speedB);
-    analogWrite(motorB, _speedB);
+    analogWrite(motorRight, powerRight);
   }
 }
 
