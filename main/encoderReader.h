@@ -4,10 +4,6 @@
 //jobb motor encoder bemenet
 #define encoderRightFront 9
 #define encoderRightBack 10
-//bal motor encoder számláló
-volatile double leftPosOld = 0;
-//jobb motor encoder számláló
-volatile double rightPosOld = 0;
 
 #define ENCODER_OPTIMIZE_INTERRUPTS
 

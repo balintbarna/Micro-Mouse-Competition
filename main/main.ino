@@ -11,12 +11,16 @@ IntervalTimer myTimer;
 const int pwmMax = pow(2, pwmRes);
 const int pwmMid = pwmMax / 2;
 
+//setpoint for pid control
 int setPoint = 0;
 
 #include "motorAutomation.h"
 
 //overflower variable
 short overF = 0;
+
+//time measure
+elapsedMillis elapsedTime = 0;
 
 void setup() {
   //Initialize Serial3 Comm
@@ -30,12 +34,28 @@ void setup() {
   //Initialize Motor Automation
   SetupMotorAutomation();
   myTimer.begin(onTimerTick, myinterval);
+  //infa
+  pinMode(22, OUTPUT);
+  digitalWrite(22, 0);
+  //led
+  pinMode(13, OUTPUT);
 }
 
 void loop()
 {
   SerialToValue();
   displayData();
+  checkBattery();
+}
+
+void checkBattery()
+{
+  if (analogRead(A14) < 800)
+  {
+    digitalWrite(13, 1);
+  }
+  else
+    digitalWrite(13, 0);
 }
 
 void SerialToValue() {
@@ -43,42 +63,48 @@ void SerialToValue() {
   {
     delay(1);
     setPoint = Serial.parseInt();
+    elapsedTime = 0;
     Serial.println(setPoint);
   }
   if (Serial3.available())
   {
     delay(1);
     setPoint = Serial3.parseInt();
+    elapsedTime = 0;
     Serial3.println(setPoint);
   }
 }
 
 void displayData()
 {
-  if (!overF)
-    //if(1)
-  {
-    String serialop = aggrSpeedLeft;
-    serialop += "\t";
-    serialop += aggrSpeedRight;
-    serialop += "\t";
-    serialop += encoderLeft.read();
-    serialop += "\t";
-    serialop += encoderRight.read();
-    serialop += "\t";
-    serialop += analogRead(A14);
+  //if (!overF)
+  //{
+  String serialop = aggrSpeedLeft;
+  serialop += "\t";
+  serialop += aggrSpeedRight;
+  serialop += "\t";
+  serialop += encoderLeft.read();
+  serialop += "\t";
+  serialop += encoderRight.read();
+  serialop += "\t";
+  serialop += analogRead(A14);
+  serialop += "\t";
+  serialop += elapsedTime;
 
-    Serial.println(serialop);
-    Serial3.println(serialop);
-  }
-  overF++;
+  Serial.println(serialop);
+  Serial3.println(serialop);
+  //}
+  //overF++;
 }
 
 
 //Functions gets called by timer ticks
 void onTimerTick()
 {
-  //SetPos(setPoint, setPoint);
-  SetMotorSpeed(setPoint, setPoint);
-  //SetMotorPower(setPoint,setPoint);
+  int leftPos = encoderLeft.read();
+  int rightPos = encoderRight.read();
+  if (setPoint - leftPos < 300 && setPoint - rightPos < 300)
+    SetPos(setPoint, setPoint);
+  else
+    SetMotorSpeed(2000, 2000);
 }
