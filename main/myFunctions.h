@@ -22,3 +22,16 @@ String getParam(int index, String comm)
   }
 }
 
+void ResetAllStoredValues()
+{
+  ResetEncoders();
+  aggrSpeedLeft = 0;
+  aggrSpeedRight = 0;
+  errSumLeft = 0;
+  errSumRight = 0;
+  pastSetSpeedLeft = 0;
+  pastSetSpeedRight = 0;
+  leftPosOld = 0;
+  rightPosOld = 0;
+}
+
