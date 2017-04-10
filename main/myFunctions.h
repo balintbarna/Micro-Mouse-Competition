@@ -6,6 +6,6 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 
 //Function to return sign of any type
 template <typename type>
-type sign(type value) { 
- return type((value>0)-(value<0)); 
+type sign(type value) {
+  return type((value > 0) - (value < 0));
 }
