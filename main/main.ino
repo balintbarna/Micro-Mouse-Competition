@@ -12,8 +12,10 @@ const int pwmMax = pow(2, pwmRes);
 const int pwmMid = pwmMax / 2;
 
 //setpoint for pid control
-int setPoint = 0;
+volatile int setPoint = 0;
 
+#include <Wire.h>
+#include "mpu6050.h"
 #include "motorAutomation.h"
 
 //overflower variable
@@ -77,8 +79,6 @@ void SerialToValue() {
 
 void displayData()
 {
-  //if (!overF)
-  //{
   String serialop = aggrSpeedLeft;
   serialop += "\t";
   serialop += aggrSpeedRight;
@@ -93,18 +93,10 @@ void displayData()
 
   Serial.println(serialop);
   Serial3.println(serialop);
-  //}
-  //overF++;
 }
-
 
 //Functions gets called by timer ticks
 void onTimerTick()
 {
-  int leftPos = encoderLeft.read();
-  int rightPos = encoderRight.read();
-  if (setPoint - leftPos < 300 && setPoint - rightPos < 300)
-    SetPos(setPoint, setPoint);
-  else
-    SetMotorSpeed(2000, 2000);
+  CascadePos(setPoint, setPoint);
 }
