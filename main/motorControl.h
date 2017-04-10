@@ -7,23 +7,17 @@
 //jobb motor enable
 #define motorRightE 6
 //holt tartomány sugara
-#define blockRadius 50
+volatile int blockRadius = 0;
 //max power stuff
 #define powerDuty 0.3
 #define absoluteMaxPower 1000000
 //maximum érték (max 1000000)
 const int maxPower = absoluteMaxPower * powerDuty;
-//maximum gyorsulás
-//#define maxTorqueC 0.0002
-#define maxTorqueC 0.0005
-const double maxTorque = myinterval * maxTorqueC;
 
 #include "myFunctions.h"
 
-const int negLowBound = pwmMid - blockRadius;
-const int posLowBound = pwmMid + blockRadius;
-
-volatile int powerLeftOld = 0, powerRightOld = 0;
+volatile int negLowBound = pwmMid - blockRadius;
+volatile int posLowBound = pwmMid + blockRadius;
 
 //Call this in setup so you can use the motors
 void SetupMotors() {
@@ -37,6 +31,10 @@ void SetupMotors() {
 //Torque from -100000 to 100000, turns off at 0
 void SetMotorPower(int powerLeft, int powerRight)
 {
+  //get bounds
+  negLowBound = pwmMid - blockRadius;
+  posLowBound = pwmMid + blockRadius;
+
   //Comparing and setting the values to maxPower
   if (abs(powerLeft) > maxPower)
   {
@@ -55,13 +53,6 @@ void SetMotorPower(int powerLeft, int powerRight)
     powerRight /= 1000;
   }
 
-  //Making sure that velocity doesn't increase too fast
-  //if (abs(speedA - sA) > maxTorque) speedA = sA + sign(speedA - sA) * maxTorque;
-  //if (abs(speedB - sB) > maxTorque) speedB = sB + sign(speedB - sB) * maxTorque;
-
-
-  powerLeftOld = powerLeft;
-  powerRightOld = powerRight;
   if (abs(powerLeft) == 0)
   {
     digitalWrite(motorLeftE, 0);
