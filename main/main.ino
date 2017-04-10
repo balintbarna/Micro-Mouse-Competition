@@ -144,37 +144,42 @@ void serialToValue() {
 void displayData()
 {
   String serialop = "";
-  
-//  serialop += aggrSpeedLeft;
-//  serialop += "\t";
-//  serialop += aggrSpeedRight;
-//  serialop += "\t";
-//  serialop += encoderLeft.read();
-//  serialop += "\t";
-//  serialop += encoderRight.read();
-//  serialop += "\t";
-//  serialop += analogRead(A14);
-//  serialop += "\t";
-//  serialop += elapsedTime;
 
-  serialop += state;
-  serialop += "\t";
-  serialop += s4;  
-  serialop += "\t";
-  serialop += aggrSpeedLeft;
-  serialop += "\t";
-  serialop += aggrSpeedRight;
-  serialop += "\t";
+  //Speed, Position, Battery, Time
+  //  serialop += aggrSpeedLeft;
+  //  serialop += "\t";
+  //  serialop += aggrSpeedRight;
+  //  serialop += "\t";
+  //  serialop += leftPos;
+  //  serialop += "\t";
+  //  serialop += rightPos;
+  //  serialop += "\t";
+  //  serialop += analogRead(A14);
+  //  serialop += "\t";
+  //  serialop += elapsedTime;
 
-//  serialop += state;
-//  serialop += "\t";
-//  serialop += param1;
-//  serialop += "\t";
-//  serialop += param2;
-//  serialop += "\t";
-//  serialop += param3;
-//  serialop += "\t";
-//  serialop += param4;
+  //Infra sensors
+  //  serialop += s0;
+  //  serialop += "\t";
+  //  serialop += s1;
+  //  serialop += "\t";
+  //  serialop += s2;
+  //  serialop += "\t";
+  //  serialop += s3;
+  //  serialop += "\t";
+  //  serialop += s4;
+  //  serialop += "\t";
+
+  //States and params
+  //  serialop += state;
+  //  serialop += "\t";
+  //  serialop += param1;
+  //  serialop += "\t";
+  //  serialop += param2;
+  //  serialop += "\t";
+  //  serialop += param3;
+  //  serialop += "\t";
+  //  serialop += param4;
 
   Serial.println(serialop);
   Serial3.println(serialop);
@@ -188,8 +193,14 @@ void onTimerTick()
     case 'T':
       stateT();
       break;
+    case 'W':
+      stateW();
+      break;
     case 'C':
       stateC();
+      break;
+    case 'R':
+      stateR();
       break;
     case 'V':
       stateV();
@@ -197,8 +208,11 @@ void onTimerTick()
     case 'S':
       stateS();
       break;
+    case 'D':
+      stateD();
+      break;
     default:
-      state = 'S';
+      state = 'E';
   }
 }
 
