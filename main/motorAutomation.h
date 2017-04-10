@@ -1,33 +1,31 @@
 //PID controllers
 #define PTagSpeed 10
-#define ITagSpeed 10
-#define PTagPos 250
-#define DTagPos 0
+#define ITagSpeed 2
+#define PTagCas 2
+
+#define maxSpeed 300
 
 //position control accuracy
 #define accuracy 1
 
 //constants for recursive filter
 #define wholePart 100000
-#define newPart 10000 //max 1000
+#define filterDuty 0.1
+const int newPart = wholePart * filterDuty;
 const int oldPart = wholePart - newPart;
 
 //maximum acceleration (speed change in a cycle)
 #define maxAccelC 0.002
 const int maxAccel = myinterval * maxAccelC;
 
+
 //Tárolók
-//időmérő
-//elapsedMicros elapsedTime;
+//Positions
+volatile int leftPos = 0;
+volatile int rightPos = 0;
 //szűrt sebesség hiba
 volatile int aggrSpeedLeft = 0;
 volatile int aggrSpeedRight = 0;
-//szűrt pozívió hiba derivált
-volatile int errDiffAggrLeft = 0;
-volatile int errDiffAggrRight = 0;
-//régi hiba
-volatile int errOldLeft = 0;
-volatile int errOldRight = 0;
 //integráló tag
 volatile long long errSumLeft = 0;
 volatile long long errSumRight = 0;
@@ -44,25 +42,13 @@ volatile int rightPosOld = 0;
 //Speed control PI
 void SetMotorSpeed(double setSpeedLeft, double setSpeedRight)
 {
-  //Maximum gyorsulás beállítása
-  //if (abs(setSpeedLeft - pastSetSpeedLeft) > maxAccel) setSpeedLeft = pastSetSpeedLeft + sign(setSpeedLeft - pastSetSpeedLeft) * maxAccel;
-  //if (abs(setSpeedRight - pastSetSpeedRight) > maxAccel) setSpeedRight = pastSetSpeedRight + sign(setSpeedRight - pastSetSpeedRight) * maxAccel;
   //Encoder érték kiolvasás
-  int leftPos = encoderLeft.read();
-  int rightPos = encoderRight.read();
+  leftPos = encoderLeft.read();
+  rightPos = encoderRight.read();
+
   //Sebesség számítása + rekurzív szűrés sebességre
   aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * 1000 * (leftPos - leftPosOld)) / wholePart;
   aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * 1000 * (rightPos - rightPosOld)) / wholePart;
-
-  //  //0 közeli hiba kiiktatása
-  //  if (abs(aggrSpeedLeft) < 30)
-  //  {
-  //    aggrSpeedLeft = 0;
-  //  }
-  //  if (abs(aggrSpeedRight) < 30)
-  //  {
-  //    aggrSpeedRight = 0;
-  //  }
 
   //Sebesség hiba számítása
   int errorLeft = setSpeedLeft - aggrSpeedLeft;
@@ -76,40 +62,47 @@ void SetMotorSpeed(double setSpeedLeft, double setSpeedRight)
   errSumLeft += errorLeft;
   errSumRight += errorRight;
 
-  //Tárolóba setSpeet metése
-  pastSetSpeedLeft = setSpeedLeft;
-  pastSetSpeedRight = setSpeedRight;
-
   //PI control
   int opLeft = PTagSpeed * errorLeft + ITagSpeed * errSumLeft;
   int opRight = PTagSpeed * errorRight + ITagSpeed * errSumRight;
 
   //Send output
+  blockRadius = 0;
   SetMotorPower(opLeft, opRight);
 }
 
-//Position control (incremental) PD
-void SetPos(int setPosLeft, int setPosRight)
+void CascadePos(int setPosLeft, int setPosRight)
 {
-  int leftPos = encoderLeft.read();
-  int rightPos = encoderRight.read();
+  leftPos = encoderLeft.read();
+  rightPos = encoderRight.read();
+
   int errorLeft = setPosLeft - leftPos;
   int errorRight = setPosRight - rightPos;
-
-  //Sebesség számítása + rekurzív szűrés sebességre
-  aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * 1000 * (leftPos - leftPosOld)) / wholePart;
-  aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * 1000 * (rightPos - rightPosOld)) / wholePart;
-
-  int opLeft = PTagPos * errorLeft - DTagPos * aggrSpeedLeft;
-  int opRight = PTagPos * errorRight - DTagPos * aggrSpeedRight;
   
-  //Tárolóba pozíció mentés
-  leftPosOld = leftPos;
-  rightPosOld = rightPos;
-  
-  SetMotorPower(opLeft, opRight);
+  //Getting outputs
+  int opLeft = PTagCas * errorLeft;
+  int opRight = PTagCas * errorRight;
+
+  //Comparing and setting the values to maxSpeed
+  if (abs(opLeft) > maxSpeed)
+  {
+    int ratio = (maxSpeed << 10) / abs(opLeft);
+    opLeft *= ratio;
+    opLeft >>= 10;
+    opRight *= ratio;
+    opRight >>= 10;
+  }
+  if (abs(opRight) > maxSpeed)
+  {
+    int ratio = (maxSpeed << 10) / abs(opRight);
+    opLeft *= ratio;
+    opLeft >>= 10;
+    opRight *= ratio;
+    opRight >>= 10;
+  }
+
+  SetMotorSpeed(opLeft, opRight);
 }
-
 
 //Call this to setup drive system
 void SetupMotorAutomation() {
