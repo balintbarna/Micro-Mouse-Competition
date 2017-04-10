@@ -33,6 +33,8 @@ String serialCommand = "";
 volatile char state = 'S';
 volatile int param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
+#include "states.h"
+
 //time measure
 elapsedMillis elapsedTime = 0;
 
@@ -141,19 +143,29 @@ void serialToValue() {
 
 void displayData()
 {
-  String serialop = aggrSpeedLeft;
+  String serialop = "";
+  
+//  serialop += aggrSpeedLeft;
+//  serialop += "\t";
+//  serialop += aggrSpeedRight;
+//  serialop += "\t";
+//  serialop += encoderLeft.read();
+//  serialop += "\t";
+//  serialop += encoderRight.read();
+//  serialop += "\t";
+//  serialop += analogRead(A14);
+//  serialop += "\t";
+//  serialop += elapsedTime;
+
+  serialop += state;
+  serialop += "\t";
+  serialop += s4;  
+  serialop += "\t";
+  serialop += aggrSpeedLeft;
   serialop += "\t";
   serialop += aggrSpeedRight;
   serialop += "\t";
-  serialop += encoderLeft.read();
-  serialop += "\t";
-  serialop += encoderRight.read();
-  serialop += "\t";
-  serialop += analogRead(A14);
-  serialop += "\t";
-  serialop += elapsedTime;
 
-//  String serialop = "";
 //  serialop += state;
 //  serialop += "\t";
 //  serialop += param1;
@@ -173,17 +185,20 @@ void onTimerTick()
 {
   switch (state)
   {
+    case 'T':
+      stateT();
+      break;
     case 'C':
-      CascadePos(param1, param2);
+      stateC();
       break;
     case 'V':
-      SetMotorSpeed(param1, param2);
+      stateV();
       break;
     case 'S':
-      SetMotorSpeed(0, 0);
+      stateS();
       break;
     default:
-      state = 0;
+      state = 'S';
   }
 }
 
