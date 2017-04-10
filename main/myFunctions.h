@@ -9,3 +9,16 @@ template <typename type>
 type sign(type value) {
   return type((value > 0) - (value < 0));
 }
+
+String getParam(int index, String comm)
+{
+  if (index == -1)
+  {
+    return comm;
+  }
+  else
+  {
+    return comm.substring(0, index);
+  }
+}
+
