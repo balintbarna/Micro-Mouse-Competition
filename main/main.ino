@@ -2,6 +2,8 @@
 
 #define pwmRes 10
 
+#define infraPin 22
+
 //timer interval (microsec)
 #define myinterval 1000
 
@@ -14,9 +16,12 @@ const int pwmMid = pwmMax / 2;
 //setpoint for pid control
 volatile int setPoint = 0;
 
+int s0, s1, s2, s3, s4;
+
 #include <Wire.h>
 #include "mpu6050.h"
 #include "motorAutomation.h"
+#include "sensor.h"
 
 //overflower variable
 short overF = 0;
@@ -36,7 +41,7 @@ void setup() {
   //Initialize Motor Automation
   SetupMotorAutomation();
   myTimer.begin(onTimerTick, myinterval);
-  //infa
+  //infra
   pinMode(22, OUTPUT);
   digitalWrite(22, 0);
   //led
@@ -45,6 +50,7 @@ void setup() {
 
 void loop()
 {
+  readInfra();
   SerialToValue();
   displayData();
   checkBattery();
@@ -99,4 +105,12 @@ void displayData()
 void onTimerTick()
 {
   CascadePos(setPoint, setPoint);
+}
+
+void readInfra()
+{
+  digitalWrite(infraPin, 1);
+  delay(1);
+  sensor();
+  digitalWrite(infraPin, 0);
 }
