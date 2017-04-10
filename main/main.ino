@@ -1,6 +1,8 @@
 #define DEBUG
 
 #define infraPin 22
+#define batteryPin A14
+#define led0 13
 
 //timer
 IntervalTimer myTimer;
@@ -36,8 +38,8 @@ elapsedMillis elapsedTime = 0;
 
 void setup() {
   //Initialize Serial3 Comm
-  Serial.begin(9600);
-  Serial3.begin(9600);
+  Serial.begin(115200);
+  Serial3.begin(115200);
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
@@ -47,10 +49,10 @@ void setup() {
   SetupMotorAutomation();
   myTimer.begin(onTimerTick, myinterval);
   //infra
-  pinMode(22, OUTPUT);
-  digitalWrite(22, 0);
+  pinMode(infraPin, OUTPUT);
+  digitalWrite(infraPin, 0);
   //led
-  pinMode(13, OUTPUT);
+  pinMode(led0, OUTPUT);
 }
 
 void loop()
@@ -63,12 +65,12 @@ void loop()
 
 void checkBattery()
 {
-  if (analogRead(A14) < 800)
+  if (analogRead(batteryPin) < 800)
   {
-    digitalWrite(13, 1);
+    digitalWrite(led0, 1);
   }
   else
-    digitalWrite(13, 0);
+    digitalWrite(led0, 0);
 }
 
 void serialToValue() {
