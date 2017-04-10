@@ -36,11 +36,11 @@ volatile int pastSetSpeedRight = 0;
 volatile int leftPosOld = 0;
 volatile int rightPosOld = 0;
 
-#include "motorControl.h"
 #include "encoderReader.h"
+#include "motorControl.h"
 
 //Speed control PI
-void SetMotorSpeed(double setSpeedLeft, double setSpeedRight)
+void SetMotorSpeed(int setSpeedLeft, int setSpeedRight)
 {
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();
