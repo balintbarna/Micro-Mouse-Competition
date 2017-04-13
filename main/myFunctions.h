@@ -31,8 +31,6 @@ void ResetAllStoredValues()
   aggrSpeedRight = 0;
   errSumLeft = 0;
   errSumRight = 0;
-//  pastSetSpeedLeft = 0;
-//  pastSetSpeedRight = 0;
   leftPosOld = 0;
   rightPosOld = 0;
 }

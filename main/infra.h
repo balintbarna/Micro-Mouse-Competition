@@ -53,16 +53,15 @@ void _readInfra(int index)
       }
     }
   }
-  infra_deriv[index] = speedMultiplier * (infra[index] - pastinfra[index]) / _elapsedMicro;
-  _elapsedMicro = 0;
+  infra_deriv[index] = 1000 * (infra[index] - pastinfra[index]) / (int)_elapsedMicro;
 }
 
 //Infra reading procedure, default value reads all 5 sensors
 void ReadInfra(int index = -1)
 {
   digitalWrite(infraPin, 1);
-  delay(1);
-  //delayMicroseconds(100);
+  //delay(1);
+  delayMicroseconds(500);
   if (index == -1)
   {
     for (int i = 0; i < 5; i++)
@@ -75,5 +74,6 @@ void ReadInfra(int index = -1)
     _readInfra(index);
   }
   digitalWrite(infraPin, 0);
+  _elapsedMicro = 0;
 }
 

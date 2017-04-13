@@ -9,7 +9,7 @@
 //timer
 IntervalTimer myTimer;
 //timer interval (microsec)
-#define myinterval 1000
+#define myinterval 20000
 
 //Setting pwm output parameters
 #define pwmRes 10
@@ -81,12 +81,12 @@ void setup() {
 //---------------- LOOP ----------------
 void loop()
 {
-  checkBattery();
-  ReadInfra();
 #if DEBUG
   serialToValue();
   displayData();
 #endif
+  checkBattery();
+  ReadInfra();
 }
 
 void checkBattery()
@@ -168,8 +168,6 @@ void serialToValue() {
 
 void displayData()
 {
-  serialop = "";
-
   //Speed, Position, Battery, Time
   //  serialop += aggrSpeedLeft;
   //  serialop += "\t";
@@ -183,22 +181,28 @@ void displayData()
   //  serialop += "\t";
   //  serialop += elapsedTime;
   //  serialop += "\t";
+  //  serialop += _elapsedMicro;
+  //  serialop += "\t";
 
   //Infra sensors
-  serialop += infra[0];
-  serialop += "\t";
-  serialop += infra[1];
-  serialop += "\t";
-  serialop += infra[2];
-  serialop += "\t";
-  serialop += infra[3];
-  serialop += "\t";
+  //  serialop += infra[0];
+  //  serialop += "\t";
+  //  serialop += infra[1];
+  //  serialop += "\t";
+  //  serialop += infra[2];
+  //  serialop += "\t";
+  //  serialop += infra[3];
+  //  serialop += "\t";
   serialop += infra[4];
+  serialop += "\t";
+  serialop += pastinfra[4];
+  serialop += "\t";
+  serialop += infra_deriv[4];
   serialop += "\t";
 
   //States and params
-  //  serialop += state;
-  //  serialop += "\t";
+  serialop += state;
+  serialop += "\t";
   //  serialop += param1;
   //  serialop += "\t";
   //  serialop += param2;
@@ -207,9 +211,13 @@ void displayData()
   //  serialop += "\t";
   //  serialop += param4;
   //  serialop += "\t";
+  //  serialop += idler;
+  //  serialop += "\t";
 
   Serial.println(serialop);
   Serial3.println(serialop);
+
+  serialop = "";
 }
 #endif
 
@@ -238,6 +246,9 @@ void onTimerTick()
       break;
     case 'D':
       stateD();
+      break;
+    case 'I':
+      stateI();
       break;
     default:
       state = 'E';

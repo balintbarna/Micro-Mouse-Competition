@@ -1,8 +1,11 @@
 //Parameters for infra based speed control
-#define PInfra 0.2
-#define DInfra 0.03
+#define PInfra 0.4
+#define DInfra 0.00001
 const int PInfraInverse = 1 / PInfra;
 const int DInfraInverse = 1 / DInfra;
+const int breakLength = 500;
+
+volatile int idler = 0;
 
 //Cascade Position
 void stateC()
@@ -25,17 +28,17 @@ void stateT()
 {
   ResetAllStoredValues();
   state = 'W';
-  param1 = 500;
-  param2 = 3500;
-//  state = 'V';
-//  param1 = 500;
-//  param2 = 500;
+  param1 = 300;
+  param2 = 2000;
+  //  state = 'V';
+  //  param1 = 500;
+  //  param2 = 500;
 }
 //Rotating/Turning (pozitive means left)
 void stateR()
 {
-  int leftS = -100;
-  int rightS = 100;
+  int leftS = -300;
+  int rightS = 300;
   if (leftPos <= -param1)
     leftS = 0;
   if (rightPos >= param1)
@@ -43,6 +46,7 @@ void stateR()
   SetMotorSpeed(leftS, rightS);
   if (leftPos <= -param1 && rightPos >= param1)
   {
+    idler = 0;
     state = 'T';
   }
 }
@@ -55,16 +59,35 @@ void stateD()
 //Go until wall
 void stateW()
 {
-  int de = (1650 - infra[4]);
-  int de_deriv = infra_deriv[4];
-  int speedL = param1 - de / PInfraInverse + de_deriv / DInfraInverse;
-  int speedR = param1 + de / PInfraInverse - de_deriv / DInfraInverse;
-  SetMotorSpeed(speedL, speedR);
-  if (infra[2] < param2)
+  if (infra[2] > param2 * 5)
   {
-    //param1 = 30;
-    //ResetAllStoredValues();
+    int de = (1650 - infra[4]);
+    int de_deriv = infra_deriv[4];
+    int speedL = param1 - de / PInfraInverse;
+    int speedR = param1 + de / PInfraInverse;
+    //int speedL = param1 - de / PInfraInverse + de_deriv / DInfraInverse;
+    //int speedR = param1 + de / PInfraInverse - de_deriv / DInfraInverse;
+    SetMotorSpeed(speedL, speedR);
+  }
+  else if (infra[2] > param2 + breakLength)
+  {
+    int target = (infra[2] - param2 - 500) / 100 + leftPos;
+    CascadePos(target, target);
+  }
+  else
+  {
+    idler = 0;
+    param1 = 35;
+    ResetAllStoredValues();
+    SetMotorPower(0, 0);
     state = 'S';
   }
+}
+//Waiting/Idle
+void stateI()
+{
+  idler++;
+  if (idler > speedMultiplier)
+    state = 'R';
 }
 
