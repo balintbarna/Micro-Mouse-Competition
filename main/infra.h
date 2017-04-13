@@ -61,7 +61,7 @@ void ReadInfra(int index = -1)
 {
   digitalWrite(infraPin, 1);
   //delay(1);
-  delayMicroseconds(500);
+  delayMicroseconds(1000);
   if (index == -1)
   {
     for (int i = 0; i < 5; i++)

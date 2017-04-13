@@ -33,5 +33,9 @@ void ResetAllStoredValues()
   errSumRight = 0;
   leftPosOld = 0;
   rightPosOld = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    infra_deriv[i] = 0;
+  }
 }
 

@@ -9,7 +9,7 @@
 //timer
 IntervalTimer myTimer;
 //timer interval (microsec)
-#define myinterval 20000
+#define myinterval 1000
 
 //Setting pwm output parameters
 #define pwmRes 10
@@ -75,6 +75,7 @@ void setup() {
   //led
   pinMode(led0, OUTPUT);
   //first infra value
+  ReadInfra();
   ReadInfra();
 }
 

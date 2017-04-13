@@ -1,7 +1,7 @@
 //PID controllers
-const int PTagSpeed = 10 * myinterval / 1000;
+const int PTagSpeed = 400;
 const int ITagSpeed = 2 * myinterval / 1000;
-#define PTagCas 2
+#define PTagCas 6
 
 #define maxSpeed 500
 
@@ -39,16 +39,18 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight)
   //Sebesség számítása + rekurzív szűrés sebességre
   aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * speedMultiplier * (leftPos - leftPosOld)) / wholePart;
   aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * speedMultiplier * (rightPos - rightPosOld)) / wholePart;
+  //aggrSpeedLeft = 50 * (leftPos - leftPosOld);
+  //aggrSpeedRight = 50 * (rightPos - rightPosOld);
 
   //Setting filter
-  //  int lesserSpeed = abs(aggrSpeedLeft) < abs(aggrSpeedRight) ? abs(aggrSpeedLeft) : abs(aggrSpeedRight);
-  //  if (lesserSpeed > filterHighSpeed)
-  //    newPart = wholePart;
-  //  else if (lesserSpeed < filterLowSpeed)
-  //    newPart = minNewPart;
-  //  else
-  //    newPart = map(lesserSpeed, filterLowSpeed, filterHighSpeed, minNewPart, wholePart);
-  //  oldPart = wholePart - newPart;
+  int lesserSpeed = abs(aggrSpeedLeft) < abs(aggrSpeedRight) ? abs(aggrSpeedLeft) : abs(aggrSpeedRight);
+  if (lesserSpeed > filterHighSpeed)
+    newPart = wholePart;
+  else if (lesserSpeed < filterLowSpeed)
+    newPart = minNewPart;
+  else
+    newPart = map(lesserSpeed, filterLowSpeed, filterHighSpeed, minNewPart, wholePart);
+  oldPart = wholePart - newPart;
 
   //Sebesség hiba számítása
   int errorLeft = setSpeedLeft - aggrSpeedLeft;

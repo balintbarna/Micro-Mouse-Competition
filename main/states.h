@@ -28,8 +28,8 @@ void stateT()
 {
   ResetAllStoredValues();
   state = 'W';
-  param1 = 300;
-  param2 = 2000;
+  param1 = 375;
+  param2 = 1500;
   //  state = 'V';
   //  param1 = 500;
   //  param2 = 500;
@@ -37,16 +37,17 @@ void stateT()
 //Rotating/Turning (pozitive means left)
 void stateR()
 {
-  int leftS = -300;
-  int rightS = 300;
-  if (leftPos <= -param1)
-    leftS = 0;
-  if (rightPos >= param1)
-    rightS = 0;
+  int leftS = -220;
+  int rightS = 240;
+  //  if (leftPos <= -param1)
+  //    leftS = 0;
+  //  if (rightPos >= param1)
+  //    rightS = 0;
   SetMotorSpeed(leftS, rightS);
-  if (leftPos <= -param1 && rightPos >= param1)
+  //if (leftPos <= -param1 && rightPos >= param1)
+  if (rightPos >= param1)
   {
-    idler = 0;
+    ResetAllStoredValues;
     state = 'T';
   }
 }
@@ -71,16 +72,17 @@ void stateW()
   }
   else if (infra[2] > param2 + breakLength)
   {
-    int target = (infra[2] - param2 - 500) / 100 + leftPos;
-    CascadePos(target, target);
+    int targetL = (infra[2] - param2 ) / 100 + leftPos;
+    int targetR = (infra[2] - param2 ) / 100 + rightPos;
+    CascadePos(targetL, targetR);
   }
   else
   {
     idler = 0;
-    param1 = 35;
+    param1 = 45;
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    state = 'S';
+    state = 'I';
   }
 }
 //Waiting/Idle
