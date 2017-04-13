@@ -1,4 +1,6 @@
-#define DEBUG
+//---------------- GLOBALS ----------------
+
+#define DEBUG 1
 
 #define infraPin 22
 #define batteryPin A14
@@ -17,12 +19,10 @@ const int pwmMid = pwmMax / 2;
 //setpoint for pid control
 volatile int setPoint = 0;
 
-volatile int s0, s1, s2, s3, s4;
-
-#include <Wire.h>
-#include "mpu6050.h"
-#include "motorAutomation.h"
-#include "sensor.h"
+//infra sensor values
+volatile int infra[5] = {0, 0, 0, 0, 0};
+volatile int pastinfra[5] = {0, 0, 0, 0, 0};
+volatile int infra_deriv[5] = {0, 0, 0, 0, 0};
 
 //overflower variable
 short overF = 0;
@@ -33,36 +33,60 @@ String serialCommand = "";
 volatile char state = 'S';
 volatile int param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
-#include "states.h"
-
 //time measure
 elapsedMillis elapsedTime = 0;
+elapsedMicros _elapsedMicro = 0;
 
+//Variable for serial output
+String serialop = "";
+
+
+//---------------- INCLUDES ----------------
+
+#include <Wire.h>
+#include "mpu6050.h"
+#include "encoderReader.h"
+#include "motorControl.h"
+#include "motorAutomation.h"
+#include "myFunctions.h"
+#include "infra.h"
+#include "states.h"
+
+
+//---------------- SETUP ----------------
 void setup() {
-  //Initialize Serial3 Comm
+  //Initialize Serial comm
+#if DEBUG
   Serial.begin(115200);
   Serial3.begin(115200);
+#endif
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
   //Analog 10 biten
   analogWriteResolution(pwmRes);
-  //Initialize Motor Automation
-  SetupMotorAutomation();
+  //Initialize Motors
+  SetupMotors();
+  //Start timer
   myTimer.begin(onTimerTick, myinterval);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
   //led
   pinMode(led0, OUTPUT);
+  //first infra value
+  ReadInfra();
 }
 
+//---------------- LOOP ----------------
 void loop()
 {
-  readInfra();
+  checkBattery();
+  ReadInfra();
+#if DEBUG
   serialToValue();
   displayData();
-  checkBattery();
+#endif
 }
 
 void checkBattery()
@@ -75,6 +99,7 @@ void checkBattery()
     digitalWrite(led0, 0);
 }
 
+#if DEBUG
 void serialToValue() {
   bool newInfo = false;
   if (Serial.available())
@@ -143,7 +168,7 @@ void serialToValue() {
 
 void displayData()
 {
-  String serialop = "";
+  serialop = "";
 
   //Speed, Position, Battery, Time
   //  serialop += aggrSpeedLeft;
@@ -157,18 +182,19 @@ void displayData()
   //  serialop += analogRead(A14);
   //  serialop += "\t";
   //  serialop += elapsedTime;
+  //  serialop += "\t";
 
   //Infra sensors
-  //  serialop += s0;
-  //  serialop += "\t";
-  //  serialop += s1;
-  //  serialop += "\t";
-  //  serialop += s2;
-  //  serialop += "\t";
-  //  serialop += s3;
-  //  serialop += "\t";
-  //  serialop += s4;
-  //  serialop += "\t";
+  serialop += infra[0];
+  serialop += "\t";
+  serialop += infra[1];
+  serialop += "\t";
+  serialop += infra[2];
+  serialop += "\t";
+  serialop += infra[3];
+  serialop += "\t";
+  serialop += infra[4];
+  serialop += "\t";
 
   //States and params
   //  serialop += state;
@@ -180,12 +206,14 @@ void displayData()
   //  serialop += param3;
   //  serialop += "\t";
   //  serialop += param4;
+  //  serialop += "\t";
 
   Serial.println(serialop);
   Serial3.println(serialop);
 }
+#endif
 
-//Functions gets called by timer ticks
+//---------------- TIMER INTERRUPT ----------------
 void onTimerTick()
 {
   switch (state)
@@ -216,10 +244,3 @@ void onTimerTick()
   }
 }
 
-void readInfra()
-{
-  digitalWrite(infraPin, 1);
-  delay(1);
-  sensor();
-  digitalWrite(infraPin, 0);
-}

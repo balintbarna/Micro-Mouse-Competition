@@ -1,3 +1,9 @@
+//Parameters for infra based speed control
+#define PInfra 0.2
+#define DInfra 0.03
+const int PInfraInverse = 1 / PInfra;
+const int DInfraInverse = 1 / DInfra;
+
 //Cascade Position
 void stateC()
 {
@@ -19,8 +25,11 @@ void stateT()
 {
   ResetAllStoredValues();
   state = 'W';
-  param1 = 300;
-  param2 = 2800;
+  param1 = 500;
+  param2 = 3500;
+//  state = 'V';
+//  param1 = 500;
+//  param2 = 500;
 }
 //Rotating/Turning (pozitive means left)
 void stateR()
@@ -46,13 +55,16 @@ void stateD()
 //Go until wall
 void stateW()
 {
-  int de = (1650 - s4) >> 6;
-  SetMotorSpeed(param1 - de, param1 + de);
-  if (s2 < param2)
+  int de = (1650 - infra[4]);
+  int de_deriv = infra_deriv[4];
+  int speedL = param1 - de / PInfraInverse + de_deriv / DInfraInverse;
+  int speedR = param1 + de / PInfraInverse - de_deriv / DInfraInverse;
+  SetMotorSpeed(speedL, speedR);
+  if (infra[2] < param2)
   {
-    param1 = 30;
-    ResetAllStoredValues();
-    state = 'R';
+    //param1 = 30;
+    //ResetAllStoredValues();
+    state = 'S';
   }
 }
 

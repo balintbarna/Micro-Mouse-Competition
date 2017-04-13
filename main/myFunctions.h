@@ -10,6 +10,7 @@ type sign(type value) {
   return type((value > 0) - (value < 0));
 }
 
+//Function to simplify deconstructing a serial command
 String getParam(int index, String comm)
 {
   if (index == -1)
@@ -22,6 +23,7 @@ String getParam(int index, String comm)
   }
 }
 
+//Function to erase past stored values
 void ResetAllStoredValues()
 {
   ResetEncoders();
@@ -29,8 +31,8 @@ void ResetAllStoredValues()
   aggrSpeedRight = 0;
   errSumLeft = 0;
   errSumRight = 0;
-  pastSetSpeedLeft = 0;
-  pastSetSpeedRight = 0;
+//  pastSetSpeedLeft = 0;
+//  pastSetSpeedRight = 0;
   leftPosOld = 0;
   rightPosOld = 0;
 }
