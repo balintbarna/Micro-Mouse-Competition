@@ -1,19 +1,19 @@
 //PID controllers
 const int PTagSpeed = 400;
 const int ITagSpeed = 2 * myinterval / 1000;
-#define PTagCas 6
+#define PTagCas 10
 
 #define maxSpeed 500
 
 //constants for recursive filter
 #define wholePart 100000
-#define filterDuty 1
+#define filterDuty 0.1
 const int minNewPart = wholePart * filterDuty;
 volatile int newPart = minNewPart;
 volatile int oldPart = wholePart - newPart;
 const int speedMultiplier = 1000000 / myinterval;
 const int filterLowSpeed = 0.3 * speedMultiplier;
-const int filterHighSpeed = 3 * speedMultiplier;
+const int filterHighSpeed = 1.1 * speedMultiplier;
 
 //Tárolók
 //Positions
@@ -39,8 +39,6 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight)
   //Sebesség számítása + rekurzív szűrés sebességre
   aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * speedMultiplier * (leftPos - leftPosOld)) / wholePart;
   aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * speedMultiplier * (rightPos - rightPosOld)) / wholePart;
-  //aggrSpeedLeft = 50 * (leftPos - leftPosOld);
-  //aggrSpeedRight = 50 * (rightPos - rightPosOld);
 
   //Setting filter
   int lesserSpeed = abs(aggrSpeedLeft) < abs(aggrSpeedRight) ? abs(aggrSpeedLeft) : abs(aggrSpeedRight);

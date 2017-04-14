@@ -5,11 +5,14 @@
 #define infraPin 22
 #define batteryPin A14
 #define led0 13
+#define gombPin 21
+#define led1 2
+#define led2 23
 
 //timer
 IntervalTimer myTimer;
 //timer interval (microsec)
-#define myinterval 1000
+#define myinterval 3000
 
 //Setting pwm output parameters
 #define pwmRes 10
@@ -39,6 +42,9 @@ elapsedMicros _elapsedMicro = 0;
 
 //Variable for serial output
 String serialop = "";
+
+bool jobboldali = false;
+bool baloldali = false;
 
 
 //---------------- INCLUDES ----------------
@@ -72,8 +78,12 @@ void setup() {
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
-  //led
+  //button
+  pinMode(gombPin, INPUT_PULLUP);
+  //leds
   pinMode(led0, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
   //first infra value
   ReadInfra();
   ReadInfra();
@@ -85,9 +95,14 @@ void loop()
 #if DEBUG
   serialToValue();
   displayData();
+
+  digitalWrite(led2, baloldali);
+  digitalWrite(led1, jobboldali);
 #endif
   checkBattery();
   ReadInfra();
+  if (!digitalRead(gombPin))
+    state = 'T';
 }
 
 void checkBattery()
@@ -184,21 +199,21 @@ void displayData()
   //  serialop += "\t";
   //  serialop += _elapsedMicro;
   //  serialop += "\t";
+  //  serialop += encoderLeft.read();
+  //  serialop += "\t";
+  //  serialop += encoderRight.read();
+  //  serialop += "\t";
 
   //Infra sensors
-  //  serialop += infra[0];
-  //  serialop += "\t";
-  //  serialop += infra[1];
-  //  serialop += "\t";
-  //  serialop += infra[2];
-  //  serialop += "\t";
-  //  serialop += infra[3];
-  //  serialop += "\t";
+  serialop += infra[0];
+  serialop += "\t";
+  serialop += infra[1];
+  serialop += "\t";
+  serialop += infra[2];
+  serialop += "\t";
+  serialop += infra[3];
+  serialop += "\t";
   serialop += infra[4];
-  serialop += "\t";
-  serialop += pastinfra[4];
-  serialop += "\t";
-  serialop += infra_deriv[4];
   serialop += "\t";
 
   //States and params
@@ -245,11 +260,11 @@ void onTimerTick()
     case 'S':
       stateS();
       break;
-    case 'D':
-      stateD();
-      break;
     case 'I':
       stateI();
+      break;
+    case 'D':
+      stateD();
       break;
     default:
       state = 'E';
