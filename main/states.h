@@ -1,9 +1,10 @@
 //Parameters for infra based speed control
 #define PInfra 0.4
-#define DInfra 0.00001
+#define DInfra 0.2
 const int PInfraInverse = 1 / PInfra;
 const int DInfraInverse = 1 / DInfra;
 const int breakLength = 500;
+volatile char nextState = 'S';
 
 volatile int idler = 0;
 
@@ -30,44 +31,47 @@ void stateT()
   state = 'W';
   param1 = 375;
   param2 = 1500;
-  //  state = 'V';
-  //  param1 = 500;
-  //  param2 = 500;
 }
 //Rotating/Turning (pozitive means left)
 void stateR()
 {
-  int leftS = -220;
-  int rightS = 240;
-  //  if (leftPos <= -param1)
-  //    leftS = 0;
-  //  if (rightPos >= param1)
-  //    rightS = 0;
-  SetMotorSpeed(leftS, rightS);
-  //if (leftPos <= -param1 && rightPos >= param1)
-  if (rightPos >= param1)
+  //végrehajtás
+  CascadePos(param1, param2);
+  //végállapot ellenőrzés
+  if (abs(leftPos) >= abs(param1) && abs(rightPos) >= abs(param2))
   {
-    ResetAllStoredValues;
-    state = 'T';
+    ResetAllStoredValues();
+    SetMotorPower(0, 0);
+    idler = 0;
+    state = 'I';
+    nextState = 'T';
   }
-}
-//delete values
-void stateD()
-{
-  ResetAllStoredValues();
-  state = 'S';
 }
 //Go until wall
 void stateW()
 {
   if (infra[2] > param2 * 5)
   {
-    int de = (1650 - infra[4]);
-    int de_deriv = infra_deriv[4];
-    int speedL = param1 - de / PInfraInverse;
-    int speedR = param1 + de / PInfraInverse;
-    //int speedL = param1 - de / PInfraInverse + de_deriv / DInfraInverse;
-    //int speedR = param1 + de / PInfraInverse - de_deriv / DInfraInverse;
+    int de = 0;
+    int de_deriv = 0;
+
+    jobboldali = false;
+    baloldali = false;
+
+    if (infra[4] < 4500 && infra[3] < 6000)
+    {
+      jobboldali = true;
+      de = 1650 - infra[4];
+      de_deriv = infra_deriv[4];
+    }
+    else if (infra[0] < 4500 && infra[1] < 6000)
+    {
+      baloldali = true;
+      de = infra[0] - 1650;
+      de_deriv = -infra_deriv[0];
+    }
+    int speedL = param1 - de / PInfraInverse + de_deriv / DInfraInverse;
+    int speedR = param1 + de / PInfraInverse - de_deriv / DInfraInverse;
     SetMotorSpeed(speedL, speedR);
   }
   else if (infra[2] > param2 + breakLength)
@@ -78,18 +82,36 @@ void stateW()
   }
   else
   {
+    //balra
+    if (infra[0] > 9999)
+    {
+      param1 = -37;
+      param2 = 47;
+    }
+    //jobbra
+    else
+    {
+      param1 = 47;
+      param2 = -37;
+    }
     idler = 0;
-    param1 = 45;
     ResetAllStoredValues();
     SetMotorPower(0, 0);
     state = 'I';
+    nextState = 'R';
   }
+}
+//
+void stateD()
+{
+  ResetAllStoredValues();
+  state = 'S';
 }
 //Waiting/Idle
 void stateI()
 {
   idler++;
   if (idler > speedMultiplier)
-    state = 'R';
+    state = nextState;
 }
 
