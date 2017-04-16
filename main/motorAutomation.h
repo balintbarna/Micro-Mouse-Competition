@@ -3,17 +3,23 @@ const int PTagSpeed = 400;
 const int ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 10
 
-#define maxSpeed 500
+const int maxSpeed = 475;
+
+//Parameters for infra based speed control
+#define PInfra 0.5
+#define DInfra 0.3
+const int PInfraInverse = 1 / PInfra;
+const int DInfraInverse = 1 / DInfra;
 
 //constants for recursive filter
 #define wholePart 100000
 #define filterDuty 0.1
+#define filterOffRatio 2
 const int minNewPart = wholePart * filterDuty;
 volatile int newPart = minNewPart;
 volatile int oldPart = wholePart - newPart;
-const int speedMultiplier = 1000000 / myinterval;
-const int filterLowSpeed = 0.3 * speedMultiplier;
-const int filterHighSpeed = 1.1 * speedMultiplier;
+const int filterLowSpeed = filterOffRatio / 10.0 * timerFrequency;
+const int filterHighSpeed = filterOffRatio * timerFrequency;
 
 //Tárolók
 //Positions
@@ -30,15 +36,53 @@ volatile int leftPosOld = 0;
 volatile int rightPosOld = 0;
 
 //Speed control PI
-void SetMotorSpeed(int setSpeedLeft, int setSpeedRight)
+void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
 {
+  jobboldali = false;
+  baloldali = false;
+  //If we want to control wall proximity
+  if (doWall)
+  {
+    int de = 0;
+    int de_deriv = 0;
+    /* 1: jobb fal jó
+       2: bal fal jó
+       3: mindkét fal jó
+    */
+    //Jobb fal vizsgálata
+    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500;
+    //Bal fal vizsgálata
+    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500) << 1;
+    //Ha van jó fal
+    if (wall_fitness)
+    {
+      //Ha a jobb fal közelebb van
+      if (infra[right] < infra[left])
+      {
+        jobboldali = true;
+        de = 1650 - infra[right];
+        de_deriv = infra_deriv[right];
+      }
+      //Ha messzebb
+      else
+      {
+        baloldali = true;
+        de = infra[left] - 1650;
+        de_deriv = -infra_deriv[left];
+      }
+    }
+    setSpeedLeft -= de / PInfraInverse;
+    setSpeedLeft += de_deriv / DInfraInverse;
+    setSpeedRight += de / PInfraInverse;
+    setSpeedRight -= de_deriv / DInfraInverse;
+  }
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();
   rightPos = encoderRight.read();
 
   //Sebesség számítása + rekurzív szűrés sebességre
-  aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * speedMultiplier * (leftPos - leftPosOld)) / wholePart;
-  aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * speedMultiplier * (rightPos - rightPosOld)) / wholePart;
+  aggrSpeedLeft = (oldPart * aggrSpeedLeft + newPart * timerFrequency * (leftPos - leftPosOld)) / wholePart;
+  aggrSpeedRight = (oldPart * aggrSpeedRight + newPart * timerFrequency * (rightPos - rightPosOld)) / wholePart;
 
   //Setting filter
   int lesserSpeed = abs(aggrSpeedLeft) < abs(aggrSpeedRight) ? abs(aggrSpeedLeft) : abs(aggrSpeedRight);
@@ -70,7 +114,7 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight)
   SetMotorPower(opLeft, opRight);
 }
 
-void CascadePos(int setPosLeft, int setPosRight)
+void CascadePos(int setPosLeft, int setPosRight, bool doWall = 0)
 {
   leftPos = encoderLeft.read();
   rightPos = encoderRight.read();
@@ -100,5 +144,5 @@ void CascadePos(int setPosLeft, int setPosRight)
     opRight /= 2000;
   }
 
-  SetMotorSpeed(opLeft, opRight);
+  SetMotorSpeed(opLeft, opRight, doWall);
 }
