@@ -1,3 +1,8 @@
+#define left 0
+#define leftdi 1
+#define front 2
+#define rightdi 3
+#define right 4
 //Meredekség tömb
 const int m[5][16] = {
   {62500, 1592, 2283, 4032, 6410, 10000, 13888, 20000, 26315, 41666, 38461, 62500, 100000, 100000, 83333, 166666},
@@ -61,7 +66,7 @@ void ReadInfra(int index = -1)
 {
   digitalWrite(infraPin, 1);
   //delay(1);
-  delayMicroseconds(1000);
+  delayMicroseconds(500);
   if (index == -1)
   {
     for (int i = 0; i < 5; i++)
