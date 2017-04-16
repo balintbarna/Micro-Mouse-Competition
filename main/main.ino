@@ -1,6 +1,13 @@
 //---------------- GLOBALS ----------------
 
 #define DEBUG 1
+/* 0: semmi
+   1: mozgás
+   2: szenzorok
+   4: állapot és paraméterek
+   összegekkel több is megy egyszerre
+*/
+byte outputMode = 0;
 
 #define infraPin 22
 #define batteryPin A14
@@ -11,8 +18,9 @@
 
 //timer
 IntervalTimer myTimer;
-//timer interval (microsec)
-#define myinterval 3000
+//timer frequency and interval (microsec)
+#define timerFrequency 250
+const int myinterval = 1000000 / timerFrequency;
 
 //Setting pwm output parameters
 #define pwmRes 10
@@ -53,9 +61,9 @@ bool baloldali = false;
 #include "mpu6050.h"
 #include "encoderReader.h"
 #include "motorControl.h"
+#include "infra.h"
 #include "motorAutomation.h"
 #include "myFunctions.h"
-#include "infra.h"
 #include "states.h"
 
 
@@ -103,6 +111,7 @@ void loop()
   ReadInfra();
   if (!digitalRead(gombPin))
     state = 'T';
+  delay(1);
 }
 
 void checkBattery()
@@ -184,51 +193,52 @@ void serialToValue() {
 
 void displayData()
 {
-  //Speed, Position, Battery, Time
-  //  serialop += aggrSpeedLeft;
-  //  serialop += "\t";
-  //  serialop += aggrSpeedRight;
-  //  serialop += "\t";
-  //  serialop += leftPos;
-  //  serialop += "\t";
-  //  serialop += rightPos;
-  //  serialop += "\t";
-  //  serialop += analogRead(A14);
-  //  serialop += "\t";
-  //  serialop += elapsedTime;
-  //  serialop += "\t";
-  //  serialop += _elapsedMicro;
-  //  serialop += "\t";
-  //  serialop += encoderLeft.read();
-  //  serialop += "\t";
-  //  serialop += encoderRight.read();
-  //  serialop += "\t";
+  //Speed, Position, Time
+  if (outputMode % 2)
+  {
+    serialop += aggrSpeedLeft;
+    serialop += "\t";
+    serialop += aggrSpeedRight;
+    serialop += "\t";
+    serialop += encoderLeft.read();
+    serialop += "\t";
+    serialop += encoderRight.read();
+    serialop += "\t";
+    serialop += elapsedTime;
+    serialop += "\t";
+  }
 
   //Infra sensors
-  serialop += infra[0];
-  serialop += "\t";
-  serialop += infra[1];
-  serialop += "\t";
-  serialop += infra[2];
-  serialop += "\t";
-  serialop += infra[3];
-  serialop += "\t";
-  serialop += infra[4];
-  serialop += "\t";
+  if ((outputMode >> 1) % 2)
+  {
+    serialop += infra[left];
+    serialop += "\t";
+    serialop += infra[leftdi];
+    serialop += "\t";
+    serialop += infra[front];
+    serialop += "\t";
+    serialop += infra[rightdi];
+    serialop += "\t";
+    serialop += infra[right];
+    serialop += "\t";
+  }
 
   //States and params
-  serialop += state;
-  serialop += "\t";
-  //  serialop += param1;
-  //  serialop += "\t";
-  //  serialop += param2;
-  //  serialop += "\t";
-  //  serialop += param3;
-  //  serialop += "\t";
-  //  serialop += param4;
-  //  serialop += "\t";
-  //  serialop += idler;
-  //  serialop += "\t";
+  if ((outputMode >> 2) % 2)
+  {
+    serialop += state;
+    serialop += "\t";
+    serialop += param1;
+    serialop += "\t";
+    serialop += param2;
+    serialop += "\t";
+    serialop += param3;
+    serialop += "\t";
+    serialop += param4;
+    serialop += "\t";
+    serialop += idler;
+    serialop += "\t";
+  }
 
   Serial.println(serialop);
   Serial3.println(serialop);
@@ -240,6 +250,8 @@ void displayData()
 //---------------- TIMER INTERRUPT ----------------
 void onTimerTick()
 {
+  jobboldali = false;
+  baloldali = false;
   switch (state)
   {
     case 'T':
