@@ -30,10 +30,11 @@ const int pwmMid = pwmMax / 2;
 //setpoint for pid control
 volatile int setPoint = 0;
 
-//infra sensor values
+//infra sensor values and TOF
 volatile int infra[5] = {0, 0, 0, 0, 0};
 volatile int pastinfra[5] = {0, 0, 0, 0, 0};
 volatile int infra_deriv[5] = {0, 0, 0, 0, 0};
+volatile int TOFread = 0;
 
 //overflower variable
 short overF = 0;
@@ -61,27 +62,25 @@ bool baloldali = false;
 #include "mpu6050.h"
 #include "encoderReader.h"
 #include "motorControl.h"
-#include <VL53L0X.h>
-VL53L0X TOF;
 #include "infra.h"
 #include "motorAutomation.h"
 #include "myFunctions.h"
 #include "states.h"
+#include "tof.h"
 
 
 
 //---------------- SETUP ----------------
 void setup() {
-  //Initialize I2C and TOF sensor
-  Wire.begin();
-  TOF.init();
-  TOF.setTimeout(500);
-
   //Initialize Serial comm
 #if DEBUG
   Serial.begin(115200);
   Serial3.begin(115200);
 #endif
+  //Initialize I2C (for TOF and MPU)
+  Wire.begin();
+  //Initialize TOF sensor
+  SetupTOF();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);

@@ -41,20 +41,8 @@ void _readInfra(int index)
   int se = analogRead(inputs[index]);
   if (se > thr[index][16])
   {
-    if (index == 2)
-    {
-      infra[index] = TOF.readRangeSingleMillimeters() * 100;
-      if (TOF.timeoutOccurred()) 
-      {
-        infra[index] = 9999999;
-      }
-    }
-    else
-    {
-      infra[index] = 9999999;
-    }
+    infra[index] = 9999999;
   }
-
   else if (se < thr[index][0])
   {
     infra[index] = 0;
