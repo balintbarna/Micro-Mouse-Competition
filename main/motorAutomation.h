@@ -45,7 +45,8 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
   {
     int de = 0;
     int de_deriv = 0;
-    /* 1: jobb fal jó
+    /* wall_fitness
+       1: jobb fal jó
        2: bal fal jó
        3: mindkét fal jó
     */
@@ -56,15 +57,33 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
     //Ha van jó fal
     if (wall_fitness)
     {
-      //Ha a jobb fal közelebb van
-      if (infra[right] < infra[left])
+      //Ha mindkét fal jó
+      if (wall_fitness == 3)
+      {
+        //Ha a jobb fal közelebb van
+        if (infra[right] < infra[left])
+        {
+          jobboldali = true;
+          de = 1650 - infra[right];
+          de_deriv = infra_deriv[right];
+        }
+        //Ha messzebb
+        else
+        {
+          baloldali = true;
+          de = infra[left] - 1650;
+          de_deriv = -infra_deriv[left];
+        }
+      }
+      //Ha csak a jobb
+      if (wall_fitness == 1)
       {
         jobboldali = true;
         de = 1650 - infra[right];
         de_deriv = infra_deriv[right];
       }
-      //Ha messzebb
-      else
+      //Ha csak a bal
+      if (wall_fitness == 2)
       {
         baloldali = true;
         de = infra[left] - 1650;
