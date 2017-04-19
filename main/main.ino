@@ -7,7 +7,7 @@
    4: állapot és paraméterek
    összegekkel több is megy egyszerre
 */
-byte outputMode = 0;
+byte outputMode = 2;
 
 #define infraPin 22
 #define batteryPin A14
@@ -61,14 +61,22 @@ bool baloldali = false;
 #include "mpu6050.h"
 #include "encoderReader.h"
 #include "motorControl.h"
+#include <VL53L0X.h>
+VL53L0X TOF;
 #include "infra.h"
 #include "motorAutomation.h"
 #include "myFunctions.h"
 #include "states.h"
 
 
+
 //---------------- SETUP ----------------
 void setup() {
+  //Initialize I2C and TOF sensor
+  Wire.begin();
+  TOF.init();
+  TOF.setTimeout(500);
+
   //Initialize Serial comm
 #if DEBUG
   Serial.begin(115200);
