@@ -4,7 +4,7 @@
 #define rightdi 3
 #define right 4
 //Meredekség tömb
-const int m[5][16] = {
+const int32_t m[5][16] = {
   {62500, 1592, 2283, 4032, 6410, 10000, 13888, 20000, 26315, 41666, 38461, 62500, 100000, 100000, 83333, 166666},
   {8771, 1602, 2590, 5208, 6329, 12195, 14285, 17857, 31250, 29411, 38461, 62500, 83333, 125000, 100000, 100000},
   {50000, 2127, 1893, 3546, 5747, 8196, 13157, 20833, 27777, 38461, 45454, 62500, 71428, 100000, 100000, 166666},
@@ -13,7 +13,7 @@ const int m[5][16] = {
 };
 
 //Y offset tömb
-const int b[5][16] = {
+const int32_t b[5][16] = {
   { -3437500, 399681, 139269, -903225, -2615384, -5480000, -8777777, -14180000, -19921052, -34166666, -31153846, -54062500, -90100000, -90100000, -73916666, -155333333},
   { -508771, 315705, -106217, -1729166, -2531645, -7195121, -8942857, -12053571, -24093750, -22411764, -30846153, -53562500, -73416666, -113375000, -89300000, -89300000},
   { -2900000, 355319, 426136, -510638, -2068965, -4016393, -8263157, -15125000, -21500000, -31500000, -38136363, -54500000, -63142857, -91000000, -91000000, -156666666},
@@ -22,7 +22,7 @@ const int b[5][16] = {
 };
 
 //Threshold tömb
-const int thr[5][17] = {
+const int32_t thr[5][17] = {
   {55, 63, 377, 596, 720, 798, 848, 884, 909, 928, 940, 953, 961, 966, 971, 977, 980},
   {58, 115, 427, 620, 716, 795, 836, 871, 899, 915, 932, 945, 953, 959, 963, 968, 973},
   {58, 68, 303, 567, 708, 795, 856, 894, 918, 936, 949, 960, 968, 975, 980, 985, 988},
@@ -31,17 +31,17 @@ const int thr[5][17] = {
 };
 
 //Analog input pins
-const int inputs[5] = {A3, A6, A2, A1, A0};
+const int32_t inputs[5] = {A3, A6, A2, A1, A0};
 
 //Read infra values, index: 0:left, 1:left-diagonal, 2:front, 3:right-diagonal, 4:right
-void _readInfra(int index)
+void _readInfra(int8_t index)
 {
   pastinfra[index] = infra[index];
 
-  int se = analogRead(inputs[index]);
+  int32_t se = analogRead(inputs[index]);
   if (se > thr[index][16])
   {
-    infra[index] = 9999999;
+    infra[index] = 999999;
   }
   else if (se < thr[index][0])
   {
@@ -49,7 +49,7 @@ void _readInfra(int index)
   }
   else
   {
-    for (int i = 15; i >= 0; i--)
+    for (int8_t i = 15; i >= 0; i--)
     {
       if (se > thr[index][i])
       {
@@ -62,7 +62,7 @@ void _readInfra(int index)
 }
 
 //Infra reading procedure, default value reads all 5 sensors
-void ReadInfra(int index = -1)
+void ReadInfra(int8_t index = -1)
 {
   digitalWrite(infraPin, 1);
   //delay(1);
