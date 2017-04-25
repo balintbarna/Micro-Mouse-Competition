@@ -9,7 +9,7 @@ void serialToValue() {
   {
     if (Serial.available())
     {
-      delayMicros(500);
+      delayMicroseconds(500);
       serialCommand = Serial.readString();
       elapsedTime = 0;
       Serial.println(serialCommand);
@@ -20,7 +20,7 @@ void serialToValue() {
   {
     if (Serial3.available())
     {
-      delayMicros(500);
+      delayMicroseconds(500);
       serialCommand = Serial3.readString();
       elapsedTime = 0;
       Serial3.println(serialCommand);
@@ -125,7 +125,7 @@ void displayData()
   }
   
   //position
-  if ((outputMode >> 3) % 2 && !(overFloop % 400))
+  if ((outputMode >> 3) % 2 && !(overFloop % 250))
   {
     String temp = "";
     for (int i = 0; i < mapsize; i++)
