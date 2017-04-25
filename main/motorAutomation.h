@@ -51,9 +51,9 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
        3: mindkét fal jó
     */
     //Jobb fal vizsgálata
-    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500 && infra_deriv[right] < 100000;
+    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500;
     //Bal fal vizsgálata
-    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500 && infra_deriv[left] < 100000) << 1;
+    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500) << 1;
     //Ha van jó fal
     if (wall_fitness)
     {

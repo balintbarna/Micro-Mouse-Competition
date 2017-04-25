@@ -9,11 +9,12 @@ void SetupTOF()
   TOF.setMeasurementTimingBudget(20000);
 }
 
-void readTOF()
+int32_t readTOF()
 {
-  TOFread = TOF.readRangeSingleMillimeters() * 100;
+  int temp = TOF.readRangeSingleMillimeters() * 100;
   if (TOF.timeoutOccurred())
   {
-    TOFread = 9999999;
+    temp = 999999;
   }
+  return temp;
 }
