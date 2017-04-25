@@ -37,5 +37,7 @@ void ResetAllStoredValues()
   {
     infra_deriv[i] = 0;
   }
+  lastPosX = posX;
+  lastPosY = posY;
 }
 

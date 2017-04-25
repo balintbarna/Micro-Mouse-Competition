@@ -7,7 +7,10 @@
    4: állapot és paraméterek
    összegekkel több is megy egyszerre
 */
-byte outputMode = 2;
+uint8_t outputMode = 8;
+
+//map size (32 for competition)
+#define mapsize 5
 
 #define infraPin 22
 #define batteryPin A14
@@ -20,30 +23,31 @@ byte outputMode = 2;
 IntervalTimer myTimer;
 //timer frequency and interval (microsec)
 #define timerFrequency 250
-const int myinterval = 1000000 / timerFrequency;
+const int32_t myinterval = 1000000 / timerFrequency;
 
 //Setting pwm output parameters
 #define pwmRes 10
-const int pwmMax = pow(2, pwmRes);
-const int pwmMid = pwmMax / 2;
+const int32_t pwmMax = pow(2, pwmRes);
+const int32_t pwmMid = pwmMax / 2;
 
 //setpoint for pid control
-volatile int setPoint = 0;
+volatile int32_t setPoint = 0;
 
 //infra sensor values and TOF
-volatile int infra[5] = {0, 0, 0, 0, 0};
-volatile int pastinfra[5] = {0, 0, 0, 0, 0};
-volatile int infra_deriv[5] = {0, 0, 0, 0, 0};
-volatile int TOFread = 0;
+volatile int32_t infra[5] = {0, 0, 0, 0, 0};
+volatile int32_t pastinfra[5] = {0, 0, 0, 0, 0};
+volatile int32_t infra_deriv[5] = {0, 0, 0, 0, 0};
+volatile int32_t TOFread = 0;
 
 //overflower variable
-short overF = 0;
+uint16_t overFloop = 0;
+uint16_t overFirpt = 0;
 
 //Variable to read command from serial
 String serialCommand = "";
 //Paramteres
 volatile char state = 'S';
-volatile int param1 = 0, param2 = 0, param3 = 0, param4 = 0;
+volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //time measure
 elapsedMillis elapsedTime = 0;
@@ -55,6 +59,22 @@ String serialop = "";
 bool jobboldali = false;
 bool baloldali = false;
 
+//Variables for position in a 2D matrix
+//0;0 a kiindulási pont
+volatile int8_t posX = 0;
+volatile int8_t posY = 0;
+volatile int8_t lastPosX = 0;
+volatile int8_t lastPosY = 0;
+//A cella közepéről induljon
+bool midzone = true;
+
+//0 az előre, -3től 4-ig irányt mutat
+/*   -1  0  1
+     -2     2
+     -3  4  3
+*/
+volatile int8_t orientation = 0;
+
 
 //---------------- INCLUDES ----------------
 
@@ -65,6 +85,8 @@ bool baloldali = false;
 #include "infra.h"
 #include "motorAutomation.h"
 #include "myFunctions.h"
+#include "position2D.h"
+#include "walls.h"
 #include "states.h"
 #include "tof.h"
 
@@ -119,6 +141,7 @@ void loop()
   if (!digitalRead(gombPin))
     state = 'T';
   delay(1);
+  overFloop++;
 }
 
 void checkBattery()
@@ -247,8 +270,83 @@ void displayData()
     serialop += "\t";
   }
 
-  Serial.println(serialop);
-  Serial3.println(serialop);
+  //Map
+  if ((outputMode >> 3) % 2)
+  {
+    //every x-th loop
+    if (overFloop % 10000 == 0)
+    {
+      //topmost row
+      for (int i = 0; i < mapsize; i++)
+        serialop += " _";
+      serialop += "\r";
+
+      //All middle rows
+      for (int i = 0; i < mapsize - 1; i++)
+      {
+        //yWalls
+        //beginning of row
+        serialop += "| ";
+        //all middle walls
+        for (int j = 0; j < mapsize - 1; j++)
+        {
+          if ((yWalls[j] >> (mapsize - 2 - i)) % 2)
+          {
+            serialop += "| ";
+          }
+          else
+          {
+            serialop += "  ";
+          }
+        }
+        //end of row
+        serialop += "|\r";
+        //xWalls
+        for (int j = 0; j < mapsize - 1; j++)
+        {
+          if (( xWalls[mapsize - 1 - i] >> j) % 2)
+          {
+            serialop += " -";
+          }
+          else
+          {
+            serialop += "  ";
+          }
+        }
+        serialop += "\r";
+      }
+
+
+      //last yWall row
+      //beginning of row
+      serialop += "| ";
+      //all middle walls
+      for (int j = 0; j < mapsize - 1; j++)
+      {
+        if (yWalls[j] % 2)
+        {
+          serialop += "| ";
+        }
+        else
+        {
+          serialop += "  ";
+        }
+      }
+
+      //end of row
+      serialop += "|\r";
+
+      //last row
+      for (int i = 0; i < mapsize; i++)
+        serialop += " T";
+    }
+  }
+
+  if (serialop.length())
+  {
+    Serial.println(serialop);
+    Serial3.println(serialop);
+  }
 
   serialop = "";
 }
@@ -288,5 +386,6 @@ void onTimerTick()
     default:
       state = 'E';
   }
+  overFirpt++;
 }
 

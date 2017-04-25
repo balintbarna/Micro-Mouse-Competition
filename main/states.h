@@ -51,6 +51,8 @@ void stateR()
 //Go until wall
 void stateW()
 {
+  updatePosition();
+  checkWalls();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {
@@ -71,10 +73,12 @@ void stateW()
     {
       param1 = -37;
       param2 = 47;
+      turn(-2);
     }
     //Egyébként jobbra
     else
     {
+      turn(2);
       param1 = 47;
       param2 = -37;
     }

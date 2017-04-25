@@ -1,21 +1,21 @@
 //PID controllers
-const int PTagSpeed = 400;
-const int ITagSpeed = 2 * myinterval / 1000;
+const int32_t PTagSpeed = 400;
+const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 10
 
-const int maxSpeed = 475;
+const int32_t maxSpeed = 475;
 
 //Parameters for infra based speed control
-#define PInfra 0.5
-#define DInfra 0.3
-const int PInfraInverse = 1 / PInfra;
-const int DInfraInverse = 1 / DInfra;
+#define PInfraCoeff 0.5
+#define DInfraCoeff 0.3
+const int32_t PInfra = 1000 * PInfraCoeff;
+const int32_t DInfra = 1000 * DInfraCoeff;
 
 //constants for recursive filter
 #define wholePart 100000
-#define filterDuty 0.1
+#define filterDutyDefault 0.1
 #define filterOffRatio 2
-const int minNewPart = wholePart * filterDuty;
+const int minNewPart = wholePart * filterDutyDefault;
 volatile int newPart = minNewPart;
 volatile int oldPart = wholePart - newPart;
 const int filterLowSpeed = filterOffRatio / 10.0 * timerFrequency;
@@ -51,9 +51,9 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
        3: mindkét fal jó
     */
     //Jobb fal vizsgálata
-    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500;
+    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500 && infra_deriv[right] < 100000;
     //Bal fal vizsgálata
-    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500) << 1;
+    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500 && infra_deriv[left] < 100000) << 1;
     //Ha van jó fal
     if (wall_fitness)
     {
@@ -90,10 +90,10 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
         de_deriv = -infra_deriv[left];
       }
     }
-    setSpeedLeft -= de / PInfraInverse;
-    setSpeedLeft += de_deriv / DInfraInverse;
-    setSpeedRight += de / PInfraInverse;
-    setSpeedRight -= de_deriv / DInfraInverse;
+    setSpeedLeft -= de * PInfra / 1000;
+    setSpeedLeft += de_deriv * DInfra / 1000;
+    setSpeedRight += de * PInfra / 1000;
+    setSpeedRight -= de_deriv * DInfra / 1000;
   }
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();
