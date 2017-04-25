@@ -1,50 +1,49 @@
 //Function to modify orientation. Negative means left, 1 increment means 45°
+int32_t lastPosEncAvg = 0;
+#define cell_length 103
 void turn(int8_t _size)
 {
   orientation += _size;
-  orientation += 3;
+  orientation += 8;
   orientation %= 8;
-  orientation -= 3;
 }
 
 void updatePosition()
 {
-  int temp = (encoderLeft.read() + encoderRight.read()) / 2;
-  //alapirany
-  if (orientation == 0)
+  int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
+  int temp = posEncAvg - lastPosEncAvg;
+  //Ha merőleges irányok
+  if (!(orientation % 2))
   {
-    posY = lastPosY + temp / 107;
-    if (abs(temp % 107) < 30)
-      midzone = true;
-    else
-      midzone = false;
+    //Ha megtett egy merőleges cella hosszt
+    if (temp / cell_length)
+    {
+      //Ha alapirány
+      if (orientation == 0)
+      {
+        posY++;
+      }
+      //hátra
+      else if (orientation == 4)
+      {
+        posY--;
+      }
+      //jobbra
+      else if (orientation == 2)
+      {
+        posX++;
+      }
+      //balra
+      else if (orientation == 6)
+      {
+        posX--;
+      }
+      lastPosEncAvg = posEncAvg;
+    }
   }
-  //hátra
-  else if (orientation == 4)
-  {
-    posY = lastPosY - temp / 107;
-    if (abs(temp % 107) < 30)
-      midzone = true;
-    else
-      midzone = false;
-  }
-  //jobbra
-  else if (orientation == 2)
-  {
-    posX = lastPosX - temp / 107;
-    if (abs(temp % 107) < 30)
-      midzone = true;
-    else
-      midzone = false;
-  }
-  //balra
-  else if (orientation == -2)
-  {
-    posX = lastPosX - temp / 107;
-    if (abs(temp % 107) < 10)
-      midzone = true;
-    else
-      midzone = false;
-  }
+  if (abs(temp % 107) < 20)
+    midzone = true;
+  else
+    midzone = false;
 }
 
