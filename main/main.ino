@@ -80,7 +80,7 @@ void setup() {
   //Initialize I2C (for TOF and MPU)
   Wire.begin();
   //Initialize TOF sensor
-  SetupTOF();
+  //SetupTOF();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
