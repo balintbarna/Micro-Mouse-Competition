@@ -16,7 +16,7 @@ uint8_t debugMode = 3;
    16: pálya
    összegekkel több is megy egyszerre
 */
-uint8_t outputMode = 16;
+uint8_t outputMode = 8;
 
 //map size (32 for competition)
 #define mapsize 5

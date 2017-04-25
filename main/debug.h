@@ -9,7 +9,7 @@ void serialToValue() {
   {
     if (Serial.available())
     {
-      delay(1);
+      delayMicros(500);
       serialCommand = Serial.readString();
       elapsedTime = 0;
       Serial.println(serialCommand);
@@ -20,7 +20,7 @@ void serialToValue() {
   {
     if (Serial3.available())
     {
-      delay(1);
+      delayMicros(500);
       serialCommand = Serial3.readString();
       elapsedTime = 0;
       Serial3.println(serialCommand);
@@ -123,77 +123,9 @@ void displayData()
     serialop += idler;
     serialop += tab;
   }
-
-  //Map
-  if ((outputMode >> 3) % 2 && !(overFloop % 1000))
-  {
-    serialop += newline;
-    //topmost row
-    for (int i = 0; i < mapsize; i++)
-      serialop += " _";
-    serialop += newline;
-    //All middle rows
-    for (int i = 0; i < mapsize - 1; i++)
-    {
-      //yWalls
-      //beginning of row
-      serialop += "| ";
-      //all middle walls
-      for (int j = 0; j < mapsize - 1; j++)
-      {
-        if ((yWalls[j] >> (mapsize - 2 - i)) % 2)
-        {
-          serialop += "| ";
-        }
-        else
-        {
-          serialop += "  ";
-        }
-      }
-      //end of row
-      serialop += "|";
-      serialop += newline;
-      //xWalls
-      for (int j = 0; j < mapsize - 1; j++)
-      {
-        if (( xWalls[mapsize - 1 - i] >> j) % 2)
-        {
-          serialop += " -";
-        }
-        else
-        {
-          serialop += "  ";
-        }
-      }
-      serialop += newline;
-    }
-
-    //last yWall row
-    //beginning of row
-    serialop += "| ";
-    //all middle walls
-    for (int j = 0; j < mapsize - 1; j++)
-    {
-      if (yWalls[j] % 2)
-      {
-        serialop += "| ";
-      }
-      else
-      {
-        serialop += "  ";
-      }
-    }
-
-    //end of row
-    serialop += "|";
-    serialop += newline;
-    //last row
-    for (int i = 0; i < mapsize; i++)
-      serialop += " T";
-  }
-
+  
   //position
-  if ((outputMode >> 4) % 2 && !(overFloop % 500))
+  if ((outputMode >> 3) % 2 && !(overFloop % 400))
   {
     String temp = "";
     for (int i = 0; i < mapsize; i++)
@@ -215,7 +147,7 @@ void displayData()
       for (int j = 0; j < mapsize; j++)
       {
         if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
-        else temp += "   ";
+        else temp += "    ";
       }
       labi[2 * (i + 1)] = temp;
     }

@@ -35,7 +35,7 @@ int32_t yWalls[31] = {
 };
 
 
-/* which values
+/* which_wall values
     0 means x higher
     1 means y higher
     2 means x lower
@@ -118,20 +118,23 @@ void setWall(int8_t x, int8_t y, int8_t which_wall)
 
 void checkWalls()
 {
-    //Szembe van
-    if (infra[front] < (1500 + maxSpeed))
-      setWall(posX, posY, (orientation / 2) % 4);
+  //Szembe van
+  if (infra[front] < (1500 + maxSpeed))
+    setWall(posX, posY, (orientation / 2) % 4);
 
+  if (midzone)
+  {
     //jobbra van
-    if (infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500 && midzone == true )
+    if (infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500 && midzone == true)
+    if (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }
+  }
 }
 

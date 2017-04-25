@@ -3,7 +3,7 @@ const int32_t PTagSpeed = 400;
 const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 10
 
-const int32_t maxSpeed = 475;
+const int32_t maxSpeed = 125;
 
 //Parameters for infra based speed control
 #define PInfraCoeff 0.5

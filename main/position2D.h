@@ -1,6 +1,6 @@
 //Function to modify orientation. Negative means left, 1 increment means 45°
 int32_t lastPosEncAvg = 0;
-#define cell_length 103
+#define cell_length 104
 void turn(int8_t _size)
 {
   orientation += _size;
@@ -41,7 +41,7 @@ void updatePosition()
       lastPosEncAvg = posEncAvg;
     }
   }
-  if (abs(temp % 107) < 20)
+  if (abs(temp % cell_length) < cell_length/3)
     midzone = true;
   else
     midzone = false;
