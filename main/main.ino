@@ -1,6 +1,6 @@
 //---------------- GLOBALS ----------------
 
-#define DEBUG 0
+#define DEBUG 1
 /* 0: semmi
    1: soros
    2: bt
@@ -12,9 +12,11 @@ uint8_t debugMode = 3;
    1: mozgás
    2: szenzorok
    4: állapot és paraméterek
+   8: térkép
+   16: pálya
    összegekkel több is megy egyszerre
 */
-uint8_t outputMode = 8;
+uint8_t outputMode = 16;
 
 //map size (32 for competition)
 #define mapsize 5
@@ -70,17 +72,15 @@ bool baloldali = false;
 //0;0 a kiindulási pont
 volatile int8_t posX = 0;
 volatile int8_t posY = 0;
-volatile int8_t lastPosX = 0;
-volatile int8_t lastPosY = 0;
 //A cella közepéről induljon
 bool midzone = true;
 
 //0 az előre, -3től 4-ig irányt mutat
-/*   -1  0  1
-     -2     2
-     -3  4  3
+/*    7  0  1
+      6     2
+      5  4  3
 */
-volatile int8_t orientation = 0;
+volatile uint8_t orientation = 0;
 
 
 //---------------- INCLUDES ----------------
@@ -89,13 +89,13 @@ volatile int8_t orientation = 0;
 #include "mpu6050.h"
 #include "encoderReader.h"
 #include "motorControl.h"
+#include "tof.h"
 #include "infra.h"
 #include "motorAutomation.h"
-#include "myFunctions.h"
 #include "position2D.h"
+#include "myFunctions.h"
 #include "walls.h"
 #include "states.h"
-#include "tof.h"
 #include "debug.h"
 
 
@@ -111,8 +111,6 @@ void setup() {
 #endif
   //Initialize I2C (for TOF and MPU)
   Wire.begin();
-  //Initialize TOF sensor
-  //SetupTOF();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
@@ -131,6 +129,8 @@ void setup() {
   pinMode(led0, OUTPUT);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
+  //Initialize TOF sensor
+  //SetupTOF();
   //first infra value
   ReadInfra();
   ReadInfra();
@@ -147,18 +147,20 @@ void loop()
   digitalWrite(led1, jobboldali);
 #endif
   checkBattery();
-  ReadInfra();
+  if (state != 'O')
+    ReadInfra();
   if (!digitalRead(gombPin))
     state = 'T';
-  delay(1);
   overFloop++;
+  delay(1);
 }
 
 void checkBattery()
 {
-  if (analogRead(batteryPin) < 800)
+  if (analogRead(batteryPin) < 780)
   {
     digitalWrite(led0, 1);
+    state = 'O';
   }
   else
     digitalWrite(led0, 0);
@@ -194,6 +196,9 @@ void onTimerTick()
       break;
     case 'D':
       stateD();
+      break;
+    case 'O':
+      stateS();
       break;
     default:
       state = 'E';
