@@ -100,7 +100,7 @@ void setWall(int8_t x, int8_t y, uint8_t which_wall)
     else
     {
       if (x == mapsize - 1)return;
-      yWalls[x] |= (1 << x);
+      yWalls[x] |= (1 << y);
     }
   }
   //xWalls
