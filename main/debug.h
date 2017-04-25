@@ -1,4 +1,8 @@
 #if DEBUG
+String tab = "\t";
+String newline = "\n";
+const int labisize = mapsize * 2 + 1;
+String labi[labisize];
 void serialToValue() {
   bool newInfo = false;
   if (debugMode % 2)
@@ -74,111 +78,70 @@ void serialToValue() {
 void displayData()
 {
   //Speed, Position, Time
-  if (outputMode % 2)
+  if (outputMode % 2 && !(overFloop % 300))
   {
     serialop += aggrSpeedLeft;
-    serialop += "\t";
+    serialop += tab;
     serialop += aggrSpeedRight;
-    serialop += "\t";
+    serialop += tab;
     serialop += encoderLeft.read();
-    serialop += "\t";
+    serialop += tab;
     serialop += encoderRight.read();
-    serialop += "\t";
+    serialop += tab;
     serialop += elapsedTime;
-    serialop += "\t";
+    serialop += tab;
   }
 
   //Infra sensors
   if ((outputMode >> 1) % 2)
   {
     serialop += infra[left];
-    serialop += "\t";
+    serialop += tab;
     serialop += infra[leftdi];
-    serialop += "\t";
+    serialop += tab;
     serialop += infra[front];
-    serialop += "\t";
+    serialop += tab;
     serialop += infra[rightdi];
-    serialop += "\t";
+    serialop += tab;
     serialop += infra[right];
-    serialop += "\t";
+    serialop += tab;
   }
 
   //States and params
   if ((outputMode >> 2) % 2)
   {
     serialop += state;
-    serialop += "\t";
+    serialop += tab;
     serialop += param1;
-    serialop += "\t";
+    serialop += tab;
     serialop += param2;
-    serialop += "\t";
+    serialop += tab;
     serialop += param3;
-    serialop += "\t";
+    serialop += tab;
     serialop += param4;
-    serialop += "\t";
+    serialop += tab;
     serialop += idler;
-    serialop += "\t";
+    serialop += tab;
   }
 
   //Map
-  if ((outputMode >> 3) % 2)
+  if ((outputMode >> 3) % 2 && !(overFloop % 1000))
   {
-    //every x-th loop
-    int repeatafter = 5000;
-    if (!(overFloop % repeatafter))
+    serialop += newline;
+    //topmost row
+    for (int i = 0; i < mapsize; i++)
+      serialop += " _";
+    serialop += newline;
+    //All middle rows
+    for (int i = 0; i < mapsize - 1; i++)
     {
-      //topmost row
-      for (int i = 0; i < mapsize; i++)
-        serialop += " _";
-    }
-    if (!((overFloop - 1) % repeatafter))
-    {
-      //All middle rows
-      for (int i = 0; i < mapsize - 1; i++)
-      {
-        //yWalls
-        //beginning of row
-        serialop += "| ";
-        //all middle walls
-        for (int j = 0; j < mapsize - 1; j++)
-        {
-          if ((yWalls[j] >> (mapsize - 2 - i)) % 2)
-          {
-            serialop += "| ";
-          }
-          else
-          {
-            serialop += "  ";
-          }
-        }
-        //end of row
-        serialop += "|\n";
-        //xWalls
-        for (int j = 0; j < mapsize - 1; j++)
-        {
-          if (( xWalls[mapsize - 1 - i] >> j) % 2)
-          {
-            serialop += " -";
-          }
-          else
-          {
-            serialop += "  ";
-          }
-        }
-        serialop += "\n";
-      }
-    }
-
-    if (!((overFloop - 2) % repeatafter))
-    {
-
-      //last yWall row
+      //yWalls
       //beginning of row
       serialop += "| ";
       //all middle walls
       for (int j = 0; j < mapsize - 1; j++)
       {
-        if (yWalls[j] % 2)
+        if ((yWalls[j] >> (mapsize - 2 - i)) % 2)
         {
           serialop += "| ";
         }
@@ -187,19 +150,90 @@ void displayData()
           serialop += "  ";
         }
       }
-
       //end of row
       serialop += "|";
+      serialop += newline;
+      //xWalls
+      for (int j = 0; j < mapsize - 1; j++)
+      {
+        if (( xWalls[mapsize - 1 - i] >> j) % 2)
+        {
+          serialop += " -";
+        }
+        else
+        {
+          serialop += "  ";
+        }
+      }
+      serialop += newline;
     }
-    if (!((overFloop - 3) % repeatafter))
-    {
 
-      //last row
-      for (int i = 0; i < mapsize; i++)
-        serialop += " T";
+    //last yWall row
+    //beginning of row
+    serialop += "| ";
+    //all middle walls
+    for (int j = 0; j < mapsize - 1; j++)
+    {
+      if (yWalls[j] % 2)
+      {
+        serialop += "| ";
+      }
+      else
+      {
+        serialop += "  ";
+      }
     }
+
+    //end of row
+    serialop += "|";
+    serialop += newline;
+    //last row
+    for (int i = 0; i < mapsize; i++)
+      serialop += " T";
   }
 
+  //position
+  if ((outputMode >> 4) % 2 && !(overFloop % 500))
+  {
+    String temp = "";
+    for (int i = 0; i < mapsize; i++)
+      temp += " ---";
+    labi[0] = temp;
+    for (int i = 0; i < mapsize; i++)
+    {
+      temp = "";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
+        else temp += "  ";
+        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
+        else temp += "  ";
+      }
+      temp += "|";
+      labi[2 * i + 1] = temp;
+      temp = " ";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
+        else temp += "   ";
+      }
+      labi[2 * (i + 1)] = temp;
+    }
+    serialop += newline;
+    for (int i = 0; i < labisize; i++)
+    {
+      serialop += labi[i] + newline;
+    }
+    serialop += posX;
+    serialop += tab;
+    serialop += posY;
+    serialop += tab;
+    serialop += orientation;
+    serialop += tab;
+  }
+
+
+  //If anything to send, do so then reset String buffer
   if (serialop.length())
   {
     if (debugMode % 2)
