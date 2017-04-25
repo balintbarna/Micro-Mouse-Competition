@@ -76,24 +76,24 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
         }
       }
       //Ha csak a jobb
-      if (wall_fitness == 1)
+      else if (wall_fitness == 1)
       {
         jobboldali = true;
         de = 1650 - infra[right];
         de_deriv = infra_deriv[right];
       }
       //Ha csak a bal
-      if (wall_fitness == 2)
+      else if (wall_fitness == 2)
       {
         baloldali = true;
         de = infra[left] - 1650;
         de_deriv = -infra_deriv[left];
       }
     }
-    setSpeedLeft -= de * PInfra / 1000;
-    setSpeedLeft += de_deriv * DInfra / 1000;
-    setSpeedRight += de * PInfra / 1000;
-    setSpeedRight -= de_deriv * DInfra / 1000;
+    setSpeedLeft -= (de * PInfra) / 1000;
+    setSpeedLeft += (de_deriv * DInfra) / 1000;
+    setSpeedRight += (de * PInfra) / 1000;
+    setSpeedRight -= (de_deriv * DInfra) / 1000;
   }
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();
