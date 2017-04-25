@@ -47,35 +47,35 @@ int32_t yWalls[31] = {
 */
 int8_t getWall(int8_t x, int8_t y, int8_t which_wall)
 {
-  //y
+  //yWalls
   if (which_wall % 2)
   {
-    //lower
+    //lower (left)
     if (which_wall - 1)
     {
-      if (y == 0)return 1;
+      if (x == 0)return 1;
       return (yWalls[x - 1] >> y) % 2;
     }
-    //higher
-    else
-    {
-      if (y == mapsize - 1)return 1;
-      return (yWalls[x] >> x) % 2;
-    }
-  }
-  //x
-  else
-  {
-    //lower
-    if (which_wall)
-    {
-      if (x == 0)return 1;
-      return (xWalls[y - 1] >> x) % 2;
-    }
-    //higher
+    //higher (right)
     else
     {
       if (x == mapsize - 1)return 1;
+      return (yWalls[x] >> y) % 2;
+    }
+  }
+  //xWalls
+  else
+  {
+    //lower (bottom)
+    if (which_wall)
+    {
+      if (y == 0)return 1;
+      return (xWalls[y - 1] >> x) % 2;
+    }
+    //higher (top)
+    else
+    {
+      if (y == mapsize - 1)return 1;
       return (xWalls[y] >> x) % 2;
     }
   }
@@ -88,13 +88,13 @@ void setWall(int8_t x, int8_t y, int8_t which_wall)
     //lower
     if (which_wall - 1)
     {
-      if (y == 0)return;
+      if (x == 0)return;
       yWalls[x - 1] |= (1 << y);
     }
     //higher
     else
     {
-      if (y == mapsize - 1)return;
+      if (x == mapsize - 1)return;
       yWalls[x] |= (1 << x);
     }
   }
@@ -104,13 +104,13 @@ void setWall(int8_t x, int8_t y, int8_t which_wall)
     //lower
     if (which_wall)
     {
-      if (x == 0)return;
+      if (y == 0)return;
       xWalls[y - 1] |= (1 << x);
     }
     //higher
     else
     {
-      if (x == mapsize - 1)return;
+      if (y == mapsize - 1)return;
       xWalls[y] |= (1 << x);
     }
   }
@@ -118,20 +118,20 @@ void setWall(int8_t x, int8_t y, int8_t which_wall)
 
 void checkWalls()
 {
-  //Szembe van
-  if (infra[front] < 5500)
-    setWall(posX, posY, 0);
+    //Szembe van
+    if (infra[front] < (1500 + maxSpeed))
+      setWall(posX, posY, (orientation / 2) % 4);
 
-  //jobbra van
-  if (infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500 && infra_deriv[right] < 100000)
-  {
-    setWall(posX, posY, 1);
-  }
+    //jobbra van
+    if (infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500 && midzone == true )
+    {
+      setWall(posX, posY, (orientation / 2 + 1) % 4);
+    }
 
-  //balra van
-  if (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500 && infra_deriv[left] < 100000)
-  {
-    setWall(posX, posY, 3);
-  }
+    //balra van
+    if (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500 && midzone == true)
+    {
+      setWall(posX, posY, (orientation / 2 + 3) % 4);
+    }
 }
 
