@@ -16,7 +16,7 @@ void updatePosition()
   if (!(orientation % 2))
   {
     //Ha megtett egy merőleges cella hosszt
-    if (temp / cell_length)
+    if (temp >= cell_length)
     {
       //Ha alapirány
       if (orientation == 0)
@@ -41,7 +41,7 @@ void updatePosition()
       lastPosEncAvg = posEncAvg;
     }
   }
-  if (abs(temp % cell_length) < cell_length/3)
+  if (abs(temp) < cell_length/4)
     midzone = true;
   else
     midzone = false;

@@ -1,18 +1,23 @@
-/*   xWalls     y
-  -- -- -- --   2
-  -- -- || --   1
-  -- -- -- --   0
-  -- -- -- --   -
-  -2 -1  0  1   x
+/*   xWalls       y
+  --- --- --- ---
+                  2
+  --- ---  |  ---
+                  1
+  --- --- --- ---
+                  0
+  --- --- --- ---
+  x0   1   2   3
+   itt a kijelölt fal elem pl 2,1,0 vagy 2,2,2
 
   ----------------------
 
       yWalls      y
-  |   |   |   |   1
-  |   |   -   |   0
-  |   |   |   |   -1
+  |   |   |   |   2
+  |   |   -   |   1
+  |   |   |   |   0
 
-  -   0   1   2   x
+  x 0   1   2   3
+  itt a kijelölt fal elem pl 1,1,1 vagy 2,1,3
 
 */
 
@@ -45,7 +50,7 @@ int32_t yWalls[31] = {
    3     1
       2
 */
-int8_t getWall(int8_t x, int8_t y, int8_t which_wall)
+int8_t getWall(int8_t x, int8_t y, uint8_t which_wall)
 {
   //yWalls
   if (which_wall % 2)
@@ -80,9 +85,9 @@ int8_t getWall(int8_t x, int8_t y, int8_t which_wall)
     }
   }
 }
-void setWall(int8_t x, int8_t y, int8_t which_wall)
+void setWall(int8_t x, int8_t y, uint8_t which_wall)
 {
-  //y
+  //yWalls
   if (which_wall % 2)
   {
     //lower
@@ -98,7 +103,7 @@ void setWall(int8_t x, int8_t y, int8_t which_wall)
       yWalls[x] |= (1 << x);
     }
   }
-  //x
+  //xWalls
   else
   {
     //lower
