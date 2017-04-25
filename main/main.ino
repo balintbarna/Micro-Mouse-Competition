@@ -1,13 +1,20 @@
 //---------------- GLOBALS ----------------
 
-#define DEBUG 1
+#define DEBUG 0
+/* 0: semmi
+   1: soros
+   2: bt
+   4: flash
+   összegekkel több is megy egyszerre
+*/
+uint8_t debugMode = 2;
 /* 0: semmi
    1: mozgás
    2: szenzorok
    4: állapot és paraméterek
    összegekkel több is megy egyszerre
 */
-uint8_t outputMode = 8;
+uint8_t outputMode = 0;
 
 //map size (32 for competition)
 #define mapsize 5
@@ -96,8 +103,10 @@ volatile int8_t orientation = 0;
 void setup() {
   //Initialize Serial comm
 #if DEBUG
-  Serial.begin(115200);
-  Serial3.begin(115200);
+  if (debugMode % 2)
+    Serial.begin(115200);
+  if ((debugMode >> 1) % 2)
+    Serial3.begin(115200);
 #endif
   //Initialize I2C (for TOF and MPU)
   Wire.begin();
@@ -157,21 +166,27 @@ void checkBattery()
 #if DEBUG
 void serialToValue() {
   bool newInfo = false;
-  if (Serial.available())
+  if (debugMode % 2)
   {
-    delay(1);
-    serialCommand = Serial.readString();
-    elapsedTime = 0;
-    Serial.println(serialCommand);
-    newInfo = true;
+    if (Serial.available())
+    {
+      delay(1);
+      serialCommand = Serial.readString();
+      elapsedTime = 0;
+      Serial.println(serialCommand);
+      newInfo = true;
+    }
   }
-  if (Serial3.available())
+  if ((debugMode >> 1) % 2)
   {
-    delay(1);
-    serialCommand = Serial3.readString();
-    elapsedTime = 0;
-    Serial3.println(serialCommand);
-    newInfo = true;
+    if (Serial3.available())
+    {
+      delay(1);
+      serialCommand = Serial3.readString();
+      elapsedTime = 0;
+      Serial3.println(serialCommand);
+      newInfo = true;
+    }
   }
   //If we have new data
   if (newInfo)
@@ -274,13 +289,15 @@ void displayData()
   if ((outputMode >> 3) % 2)
   {
     //every x-th loop
-    if (overFloop % 10000 == 0)
+    int repeatafter = 5000;
+    if (!(overFloop % repeatafter))
     {
       //topmost row
       for (int i = 0; i < mapsize; i++)
         serialop += " _";
-      serialop += "\r";
-
+    }
+    if (!((overFloop - 1) % repeatafter))
+    {
       //All middle rows
       for (int i = 0; i < mapsize - 1; i++)
       {
@@ -300,7 +317,7 @@ void displayData()
           }
         }
         //end of row
-        serialop += "|\r";
+        serialop += "|\n";
         //xWalls
         for (int j = 0; j < mapsize - 1; j++)
         {
@@ -313,9 +330,12 @@ void displayData()
             serialop += "  ";
           }
         }
-        serialop += "\r";
+        serialop += "\n";
       }
+    }
 
+    if (!((overFloop - 2) % repeatafter))
+    {
 
       //last yWall row
       //beginning of row
@@ -334,7 +354,10 @@ void displayData()
       }
 
       //end of row
-      serialop += "|\r";
+      serialop += "|";
+    }
+    if (!((overFloop - 3) % repeatafter))
+    {
 
       //last row
       for (int i = 0; i < mapsize; i++)
@@ -344,11 +367,13 @@ void displayData()
 
   if (serialop.length())
   {
-    Serial.println(serialop);
-    Serial3.println(serialop);
+    if (debugMode % 2)
+      Serial.println(serialop);
+    if ((debugMode >> 1) % 2)
+      Serial3.println(serialop);
+    serialop = "";
   }
 
-  serialop = "";
 }
 #endif
 
