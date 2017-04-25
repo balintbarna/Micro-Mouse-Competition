@@ -157,9 +157,10 @@ void loop()
 
 void checkBattery()
 {
-  if (analogRead(batteryPin) < 780)
+  if (analogRead(batteryPin) < 800)
   {
     digitalWrite(led0, 1);
+    if(analogRead(batteryPin) < 780)
     state = 'O';
   }
   else
