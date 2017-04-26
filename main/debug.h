@@ -125,7 +125,7 @@ void displayData()
   }
   
   //position
-  if ((outputMode >> 3) % 2 && !(overFloop % 250))
+  if ((outputMode >> 3) % 2 && !(overFloop % 100))
   {
     String temp = "";
     for (int i = 0; i < mapsize; i++)
