@@ -1,4 +1,4 @@
-#if DEBUG
+#if _DEBUG
 String tab = "\t";
 String newline = "\n";
 const int labisize = mapsize * 2 + 1;

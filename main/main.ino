@@ -1,6 +1,6 @@
 //---------------- GLOBALS ----------------
 
-#define DEBUG 1
+#define _DEBUG 1
 /* 0: semmi
    1: soros
    2: bt
@@ -60,6 +60,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //time measure
 elapsedMillis elapsedTime = 0;
+elapsedMillis delayTimer = 0;
 elapsedMicros _elapsedMicro = 0;
 
 //Variable for serial output
@@ -72,6 +73,8 @@ bool baloldali = false;
 //0;0 a kiindulási pont
 volatile int8_t posX = 0;
 volatile int8_t posY = 0;
+volatile int8_t savedPosX = 0;
+volatile int8_t savedPosY = 0;
 //A cella közepéről induljon
 bool midzone = true;
 
@@ -81,15 +84,13 @@ bool midzone = true;
       5  4  3
 */
 volatile uint8_t orientation = 0;
+volatile int16_t relativeAngleError = 0;
 
 
 //---------------- INCLUDES ----------------
 
-#include <Wire.h>
-#include "mpu6050.h"
 #include "encoderReader.h"
 #include "motorControl.h"
-#include "tof.h"
 #include "infra.h"
 #include "motorAutomation.h"
 #include "position2D.h"
@@ -101,16 +102,17 @@ volatile uint8_t orientation = 0;
 
 
 //---------------- SETUP ----------------
-void setup() {
+void setup()
+{
   //Initialize Serial comm
-#if DEBUG
+#if _DEBUG
   if (debugMode % 2)
     Serial.begin(115200);
   if ((debugMode >> 1) % 2)
     Serial3.begin(115200);
 #endif
   //Initialize I2C (for TOF and MPU)
-  Wire.begin();
+  //Wire.begin();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
@@ -139,6 +141,7 @@ void setup() {
 //---------------- LOOP ----------------
 void loop()
 {
+  delayTimer = 0;
 #if DEBUG
   serialToValue();
   displayData();
@@ -152,7 +155,7 @@ void loop()
   if (!digitalRead(gombPin))
     state = 'T';
   overFloop++;
-  delay(1);
+  while (delayTimer < 5);
 }
 
 void checkBattery()
@@ -160,8 +163,8 @@ void checkBattery()
   if (analogRead(batteryPin) < 800)
   {
     digitalWrite(led0, 1);
-    if(analogRead(batteryPin) < 780)
-    state = 'O';
+    if (analogRead(batteryPin) < 780)
+      state = 'O';
   }
   else
     digitalWrite(led0, 0);
