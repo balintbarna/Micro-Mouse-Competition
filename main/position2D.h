@@ -88,7 +88,8 @@ void updatePosition()
       posY = savedPosY;
     }
   }
-  if (abs(distance) < (cell_length / 8))
+  int newdistance = (posX - savedPosX + posY - savedPosY) * cell_length - distance;
+  if (abs(newdistance) < (cell_length / 7))
     midzone = true;
   else
     midzone = false;

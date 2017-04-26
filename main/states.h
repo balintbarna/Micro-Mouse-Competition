@@ -4,7 +4,7 @@ volatile char nextState = 'S';
 
 volatile int idler = 0;
 
-#define waitTime 100 //in ms
+#define waitTime 0 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
 //Cascade Position
@@ -54,7 +54,7 @@ void stateW()
   updatePosition();
   checkWalls();
   //Még mehetünk egyenesen bőven
-  if (infra[front] > param2 * 4)
+  if (infra[front] > param2 * 5)
   {
     SetMotorSpeed(param1, param1, true);
   }
@@ -82,7 +82,6 @@ void stateW()
       param1 = 47;
       param2 = -37;
     }
-    idler = 0;
     ResetAllStoredValues();
     SetMotorPower(0, 0);
     state = 'I';
@@ -100,6 +99,9 @@ void stateI()
 {
   idler++;
   if (idler > waitCycle)
+  {
+    idler = 0;
     state = nextState;
+  }
 }
 

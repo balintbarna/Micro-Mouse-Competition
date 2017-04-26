@@ -4,6 +4,7 @@ const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 10
 
 const int32_t maxSpeed = 325;
+const int32_t midDistance = 2010;
 
 //Parameters for infra based speed control
 #define PInfraCoeff 0.5
@@ -38,6 +39,24 @@ volatile int rightPosOld = 0;
 //Speed control PI
 void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
 {
+  //Normalizing the values to maxSpeed
+  if (abs(setSpeedLeft) > maxSpeed)
+  {
+    int ratio = maxSpeed * 2000 / abs(setSpeedLeft);
+    setSpeedLeft *= ratio;
+    setSpeedLeft /= 2000;
+    setSpeedRight *= ratio;
+    setSpeedRight /= 2000;
+  }
+  if (abs(setSpeedRight) > maxSpeed)
+  {
+    int ratio = maxSpeed * 2000 / abs(setSpeedRight);
+    setSpeedLeft *= ratio;
+    setSpeedLeft /= 2000;
+    setSpeedRight *= ratio;
+    setSpeedRight /= 2000;
+  }
+
   jobboldali = false;
   baloldali = false;
   //If we want to control wall proximity
@@ -51,9 +70,9 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
        3: mindkét fal jó
     */
     //Jobb fal vizsgálata
-    byte wall_fitness = infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500;
+    byte wall_fitness = infra[right] < 3500 && infra[rightdi] < 5000 && pastinfra[right] < 4500 && infra_deriv[right] < 4;
     //Bal fal vizsgálata
-    wall_fitness += (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500) << 1;
+    wall_fitness += (infra[left] < 3500 && infra[leftdi] < 5000 && pastinfra[left] < 4500 && infra_deriv[left] < 4) << 1;
     //Ha van jó fal
     if (wall_fitness)
     {
@@ -64,14 +83,14 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
         if (infra[right] < infra[left])
         {
           jobboldali = true;
-          de = 1650 - infra[right];
+          de = midDistance - infra[right];
           de_deriv = infra_deriv[right];
         }
         //Ha messzebb
         else
         {
           baloldali = true;
-          de = infra[left] - 1650;
+          de = infra[left] - midDistance;
           de_deriv = -infra_deriv[left];
         }
       }
@@ -79,21 +98,19 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
       else if (wall_fitness == 1)
       {
         jobboldali = true;
-        de = 1650 - infra[right];
+        de = midDistance - infra[right];
         de_deriv = infra_deriv[right];
       }
       //Ha csak a bal
       else if (wall_fitness == 2)
       {
         baloldali = true;
-        de = infra[left] - 1650;
+        de = infra[left] - midDistance;
         de_deriv = -infra_deriv[left];
       }
     }
-    setSpeedLeft -= (de * PInfra) / 1000;
-    setSpeedLeft += (de_deriv * DInfra) / 1000;
-    setSpeedRight += (de * PInfra) / 1000;
-    setSpeedRight -= (de_deriv * DInfra) / 1000;
+    setSpeedLeft -= (de * PInfra - de_deriv * DInfra) / 1000;
+    setSpeedRight += (de * PInfra - de_deriv * DInfra) / 1000;
   }
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();
@@ -144,24 +161,6 @@ void CascadePos(int setPosLeft, int setPosRight, bool doWall = 0)
   //Getting outputs
   int opLeft = PTagCas * errorLeft;
   int opRight = PTagCas * errorRight;
-
-  //Comparing and setting the values to maxSpeed
-  if (abs(opLeft) > maxSpeed)
-  {
-    int ratio = maxSpeed * 2000 / abs(opLeft);
-    opLeft *= ratio;
-    opLeft /= 2000;
-    opRight *= ratio;
-    opRight /= 2000;
-  }
-  if (abs(opRight) > maxSpeed)
-  {
-    int ratio = maxSpeed * 2000 / abs(opRight);
-    opLeft *= ratio;
-    opLeft /= 2000;
-    opRight *= ratio;
-    opRight /= 2000;
-  }
 
   SetMotorSpeed(opLeft, opRight, doWall);
 }

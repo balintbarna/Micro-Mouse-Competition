@@ -31,7 +31,7 @@ uint8_t outputMode = 8;
 //timer
 IntervalTimer myTimer;
 //timer frequency and interval (microsec)
-#define timerFrequency 250
+#define timerFrequency 500
 const int32_t myinterval = 1000000 / timerFrequency;
 
 //Setting pwm output parameters
@@ -154,7 +154,7 @@ void loop()
   if (!digitalRead(gombPin))
     state = 'T';
   overFloop++;
-  while (delayTimer < 5);
+  while (delayTimer < 3);
 }
 
 void checkBattery()
