@@ -1,6 +1,6 @@
 //---------------- GLOBALS ----------------
 
-#define _DEBUG 1
+#define DEBUG 1
 /* 0: semmi
    1: soros
    2: bt
@@ -75,6 +75,7 @@ volatile int8_t posX = 0;
 volatile int8_t posY = 0;
 volatile int8_t savedPosX = 0;
 volatile int8_t savedPosY = 0;
+volatile int32_t lastPosEncAvg = 0;
 //A cella közepéről induljon
 bool midzone = true;
 
@@ -93,8 +94,8 @@ volatile int16_t relativeAngleError = 0;
 #include "motorControl.h"
 #include "infra.h"
 #include "motorAutomation.h"
-#include "position2D.h"
 #include "myFunctions.h"
+#include "position2D.h"
 #include "walls.h"
 #include "states.h"
 #include "debug.h"
@@ -105,11 +106,9 @@ volatile int16_t relativeAngleError = 0;
 void setup()
 {
   //Initialize Serial comm
-#if _DEBUG
-  if (debugMode % 2)
-    Serial.begin(115200);
-  if ((debugMode >> 1) % 2)
-    Serial3.begin(115200);
+#if DEBUG
+  Serial.begin(115200);
+  Serial3.begin(115200);
 #endif
   //Initialize I2C (for TOF and MPU)
   //Wire.begin();

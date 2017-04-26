@@ -130,13 +130,13 @@ void checkWalls()
   if (midzone)
   {
     //jobbra van
-    if (infra[right] < 4500 && infra[rightdi] < 6000 && pastinfra[right] < 4500)
+    if (infra[right] < 3000 && infra[rightdi] < 6000 && pastinfra[right] < 3000)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 4500 && infra[leftdi] < 6000 && pastinfra[left] < 4500)
+    if (infra[left] < 3000 && infra[leftdi] < 6000 && pastinfra[left] < 3000)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }

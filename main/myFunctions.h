@@ -38,6 +38,8 @@ void ResetAllStoredValues()
     infra_deriv[i] = 0;
   }
   lastPosEncAvg = 0;
+  savedPosX = posX;
+  savedPosY = posY;
 }
 
 void ReadWalls()

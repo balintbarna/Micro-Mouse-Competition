@@ -1,4 +1,4 @@
-#if _DEBUG
+#if DEBUG
 String tab = "\t";
 String newline = "\n";
 const int labisize = mapsize * 2 + 1;
@@ -161,6 +161,10 @@ void displayData()
     serialop += posY;
     serialop += tab;
     serialop += orientation;
+    serialop += newline;
+    serialop += savedPosX;
+    serialop += tab;
+    serialop += savedPosY;
     serialop += tab;
   }
 

@@ -1,6 +1,5 @@
 //Function to modify orientation. Negative means left, 1 increment means 45°
-int32_t lastPosEncAvg = 0;
-#define cell_length 104
+#define cell_length 107
 void turn(int8_t _size)
 {
   orientation += _size;
@@ -11,37 +10,85 @@ void turn(int8_t _size)
 void updatePosition()
 {
   int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
-  int temp = posEncAvg - lastPosEncAvg;
+  int distance = posEncAvg - lastPosEncAvg;
   //Ha merőleges irányok
   if (!(orientation % 2))
   {
-    //Ha megtett egy merőleges cella hosszt
-    if (temp >= cell_length)
+    //Elmentett pozíció, ha megtett egy merőleges cella hosszt
+    if (abs(distance) >= cell_length)
     {
-      //Ha alapirány
-      if (orientation == 0)
+      //Ha X irányú
+      if (orientation % 4)
       {
-        posY++;
+        //jobbra (poz)
+        if (orientation == 2)
+        {
+          savedPosX += sign(distance);
+        }
+        //balra (neg)
+        else
+        {
+          savedPosX -= sign(distance);
+        }
       }
-      //hátra
-      else if (orientation == 4)
+      //Y irányú
+      else
       {
-        posY--;
-      }
-      //jobbra
-      else if (orientation == 2)
-      {
-        posX++;
-      }
-      //balra
-      else if (orientation == 6)
-      {
-        posX--;
+        //lefelé (neg)
+        if (orientation)
+        {
+          savedPosY -= sign(distance);
+        }
+        //alapirány (poz)
+        else
+        {
+          savedPosY += sign(distance);
+        }
       }
       lastPosEncAvg = posEncAvg;
     }
+    //Valós pozíció, ha messze van az elmentetttől
+    if (abs(distance) >= cell_length / 2)
+    {
+      //Ha X irányú
+      if (orientation % 4)
+      {
+        //jobbra (poz)
+        if (orientation == 2)
+        {
+          posX = savedPosX + sign(distance);
+        }
+        //balra (neg)
+        else
+        {
+          posX = savedPosX - sign(distance);
+        }
+        posY = savedPosY;
+      }
+      //Y irányú
+      else
+      {
+        //lefelé (neg)
+        if (orientation)
+        {
+          posY = savedPosY - sign(distance);
+        }
+        //alapirány (poz)
+        else
+        {
+          posY = savedPosY + sign(distance);
+        }
+        posX = savedPosX;
+      }
+    }
+    //Ha még ott van
+    else
+    {
+      posX = savedPosX;
+      posY = savedPosY;
+    }
   }
-  if (abs(temp) < cell_length/4)
+  if (abs(distance) < cell_length / 4)
     midzone = true;
   else
     midzone = false;
