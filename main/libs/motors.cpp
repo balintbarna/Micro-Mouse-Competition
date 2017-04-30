@@ -6,17 +6,11 @@
 #define motorLeftE 4
 //jobb motor enable
 #define motorRightE 6
-//holt tartomány sugara
-const int blockRadius = 0;
 //max power stuff
 #define powerDuty 0.3
 #define absoluteMaxPower 1000000
 //maximum érték (max 1000000)
 const int maxPower = absoluteMaxPower * powerDuty;
-
-//Getting the bound values for the pwm value mapping
-const int negLowBound = pwmMid - blockRadius;
-const int posLowBound = pwmMid + blockRadius;
 
 //Call this in setup so you can use the motors
 void SetupMotors() {
@@ -50,7 +44,7 @@ void SetMotorPower(int powerLeft, int powerRight)
 
   //Left Motor
   //If the input is 0, the motor gets grounded
-  if (abs(powerLeft) == 0)
+  if (powerLeft == 0)
   {
     digitalWrite(motorLeftE, 0);
     analogWrite(motorLeft, 127);
@@ -82,13 +76,12 @@ void SetMotorPower(int powerLeft, int powerRight)
     digitalWrite(motorRightE, 1);
     if (powerRight < 0)
     {
-      powerRight = map(powerRight, -absoluteMaxPower, -1, pwmMax, posLowBound);
+      powerRight = map(powerRight, -absoluteMaxPower, -1, pwmMax, pwmMid);
     }
     else
     {
-      powerRight = map(powerRight, 1, absoluteMaxPower, negLowBound, 0);
+      powerRight = map(powerRight, 1, absoluteMaxPower, pwmMid, 0);
     }
     analogWrite(motorRight, powerRight);
   }
 }
-

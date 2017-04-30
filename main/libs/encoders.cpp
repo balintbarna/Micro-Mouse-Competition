@@ -19,7 +19,3 @@ void ResetEncoders() {
   encoderLeft.write(0);
   encoderRight.write(0);
 }
-
-
-
-

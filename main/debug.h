@@ -1,15 +1,164 @@
+#define DEBUG 1
 #if DEBUG
-String tab = "\t";
-String newline = "\n";
+/* 0: semmi
+   1: soros
+   2: bt
+   4: flash
+   összegekkel több is megy egyszerre */
+uint8_t debugMode = 3;
+/* 0: semmi
+   1: mozgás
+   2: szenzorok
+   4: állapot és paraméterek
+   8: pálya
+   összegekkel több is megy egyszerre */
+uint8_t outputMode = 8;
+bool infoline = true;
+const String tab = "\t";
+const String newline = "\n";
 const int labisize = mapsize * 2 + 1;
 String labi[labisize];
+
+//Function to display debug info on serial
+void displayData()
+{
+  //Speed, Position, Time
+  if (outputMode % 2 && !(overFloop % 300))
+  {
+    if (infoline)
+      serialop += "Speed, Position, Time" + newline;
+      
+    serialop += aggrSpeedLeft;
+    serialop += tab;
+    serialop += aggrSpeedRight;
+    serialop += tab;
+    serialop += encoderLeft.read();
+    serialop += tab;
+    serialop += encoderRight.read();
+    serialop += tab;
+    serialop += elapsedTime;
+    serialop += newline;
+  }
+
+  //Infra sensors
+  if ((outputMode >> 1) % 2)
+  {
+    if (infoline)
+      serialop += "Infra sensors: left, leftdi, front, rightdi, right" + newline;
+      
+    serialop += infra[left];
+    serialop += tab;
+    serialop += infra[leftdi];
+    serialop += tab;
+    serialop += infra[front];
+    serialop += tab;
+    serialop += infra[rightdi];
+    serialop += tab;
+    serialop += infra[right];
+    serialop += newline;
+  }
+
+  //States and params
+  if ((outputMode >> 2) % 2)
+  {
+    if (infoline)
+      serialop += "States, params, idler" + newline;
+      
+    serialop += state;
+    serialop += tab;
+    serialop += param1;
+    serialop += tab;
+    serialop += param2;
+    serialop += tab;
+    serialop += param3;
+    serialop += tab;
+    serialop += param4;
+    serialop += tab;
+    serialop += idler;
+    serialop += newline;
+  }
+
+  //position
+  if ((outputMode >> 3) % 2 && !(overFloop % 100))
+  {
+    if (infoline)
+      serialop += "Map and coordinates, etc." + newline;
+      
+    String temp = "";
+    for (int i = 0; i < mapsize; i++)
+      temp += " ---";
+    labi[0] = temp;
+    for (int i = 0; i < mapsize; i++)
+    {
+      temp = "";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
+        else temp += "  ";
+        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
+        else temp += "  ";
+      }
+      temp += "|";
+      labi[2 * i + 1] = temp;
+      temp = " ";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
+        else temp += "    ";
+      }
+      labi[2 * (i + 1)] = temp;
+    }
+    serialop += newline;
+    for (int i = 0; i < labisize; i++)
+    {
+      serialop += labi[i] + newline;
+    }
+    serialop += posX;
+    serialop += tab;
+    serialop += posY;
+    serialop += tab;
+    serialop += orientation;
+    serialop += newline;
+    serialop += savedPosX;
+    serialop += tab;
+    serialop += savedPosY;
+    serialop += newline;
+  }
+
+
+  //If anything to send, do so then reset String buffer
+  if (serialop.length())
+  {
+    if (debugMode % 2)
+      Serial.println(serialop);
+      Serial.send_now()
+    if ((debugMode >> 1) % 2)
+      Serial3.println(serialop);
+    serialop = "";
+  }
+}
+
+//Function to simplify deconstructing a serial command
+String getParam(int index, String comm)
+{
+  if (index == -1)
+  {
+    return comm;
+  }
+  else
+  {
+    return comm.substring(0, index);
+  }
+}
+
+//Convert message recieved on serial to a command
 void serialToValue() {
   bool newInfo = false;
   if (debugMode % 2)
   {
     if (Serial.available())
     {
-      delayMicroseconds(500);
+      delayMicroseconds(100);
       serialCommand = Serial.readString();
       elapsedTime = 0;
       Serial.println(serialCommand);
@@ -20,7 +169,7 @@ void serialToValue() {
   {
     if (Serial3.available())
     {
-      delayMicroseconds(500);
+      delayMicroseconds(100);
       serialCommand = Serial3.readString();
       elapsedTime = 0;
       Serial3.println(serialCommand);
@@ -73,111 +222,5 @@ void serialToValue() {
     //If no space -> exit
     if (spaceIndex == -1) return;
   }
-}
-
-void displayData()
-{
-  //Speed, Position, Time
-  if (outputMode % 2 && !(overFloop % 300))
-  {
-    serialop += aggrSpeedLeft;
-    serialop += tab;
-    serialop += aggrSpeedRight;
-    serialop += tab;
-    serialop += encoderLeft.read();
-    serialop += tab;
-    serialop += encoderRight.read();
-    serialop += tab;
-    serialop += elapsedTime;
-    serialop += tab;
-  }
-
-  //Infra sensors
-  if ((outputMode >> 1) % 2)
-  {
-    serialop += infra[left];
-    serialop += tab;
-    serialop += infra[leftdi];
-    serialop += tab;
-    serialop += infra[front];
-    serialop += tab;
-    serialop += infra[rightdi];
-    serialop += tab;
-    serialop += infra[right];
-    serialop += tab;
-  }
-
-  //States and params
-  if ((outputMode >> 2) % 2)
-  {
-    serialop += state;
-    serialop += tab;
-    serialop += param1;
-    serialop += tab;
-    serialop += param2;
-    serialop += tab;
-    serialop += param3;
-    serialop += tab;
-    serialop += param4;
-    serialop += tab;
-    serialop += idler;
-    serialop += tab;
-  }
-  
-  //position
-  if ((outputMode >> 3) % 2 && !(overFloop % 100))
-  {
-    String temp = "";
-    for (int i = 0; i < mapsize; i++)
-      temp += " ---";
-    labi[0] = temp;
-    for (int i = 0; i < mapsize; i++)
-    {
-      temp = "";
-      for (int j = 0; j < mapsize; j++)
-      {
-        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
-        else temp += "  ";
-        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
-        else temp += "  ";
-      }
-      temp += "|";
-      labi[2 * i + 1] = temp;
-      temp = " ";
-      for (int j = 0; j < mapsize; j++)
-      {
-        if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
-        else temp += "    ";
-      }
-      labi[2 * (i + 1)] = temp;
-    }
-    serialop += newline;
-    for (int i = 0; i < labisize; i++)
-    {
-      serialop += labi[i] + newline;
-    }
-    serialop += posX;
-    serialop += tab;
-    serialop += posY;
-    serialop += tab;
-    serialop += orientation;
-    serialop += newline;
-    serialop += savedPosX;
-    serialop += tab;
-    serialop += savedPosY;
-    serialop += tab;
-  }
-
-
-  //If anything to send, do so then reset String buffer
-  if (serialop.length())
-  {
-    if (debugMode % 2)
-      Serial.println(serialop);
-    if ((debugMode >> 1) % 2)
-      Serial3.println(serialop);
-    serialop = "";
-  }
-
 }
 #endif
