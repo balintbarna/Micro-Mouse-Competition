@@ -29,10 +29,9 @@ void setup()
   analogWriteResolution(pwmRes);
   //Initialize Motors
   SetupMotors();
-  //Start timer
+  //Set timer priorities
   stateTimer.priority(254);
   infraTimer.priority(255);
-  stateTimer.begin(stateMachine, myinterval);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -60,6 +59,7 @@ void loop()
     setYawCorrection();
     infraTimer.begin(stateMachine, myinterval);
     state = 'T';
+    stateTimer.begin(stateMachine, myinterval);
   }
   overFloop++;
   while (delayTimer < 3);
@@ -72,8 +72,10 @@ void checkBattery()
     digitalWrite(led0, 1);
     if (analogRead(batteryPin) < 780)
     {
+      stateTimer.end()
       infraTimer.end();
       state = 'O';
+      SetMotorPower(0, 0);
     }
   }
   else
@@ -116,4 +118,10 @@ void stateMachine()
       state = 'E';
   }
   overFirpt++;
+}
+
+//Function to return sign of any type
+template <typename type>
+type sign(type value) {
+  return type((value > 0) - (value < 0));
 }

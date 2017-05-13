@@ -98,3 +98,18 @@ void stateI()
     state = nextState;
 }
 
+//Function to erase past stored values
+void ResetAllStoredValues()
+{
+  ResetEncoders();
+  aggrSpeedLeft = 0;
+  aggrSpeedRight = 0;
+  errSumLeft = 0;
+  errSumRight = 0;
+  leftPosOld = 0;
+  rightPosOld = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    infra_deriv[i] = 0;
+  }
+}
