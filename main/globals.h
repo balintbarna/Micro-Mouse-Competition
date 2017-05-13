@@ -32,5 +32,7 @@ elapsedMillis milli = 0;
 elapsedMillis delayTimer = 0;
 elapsedMicros micro = 0;
 
-
-
+//Variable to read command from serial
+String serialCommand = "";
+//Paramteres
+volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;

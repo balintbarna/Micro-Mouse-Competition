@@ -14,13 +14,14 @@ volatile uint16_t overFirpt = 0;
 void setup()
 {
   //Initialize Serial comm
-
 #if DEBUG
   Serial.begin(115200);
   Serial3.begin(115200);
 #endif
   //Initialize I2C (for TOF and MPU)
   Wire.begin();
+  //Init MPU
+  SetupMPU();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);

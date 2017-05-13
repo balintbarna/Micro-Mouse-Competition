@@ -24,11 +24,6 @@ const String newline = "\n";
 //Variable for serial output
 String serialop = "";
 
-//Variable to read command from serial
-String serialCommand = "";
-//Paramteres
-volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
-
 //Function to display debug info on serial
 void displayData()
 {
