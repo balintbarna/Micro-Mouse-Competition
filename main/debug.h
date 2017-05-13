@@ -13,11 +13,14 @@ uint8_t debugMode = 3;
    8: pálya
    összegekkel több is megy egyszerre */
 uint8_t outputMode = 8;
+
 bool infoline = true;
+
+const uint8_t labisize = mapsize * 2 + 1;
+String labi[labisize];
+
 const String tab = "\t";
 const String newline = "\n";
-const int labisize = mapsize * 2 + 1;
-String labi[labisize];
 
 //Function to display debug info on serial
 void displayData()
@@ -27,7 +30,7 @@ void displayData()
   {
     if (infoline)
       serialop += "Speed, Position, Time" + newline;
-      
+
     serialop += aggrSpeedLeft;
     serialop += tab;
     serialop += aggrSpeedRight;
@@ -41,11 +44,11 @@ void displayData()
   }
 
   //Infra sensors
-  if ((outputMode >> 1) % 2)
+  if ((outputMode >> 1) % 2 && !(overFloop % 300))
   {
     if (infoline)
       serialop += "Infra sensors: left, leftdi, front, rightdi, right" + newline;
-      
+
     serialop += infra[left];
     serialop += tab;
     serialop += infra[leftdi];
@@ -59,11 +62,11 @@ void displayData()
   }
 
   //States and params
-  if ((outputMode >> 2) % 2)
+  if ((outputMode >> 2) % 2 && !(overFloop % 300))
   {
     if (infoline)
       serialop += "States, params, idler" + newline;
-      
+
     serialop += state;
     serialop += tab;
     serialop += param1;
@@ -83,7 +86,7 @@ void displayData()
   {
     if (infoline)
       serialop += "Map and coordinates, etc." + newline;
-      
+
     String temp = "";
     for (int i = 0; i < mapsize; i++)
       temp += " ---";
@@ -131,7 +134,7 @@ void displayData()
   {
     if (debugMode % 2)
       Serial.println(serialop);
-      Serial.send_now()
+    Serial.send_now()
     if ((debugMode >> 1) % 2)
       Serial3.println(serialop);
     serialop = "";
