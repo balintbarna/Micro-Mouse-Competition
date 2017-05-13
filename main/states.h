@@ -6,6 +6,44 @@ volatile int idler = 0;
 #define waitTime 100 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
+//Function to erase past stored values
+void ResetAllStoredValues()
+{
+  ResetEncoders();
+  aggrSpeedLeft = 0;
+  aggrSpeedRight = 0;
+  errSumLeft = 0;
+  errSumRight = 0;
+  leftPosOld = 0;
+  rightPosOld = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    infra_deriv[i] = 0;
+  }
+}
+
+void checkWalls()
+{
+  //Szembe van
+  if (infra[front] < (1500 + maxSpeed))
+    setWall(posX, posY, (orientation / 2) % 4);
+
+  if (midzone)
+  {
+    //jobbra van
+    if (infra[right] < 3500 && infra[rightdi] < 6000 && pastinfra[right] < 3500)
+    {
+      setWall(posX, posY, (orientation / 2 + 1) % 4);
+    }
+
+    //balra van
+    if (infra[left] < 3500 && infra[leftdi] < 6000 && pastinfra[left] < 3500)
+    {
+      setWall(posX, posY, (orientation / 2 + 3) % 4);
+    }
+  }
+}
+
 //Cascade Position
 void stateC()
 {
@@ -96,20 +134,4 @@ void stateI()
   idler++;
   if (idler > waitCycle)
     state = nextState;
-}
-
-//Function to erase past stored values
-void ResetAllStoredValues()
-{
-  ResetEncoders();
-  aggrSpeedLeft = 0;
-  aggrSpeedRight = 0;
-  errSumLeft = 0;
-  errSumRight = 0;
-  leftPosOld = 0;
-  rightPosOld = 0;
-  for (int i = 0; i < 5; i++)
-  {
-    infra_deriv[i] = 0;
-  }
 }

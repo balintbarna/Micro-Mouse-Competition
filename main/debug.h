@@ -3,7 +3,6 @@
 /* 0: semmi
    1: soros
    2: bt
-   4: flash
    összegekkel több is megy egyszerre */
 uint8_t debugMode = 3;
 /* 0: semmi
@@ -12,7 +11,7 @@ uint8_t debugMode = 3;
    4: állapot és paraméterek
    8: pálya
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 8;
+uint8_t outputMode = 4;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -136,7 +135,7 @@ void displayData()
   {
     if (debugMode % 2)
       Serial.println(serialop);
-    Serial.send_now()
+    Serial.send_now();
     if ((debugMode >> 1) % 2)
       Serial3.println(serialop);
     serialop = "";
@@ -165,7 +164,7 @@ void serialToValue() {
     {
       delayMicroseconds(100);
       serialCommand = Serial.readString();
-      elapsedTime = 0;
+      milli = 0;
       Serial.println(serialCommand);
       newInfo = true;
     }
@@ -176,7 +175,7 @@ void serialToValue() {
     {
       delayMicroseconds(100);
       serialCommand = Serial3.readString();
-      elapsedTime = 0;
+      milli = 0;
       Serial3.println(serialCommand);
       newInfo = true;
     }

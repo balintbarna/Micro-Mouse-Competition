@@ -21,7 +21,7 @@ void setup()
   //Initialize I2C (for TOF and MPU)
   Wire.begin();
   //Init MPU
-  SetupMPU();
+  //SetupMPU();
   //Analog frekvencia
   analogWriteFrequency(motorLeft, 35156.25);
   analogWriteFrequency(motorRight, 35156.25);
@@ -32,6 +32,7 @@ void setup()
   //Set timer priorities
   stateTimer.priority(254);
   infraTimer.priority(255);
+  stateTimer.begin(stateMachine, myinterval);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -56,13 +57,12 @@ void loop()
   checkBattery();
   if (!digitalRead(gombPin))
   {
-    setYawCorrection();
+    //setYawCorrection();
     infraTimer.begin(stateMachine, myinterval);
     state = 'T';
-    stateTimer.begin(stateMachine, myinterval);
   }
   overFloop++;
-  while (delayTimer < 3);
+  while (delayTimer < 5);
 }
 
 void checkBattery()
@@ -72,7 +72,7 @@ void checkBattery()
     digitalWrite(led0, 1);
     if (analogRead(batteryPin) < 780)
     {
-      stateTimer.end()
+      //stateTimer.end();
       infraTimer.end();
       state = 'O';
       SetMotorPower(0, 0);
@@ -118,10 +118,4 @@ void stateMachine()
       state = 'E';
   }
   overFirpt++;
-}
-
-//Function to return sign of any type
-template <typename type>
-type sign(type value) {
-  return type((value > 0) - (value < 0));
 }

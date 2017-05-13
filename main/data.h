@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 /*   xWalls       y
   --- --- --- ---
                   2
@@ -21,7 +22,7 @@
 
 */
 
-int32_t xWalls[31] = {
+uint32_t xWalls[31] = {
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
@@ -30,7 +31,7 @@ int32_t xWalls[31] = {
   0, 0, 0, 0, 0, 0
 };
 
-int32_t yWalls[31] = {
+uint32_t yWalls[31] = {
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
@@ -121,25 +122,40 @@ void setWall(int8_t x, int8_t y, uint8_t which_wall)
   }
 }
 
-void checkWalls()
+//Store 32 bit to EEPROM
+void Store32 (uint16_t address, uint32_t value)
 {
-  //Szembe van
-  if (infra[front] < (1500 + maxSpeed))
-    setWall(posX, posY, (orientation / 2) % 4);
-
-  if (midzone)
+  for (int i = 0; i < 4; i++)
   {
-    //jobbra van
-    if (infra[right] < 3500 && infra[rightdi] < 6000 && pastinfra[right] < 3500)
-    {
-      setWall(posX, posY, (orientation / 2 + 1) % 4);
-    }
+    EEPROM.write(i + address * 4, value);
+    value >>= 8;
+  }
+}
 
-    //balra van
-    if (infra[left] < 3500 && infra[leftdi] < 6000 && pastinfra[left] < 3500)
-    {
-      setWall(posX, posY, (orientation / 2 + 3) % 4);
-    }
+uint32_t Read32(uint16_t address)
+{
+  uint32_t readval = 0;
+  for (uint8_t i = 3; i >= 0; i--)
+  {
+    readval = readval << 8;
+    readval += EEPROM.read(i + 4 * address);
+  }
+  return readval;
+}
+void StoreArray32(uint16_t address, uint32_t* data)
+{
+  uint8_t datasize = sizeof(data) / 4;
+  for (uint8_t i = 0; i < datasize; i++ )
+  {
+    Store32(address + i, data[i]);
+  }
+}
+void ReadArray32(uint16_t address, uint32_t* data)
+{
+  uint8_t datasize = sizeof(data) / 4;
+  for (uint8_t i = 0; i < datasize; i++)
+  {
+    data[i] = Read32(address + i);
   }
 }
 

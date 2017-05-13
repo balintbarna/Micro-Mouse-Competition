@@ -1,7 +1,7 @@
+#include "data.h"
 #include "distance.h"
-#include "location.h"
 #include "movement.h"
-#include "functions.h"
+#include "location.h"
 #include "states.h"
 
 #include "debug.h"

@@ -38,12 +38,12 @@ void _readInfraPin(int8_t index)
 {
   pastinfra[index] = infra[index];
 
-  int16_t se = analogRead(inputs[index]);
-  if (se > thr[index][16])
+  int16_t value = analogRead(inputs[index]);
+  if (value > thr[index][16])
   {
     infra[index] = 999999;
   }
-  else if (se < thr[index][0])
+  else if (value < thr[index][0])
   {
     infra[index] = 0;
   }
@@ -51,9 +51,9 @@ void _readInfraPin(int8_t index)
   {
     for (int8_t i = 15; i >= 0; i--)
     {
-      if (se > thr[index][i])
+      if (value > thr[index][i])
       {
-        infra[index] = (se * m[index][i] + b[index][i]) / 1000;
+        infra[index] = (value * m[index][i] + b[index][i]) / 1000;
         break;
       }
     }
@@ -77,14 +77,14 @@ void _readInfra(int8_t index = -1)
 }
 
 //Infra reading procedure, default value reads all 5 sensors
-void ReadInfra(int8_t index = -1)
-{
-  digitalWrite(infraPin, 1);
-  delayMicroseconds(500);
-  _readInfra();
-  digitalWrite(infraPin, 0);
-  micro = 0;
-}
+//void ReadInfra(int8_t index = -1)
+//{
+//  digitalWrite(infraPin, 1);
+//  delayMicroseconds(500);
+//  _readInfra();
+//  digitalWrite(infraPin, 0);
+//  micro = 0;
+//}
 
 uint8_t _infraCounter = 0;
 void InfraISR()

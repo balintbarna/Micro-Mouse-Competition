@@ -58,6 +58,12 @@ void turn(int8_t _size)
   orientation %= 8;
 }
 
+//Function to return sign of any type
+template <typename type>
+type sign(type value) {
+  return type((value > 0) - (value < 0));
+}
+
 void updatePosition()
 {
   int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
