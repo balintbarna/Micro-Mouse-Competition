@@ -13,14 +13,16 @@ uint8_t debugMode = 3;
    8: pálya
    összegekkel több is megy egyszerre */
 uint8_t outputMode = 8;
-
+//Should the output include only data or title lines too
 bool infoline = true;
-
+//storage size for an output
 const uint8_t labisize = mapsize * 2 + 1;
 String labi[labisize];
-
+//string constants
 const String tab = "\t";
 const String newline = "\n";
+//Variable for serial output
+String serialop = "";
 
 //Function to display debug info on serial
 void displayData()
@@ -140,6 +142,11 @@ void displayData()
     serialop = "";
   }
 }
+
+//Variable to read command from serial
+String serialCommand = "";
+//Paramteres
+volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //Function to simplify deconstructing a serial command
 String getParam(int index, String comm)

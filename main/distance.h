@@ -38,7 +38,7 @@ void _readInfraPin(int8_t index)
 {
   pastinfra[index] = infra[index];
 
-  int32_t se = analogRead(inputs[index]);
+  int16_t se = analogRead(inputs[index]);
   if (se > thr[index][16])
   {
     infra[index] = 999999;
@@ -58,14 +58,14 @@ void _readInfraPin(int8_t index)
       }
     }
   }
-  infra_deriv[index] = 1000 * (infra[index] - pastinfra[index]) / (int)_elapsedMicro;
+  infra_deriv[index] = 1000 * (infra[index] - pastinfra[index]) / (int)micro;
 }
 
 void _readInfra(int8_t index = -1)
 {
   if (index == -1)
   {
-    for (int i = 0; i < 5; i++)
+    for (uint8_t i = 0; i < 5; i++)
     {
       _readInfraPin(i);
     }
@@ -83,7 +83,7 @@ void ReadInfra(int8_t index = -1)
   delayMicroseconds(500);
   _readInfra();
   digitalWrite(infraPin, 0);
-  _elapsedMicro = 0;
+  micro = 0;
 }
 
 uint8_t _infraCounter = 0;
@@ -97,7 +97,7 @@ void InfraISR()
   {
     _readInfra();
     digitalWrite(infraPin, 0);
-    _elapsedMicro = 0;
+    micro = 0;
   }
   if (_infraCounter == 4)
   {

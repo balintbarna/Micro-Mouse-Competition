@@ -1,6 +1,7 @@
 //map size (32 for competition)
 #define mapsize 5
 
+//general pins
 #define infraPin 22
 #define batteryPin A14
 #define led0 13
@@ -16,3 +17,20 @@ const uint32_t myinterval = 1000000 / timerFrequency;
 #define pwmRes 10
 const uint16_t pwmMax = pow(2, pwmRes);
 const uint16_t pwmMid = pwmMax / 2;
+
+//infra sensor values and TOF
+volatile int32_t infra[5] = {0, 0, 0, 0, 0};
+volatile int32_t pastinfra[5] = {0, 0, 0, 0, 0};
+volatile int32_t infra_deriv[5] = {0, 0, 0, 0, 0};
+volatile int32_t TOFread = 0;
+
+//states
+volatile char state = 'S';
+
+//time measure
+elapsedMillis mill = 0;
+elapsedMillis delayTimer = 0;
+elapsedMicros micro = 0;
+
+
+
