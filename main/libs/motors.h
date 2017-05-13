@@ -7,7 +7,7 @@
 //jobb motor enable
 #define motorRightE 6
 //max power stuff
-#define powerDuty 0.3
+#define powerDuty 0.5
 #define absoluteMaxPower 1000000
 //maximum érték (max 1000000)
 const int maxPower = absoluteMaxPower * powerDuty;
@@ -52,15 +52,17 @@ void SetMotorPower(int powerLeft, int powerRight)
   else
   {
     digitalWrite(motorLeftE, 1);
+    //Backward
     //If the input is negative, the pwm duty maps to larger than half (directions are inverted)
     if (powerLeft < 0)
     {
-      powerLeft = map(powerLeft, -absoluteMaxPower, -1, pwmMax, posLowBound);
+      powerLeft = map(powerLeft, -absoluteMaxPower, -1, 0, pwmMid);
     }
+    //Forward
     //If the input is positive, the pwm duty maps to smaller than half (directions are inverted)
     else
     {
-      powerLeft = map(powerLeft, 1, absoluteMaxPower, negLowBound, 0);
+      powerLeft = map(powerLeft, 1, absoluteMaxPower, pwmMid, pwmMax);
     }
     analogWrite(motorLeft, powerLeft);
   }
@@ -74,13 +76,15 @@ void SetMotorPower(int powerLeft, int powerRight)
   else
   {
     digitalWrite(motorRightE, 1);
+    //Backward
     if (powerRight < 0)
     {
-      powerRight = map(powerRight, -absoluteMaxPower, -1, pwmMax, pwmMid);
+      powerRight = map(powerRight, -absoluteMaxPower, -1, 0, pwmMid);
     }
+    //Forward
     else
     {
-      powerRight = map(powerRight, 1, absoluteMaxPower, pwmMid, 0);
+      powerRight = map(powerRight, 1, absoluteMaxPower, pwmMid, pwmMax);
     }
     analogWrite(motorRight, powerRight);
   }

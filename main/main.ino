@@ -1,17 +1,20 @@
 #include "globals.h"
 
 //timer
-IntervalTimer myTimer;
+IntervalTimer stateTimer;
+IntervalTimer infraTimer;
 
 //overflower variable
 uint16_t overFloop = 0;
-uint16_t overFirpt = 0;
+volatile uint16_t overFirpt = 0;
 
 #include "includes.h"
 
+//---------------- SETUP ---------------
 void setup()
 {
   //Initialize Serial comm
+
 #if DEBUG
   Serial.begin(115200);
   Serial3.begin(115200);
@@ -26,7 +29,9 @@ void setup()
   //Initialize Motors
   SetupMotors();
   //Start timer
-  myTimer.begin(stateMachine, myinterval);
+  stateTimer.priority(254);
+  infraTimer.priority(255);
+  stateTimer.begin(stateMachine, myinterval);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -40,15 +45,43 @@ void setup()
   //SetupTOF();
 }
 
+//---------------- LOOP ----------------
 void loop()
 {
-
+  delayTimer = 0;
+#if DEBUG
+  serialToValue();
+  displayData();
+#endif
+  checkBattery();
+  if (!digitalRead(gombPin))
+  {
+    setYawCorrection();
+    infraTimer.begin(stateMachine, myinterval);
+    state = 'T';
+  }
+  overFloop++;
+  while (delayTimer < 3);
 }
 
+void checkBattery()
+{
+  if (analogRead(batteryPin) < 800)
+  {
+    digitalWrite(led0, 1);
+    if (analogRead(batteryPin) < 780)
+    {
+      infraTimer.end();
+      state = 'O';
+    }
+  }
+  else
+    digitalWrite(led0, 0);
+}
+
+//-------------- TIMER INTERRUPT --------------
 void stateMachine()
 {
-  jobboldali = false;
-  baloldali = false;
   switch (state)
   {
     case 'T':

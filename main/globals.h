@@ -28,7 +28,7 @@ volatile int32_t TOFread = 0;
 volatile char state = 'S';
 
 //time measure
-elapsedMillis mill = 0;
+elapsedMillis milli = 0;
 elapsedMillis delayTimer = 0;
 elapsedMicros micro = 0;
 

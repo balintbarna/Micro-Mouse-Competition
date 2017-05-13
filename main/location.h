@@ -1,4 +1,4 @@
-#include "libs/mpu6050.cpp"
+#include "libs/mpu6050.h"
 int16_t baseYaw = 0;
 volatile int16_t relativeTurnError = 0;
 
@@ -45,7 +45,7 @@ void readTurnError()
 
 void setYawCorrection()
 {
-  while(!mpuready());
-  baseYaw=mpuread();
+  while (!mpuready());
+  baseYaw = mpuread();
 }
 
