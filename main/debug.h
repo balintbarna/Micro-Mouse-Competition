@@ -11,7 +11,7 @@ uint8_t debugMode = 3;
    4: állapot és paraméterek
    8: pálya
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 13;
+uint8_t outputMode = 24;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -23,7 +23,7 @@ const String newline = "\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 100
+#define loopNumber 200
 
 //Function to display debug info on serial
 void displayData()
@@ -135,6 +135,49 @@ void displayData()
     serialop += tab;
     serialop += midzone;
     serialop += newline;
+  }
+
+  //floodfill map
+  if ((outputMode >> 4) % 2 && !(overFloop % loopNumber))
+  {
+    if (infoline)
+      serialop += "Floodfill Values Map" + newline;
+
+    String temp = "";
+    for (int i = 0; i < mapsize; i++)
+      temp += " ---";
+    labi[0] = temp;
+    for (int i = 0; i < mapsize; i++)
+    {
+      temp = "";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
+        else temp += "  ";
+        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
+        else
+        {
+          String t = cellValues[j][mapsize - 1 - i];
+          temp += t;
+          if (t.length() < 2)
+            temp += " ";
+        }
+      }
+      temp += "|";
+      labi[2 * i + 1] = temp;
+      temp = " ";
+      for (int j = 0; j < mapsize; j++)
+      {
+        if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
+        else temp += "    ";
+      }
+      labi[2 * (i + 1)] = temp;
+    }
+    serialop += newline;
+    for (int i = 0; i < labisize; i++)
+    {
+      serialop += labi[i] + newline;
+    }
   }
 
 

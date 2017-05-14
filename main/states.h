@@ -6,6 +6,28 @@ volatile int idler = 0;
 #define waitTime 0 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
+bool computed = false;
+
+void setTurn(int16_t degree)
+{
+  int ratio = 360 / abs(degree);
+  //jobbra
+  if (degree >= 0)
+  {
+    param1 = positiveFullRotation / ratio;
+    param2 = negativeFullRotation / ratio;
+  }
+  //balra
+  else
+  {
+    param1 = negativeFullRotation / ratio;
+    param2 = positiveFullRotation / ratio;
+  }
+  turn(degree / 45);
+  state = 'I';
+  nextState = 'R';
+}
+
 //Function to erase past stored values
 void ResetAllStoredValues()
 {
@@ -17,6 +39,31 @@ void ResetAllStoredValues()
     infra_deriv[i] = 0;
   }
   idler = 0;
+}
+
+void planMovement()
+{
+  if (midzone)
+  {
+    //célba jutott
+    if (!cellValues[posX][posY])
+      state = 'S';
+    //még nem jutott célba
+    else
+    {
+      if (computed)
+      {
+        int temp = getBestDirection(posX, posY);
+        int temp2 = temp - orientation;
+        if (!temp2)
+        {
+          ResetAllStoredValues();
+          SetMotorPower(0, 0);
+          setTurn(temp2 * 45);
+        }
+      }
+    }
+  }
 }
 
 void checkWalls()
@@ -39,26 +86,6 @@ void checkWalls()
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }
   }
-}
-
-void setTurn(int16_t degree)
-{
-  int ratio = 360 / abs(degree);
-  //jobbra
-  if (degree >= 0)
-  {
-    param1 = positiveFullRotation / ratio;
-    param2 = negativeFullRotation / ratio;
-  }
-  //balra
-  else
-  {
-    param1 = negativeFullRotation / ratio;
-    param2 = positiveFullRotation / ratio;
-  }
-  turn(degree / 45);
-  state = 'I';
-  nextState = 'R';
 }
 
 //---------------- STATES ---------------
@@ -107,6 +134,7 @@ void stateW()
 {
   updatePosition();
   checkWalls();
+  planMovement();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {

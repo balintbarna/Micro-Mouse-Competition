@@ -15,8 +15,7 @@ volatile bool midzone = true;
 //0 az előre, -3től 4-ig irányt mutat
 /*    7  0  1
       6     2
-      5  4  3
-*/
+      5  4  3 */
 volatile uint8_t orientation = 0;
 
 void readTurnError()

@@ -1,7 +1,9 @@
 //map size (32 for competition)
 #define mapsize 5
-#define goalX 3
-#define goalY 2
+#define originalGoalX 3
+#define originalGoalY 2
+volatile int8_t goalX = originalGoalX;
+volatile int8_t goalY = originalGoalY;
 
 //general pins
 #define infraPin 22
@@ -49,3 +51,5 @@ const int16_t diagonalInfraLimit = 5000;
 const int16_t derivInfraLimit = 4;
 const int16_t frontInfraLimit = 1500;
 
+//cell value max
+const int32_t cellValueMax = 99;

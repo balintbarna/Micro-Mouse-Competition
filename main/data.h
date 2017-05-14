@@ -169,41 +169,93 @@ void SetupMazeSolver()
   {
     for (int j = 0; j < mapsize; j++)
     {
-      cellValues[i][j] = 0xFFFFFFFF;
+      cellValues[i][j] = cellValueMax;
     }
   }
   cellValues[goalX][goalY] = 0;
 }
 
+uint8_t getBestDirection(int8_t x, int8_t y)
+{
+  uint32_t lowest = cellValueMax;
+  uint8_t ori = 0;
+  //not leftmost and no wall to the left
+  if (x && !getWall(x, y, 3))
+  {
+    //check cell to the left
+    int temp = cellValues[x - 1][y];
+    if (temp < lowest)
+    {
+      lowest = temp;
+      ori = 6;
+    }
+  }
+  //not rightmost and no wall to the right
+  if (x - mapsize + 1 && !getWall(x, y, 1))
+  {
+    //check cell to the right
+    int temp = cellValues[x + 1][y];
+    if (temp < lowest)
+    {
+      lowest = temp;
+      ori = 2;
+    }
+  }
+  //not bottom and no wall to the bottom
+  if (y && !getWall(x, y, 2))
+  {
+    //check cell to the bottom
+    int temp = cellValues[x][y - 1];
+    if (temp < lowest)
+    {
+      lowest = temp;
+      ori = 4;
+    }
+  }
+  //not top and no wall to the top
+  if (y - mapsize + 1 && !getWall(x, y, 0))
+  {
+    //check cell to the top
+    int temp = cellValues[x][y + 1];
+    if (temp < lowest)
+    {
+      lowest = temp;
+      ori = 0;
+    }
+  }
+  return ori;
+}
+
 uint32_t getLowestNeighbour(int8_t x, int8_t y)
 {
-  int lowest;
-  //not leftmost
-  if (x)
+  uint32_t lowest = cellValueMax;
+  //not leftmost and no wall to the left
+  if (x && !getWall(x, y, 3))
   {
     lowest = cellValues[x - 1][y];
   }
-  //not rightmost
-  if (x - mapsize + 1)
+  //not rightmost and no wall to the right
+  if (x - mapsize + 1 && !getWall(x, y, 1))
   {
     int temp = cellValues[x + 1][y];
     lowest = temp < lowest ? temp : lowest;
   }
-  //not bottom
-  if (y)
+  //not bottom and no wall to the bottom
+  if (y && !getWall(x, y, 2))
   {
     int temp = cellValues[x][y - 1];
     lowest = temp < lowest ? temp : lowest;
   }
-  //not top
-  if (y - mapsize + 1)
+  //not top and no wall to the top
+  if (y - mapsize + 1 && !getWall(x, y, 0))
   {
     int temp = cellValues[x][y + 1];
     lowest = temp < lowest ? temp : lowest;
   }
+  return lowest;
 }
 
-void SolveMazeSolver()
+void SolveMaze()
 {
   bool changed = true;
   while (changed)
@@ -213,8 +265,12 @@ void SolveMazeSolver()
     {
       for (int j = 0; j < mapsize; j++)
       {
-        cellValues[i][j] = getLowestNeighbour(i, j) + 1;
-        changed = true;
+        uint32_t temp = getLowestNeighbour(i, j) + 1;
+        if (cellValues[i][j] > temp)
+        {
+          cellValues[i][j] = temp;
+          changed = true;
+        }
       }
     }
   }

@@ -19,7 +19,7 @@ void setup()
   Serial3.begin(115200);
 #endif
   //Initialize I2C (for TOF and MPU)
-  Wire.begin();
+  //Wire.begin();
   //Init MPU
   //SetupMPU();
   //Analog frekvencia
@@ -45,7 +45,7 @@ void setup()
   pinMode(led2, OUTPUT);
   //Initialize TOF sensor
   //SetupTOF();
-  //
+  //start values for maze solver
   SetupMazeSolver();
 }
 
@@ -60,11 +60,15 @@ void loop()
   checkBattery();
   if (!digitalRead(gombPin))
   {
-    while (delayTimer < 200);
+    while (delayTimer < 300);
     //setYawCorrection();
     state = 'T';
   }
   //readTurnError();
+  computed = false;
+  SetupMazeSolver();
+  SolveMaze();
+  computed = true;
   overFloop++;
   while (delayTimer < 5);
 }
@@ -74,13 +78,13 @@ void checkBattery()
   if (analogRead(batteryPin) < 800)
   {
     digitalWrite(led0, 1);
-    //    if (analogRead(batteryPin) < 780)
-    //    {
-    //      //stateTimer.end();
-    //      infraTimer.end();
-    //      state = 'O';
-    //      SetMotorPower(0, 0);
-    //    }
+    if (analogRead(batteryPin) < 780)
+    {
+      //stateTimer.end();
+      infraTimer.end();
+      state = 'O';
+      SetMotorPower(0, 0);
+    }
   }
   else
     digitalWrite(led0, 0);
