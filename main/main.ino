@@ -45,6 +45,8 @@ void setup()
   pinMode(led2, OUTPUT);
   //Initialize TOF sensor
   //SetupTOF();
+  //
+  SetupMazeSolver();
 }
 
 //---------------- LOOP ----------------

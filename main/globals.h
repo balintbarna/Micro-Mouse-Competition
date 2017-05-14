@@ -1,5 +1,7 @@
 //map size (32 for competition)
 #define mapsize 5
+#define goalX 3
+#define goalY 2
 
 //general pins
 #define infraPin 22

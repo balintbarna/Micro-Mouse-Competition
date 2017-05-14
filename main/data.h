@@ -21,33 +21,14 @@
   itt a kijelölt fal elem pl 1,1,1 vagy 2,1,3
 
 */
-
-volatile uint32_t xWalls[31] = {
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0
-};
-
-volatile uint32_t yWalls[31] = {
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0
-};
-
-volatile uint32_t visited[32] = {
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0
-};
+//store vertical walls
+volatile uint32_t xWalls[mapsize - 1];
+//store horizontal walls
+volatile uint32_t yWalls[mapsize - 1];
+//store which cells have been visited
+volatile uint32_t visited[mapsize];
+//store values of cells for maze solving
+volatile uint32_t cellValues[mapsize][mapsize];
 
 /* which_wall values
     0 means x higher
@@ -180,5 +161,62 @@ uint8_t getVisited(int8_t x, int8_t y)
 void clearAllData()
 {
 
+}
+
+void SetupMazeSolver()
+{
+  for (int i = 0; i < mapsize; i++)
+  {
+    for (int j = 0; j < mapsize; j++)
+    {
+      cellValues[i][j] = 0xFFFFFFFF;
+    }
+  }
+  cellValues[goalX][goalY] = 0;
+}
+
+uint32_t getLowestNeighbour(int8_t x, int8_t y)
+{
+  int lowest;
+  //not leftmost
+  if (x)
+  {
+    lowest = cellValues[x - 1][y];
+  }
+  //not rightmost
+  if (x - mapsize + 1)
+  {
+    int temp = cellValues[x + 1][y];
+    lowest = temp < lowest ? temp : lowest;
+  }
+  //not bottom
+  if (y)
+  {
+    int temp = cellValues[x][y - 1];
+    lowest = temp < lowest ? temp : lowest;
+  }
+  //not top
+  if (y - mapsize + 1)
+  {
+    int temp = cellValues[x][y + 1];
+    lowest = temp < lowest ? temp : lowest;
+  }
+}
+
+void SolveMazeSolver()
+{
+  bool changed = true;
+  while (changed)
+  {
+    changed = false;
+    for (int i = 0; i < mapsize; i++)
+    {
+      for (int j = 0; j < mapsize; j++)
+      {
+        cellValues[i][j] = getLowestNeighbour(i, j) + 1;
+        changed = true;
+      }
+    }
+  }
 }
 
