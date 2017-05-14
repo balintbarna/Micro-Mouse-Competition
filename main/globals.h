@@ -38,8 +38,8 @@ String serialCommand = "";
 volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //Movement constants
-const int16_t positiveFullRotation = 580;
-const int16_t negativeFullRotation = -460;
+const int16_t positiveFullRotation = 555;
+const int16_t negativeFullRotation = -444;
 
 //Infra constants
 const int16_t sideInfraLimit = 3000;

@@ -2,12 +2,12 @@
 #include "libs/motors.h"
 
 //PID controllers
-const int32_t PTagSpeed = 400;
+const int32_t PTagSpeed = 200;
 const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 40
 
 //Encoder signals / sec
-const int32_t maxSpeed = 500;
+const int32_t maxSpeed = 1000;
 
 //How far the side walls should be
 const int32_t midDistance = 2010;
