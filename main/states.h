@@ -22,19 +22,19 @@ void ResetAllStoredValues()
 void checkWalls()
 {
   //Szembe van
-  if (infra[front] < (1500 + maxSpeed))
+  if (infra[front] < (frontInfraLimit + breakLength))
     setWall(posX, posY, (orientation / 2) % 4);
 
   if (midzone)
   {
     //jobbra van
-    if (infra[right] < 3000 && infra[rightdi] < 5000 && pastinfra[right] < 3000 && infra_deriv[right] < 4)
+    if (infra[right] < sideInfraLimit && infra[rightdi] < diagonalInfraLimit && pastinfra[right] < sideInfraLimit && infra_deriv[right] < derivInfraLimit)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 3000 && infra[leftdi] < 5000 && pastinfra[left] < 3000 && infra_deriv[left] < 4)
+    if (infra[left] < sideInfraLimit && infra[leftdi] < diagonalInfraLimit && pastinfra[left] < sideInfraLimit && infra_deriv[left] < derivInfraLimit)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }
@@ -43,7 +43,7 @@ void checkWalls()
 
 void setTurn(int16_t degree)
 {
-  int ratio = 360 / degree;
+  int ratio = 360 / abs(degree);
   //jobbra
   if (degree >= 0)
   {
@@ -86,7 +86,7 @@ void stateT()
   ResetAllStoredValues();
   state = 'W';
   param1 = maxSpeed;
-  param2 = 1500;
+  param2 = frontInfraLimit;
 }
 //Rotating/Turning (pozitive means left)
 void stateR()

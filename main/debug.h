@@ -11,7 +11,7 @@ uint8_t debugMode = 3;
    4: állapot és paraméterek
    8: pálya
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 8;
+uint8_t outputMode = 13;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -121,7 +121,7 @@ void displayData()
     }
     
     if (infoline)
-      serialop += "Coordinates, orientation, saved coordinates" + newline;
+      serialop += "Coordinates, orientation, saved coordinates and midzone" + newline;
     serialop += posX;
     serialop += tab;
     serialop += posY;
@@ -131,6 +131,8 @@ void displayData()
     serialop += savedPosX;
     serialop += tab;
     serialop += savedPosY;
+    serialop += tab;
+    serialop += midzone;
     serialop += newline;
   }
 

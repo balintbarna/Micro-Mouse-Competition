@@ -10,7 +10,7 @@ volatile int8_t savedPosX = 0;
 volatile int8_t savedPosY = 0;
 volatile int32_t lastPosEncAvg = 0;
 //A cella közepéről induljon
-bool midzone = true;
+volatile bool midzone = true;
 
 //0 az előre, -3től 4-ig irányt mutat
 /*    7  0  1
@@ -50,7 +50,7 @@ void setYawCorrection()
 }
 
 //Function to modify orientation. Negative means left, 1 increment means 45°
-#define cell_length 321
+#define cell_length 300
 void turn(int8_t _size)
 {
   orientation += _size;
@@ -77,30 +77,14 @@ void updatePosition()
       //Ha X irányú
       if (orientation % 4)
       {
-        //jobbra (poz)
-        if (orientation == 2)
-        {
-          savedPosX += sign(distance);
-        }
-        //balra (neg)
-        else
-        {
-          savedPosX -= sign(distance);
-        }
+        int adder = -(orientation / 2 - 2) * sign(distance);
+        savedPosX += adder;
       }
       //Y irányú
       else
       {
-        //lefelé (neg)
-        if (orientation)
-        {
-          savedPosY -= sign(distance);
-        }
-        //alapirány (poz)
-        else
-        {
-          savedPosY += sign(distance);
-        }
+        int adder = -(orientation / 2 - 1) * sign(distance);
+        savedPosY += adder;
       }
       lastPosEncAvg = posEncAvg;
       distance = 0;
@@ -111,31 +95,15 @@ void updatePosition()
       //Ha X irányú
       if (orientation % 4)
       {
-        //jobbra (poz)
-        if (orientation == 2)
-        {
-          posX = savedPosX + sign(distance);
-        }
-        //balra (neg)
-        else
-        {
-          posX = savedPosX - sign(distance);
-        }
+        int adder = -(orientation / 2 - 2) * sign(distance);
+        posX = savedPosX + adder;
         posY = savedPosY;
       }
       //Y irányú
       else
       {
-        //lefelé (neg)
-        if (orientation)
-        {
-          posY = savedPosY - sign(distance);
-        }
-        //alapirány (poz)
-        else
-        {
-          posY = savedPosY + sign(distance);
-        }
+        int adder = -(orientation / 2 - 1) * sign(distance);
+        posY = savedPosY + adder;
         posX = savedPosX;
       }
     }
@@ -146,8 +114,8 @@ void updatePosition()
       posY = savedPosY;
     }
   }
-  int newdistance = (posX - savedPosX + posY - savedPosY) * cell_length - distance;
-  if (abs(newdistance) < (cell_length / 7))
+  int newdistance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+  if (abs(newdistance) < (cell_length / 8))
     midzone = true;
   else
     midzone = false;

@@ -58,6 +58,7 @@ void loop()
   checkBattery();
   if (!digitalRead(gombPin))
   {
+    while(delayTimer<3);
     //setYawCorrection();
     state = 'T';
   }
@@ -71,13 +72,13 @@ void checkBattery()
   if (analogRead(batteryPin) < 800)
   {
     digitalWrite(led0, 1);
-    if (analogRead(batteryPin) < 780)
-    {
-      //stateTimer.end();
-      infraTimer.end();
-      state = 'O';
-      SetMotorPower(0, 0);
-    }
+//    if (analogRead(batteryPin) < 780)
+//    {
+//      //stateTimer.end();
+//      infraTimer.end();
+//      state = 'O';
+//      SetMotorPower(0, 0);
+//    }
   }
   else
     digitalWrite(led0, 0);
