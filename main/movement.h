@@ -7,7 +7,7 @@ const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 40
 
 //Encoder signals / sec
-const int32_t maxSpeed = 1000;
+const int32_t maxSpeed = 1500;
 
 //How far the side walls should be
 const int32_t midDistance = 2010;

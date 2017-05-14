@@ -102,6 +102,7 @@ void displayData()
         if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
         else temp += "  ";
         if (posX == j && posY == mapsize - 1 - i) temp += "x ";
+        else if (getVisited(j, mapsize - 1 - i)) temp += "- ";
         else temp += "  ";
       }
       temp += "|";
@@ -119,7 +120,7 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
-    
+
     if (infoline)
       serialop += "Coordinates, orientation, saved coordinates and midzone" + newline;
     serialop += posX;

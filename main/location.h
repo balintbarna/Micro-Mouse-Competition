@@ -120,6 +120,7 @@ void updatePosition()
     midzone = true;
   else
     midzone = false;
+  setVisited(posX, posY);
 }
 
 void ResetLocation()

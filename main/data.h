@@ -40,6 +40,14 @@ volatile uint32_t yWalls[31] = {
   0, 0, 0, 0, 0, 0
 };
 
+volatile uint32_t visited[32] = {
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0
+};
 
 /* which_wall values
     0 means x higher
@@ -159,8 +167,18 @@ void ReadArray32(uint16_t address, uint32_t* data)
   }
 }
 
+void setVisited(int8_t x, int8_t y)
+{
+  visited[x] |= 1 << y;
+}
+
+uint8_t getVisited(int8_t x, int8_t y)
+{
+  return (visited[x] >> y) % 2;
+}
+
 void clearAllData()
 {
-  
+
 }
 
