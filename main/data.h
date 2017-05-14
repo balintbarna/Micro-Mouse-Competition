@@ -22,7 +22,7 @@
 
 */
 
-uint32_t xWalls[31] = {
+volatile uint32_t xWalls[31] = {
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
@@ -31,7 +31,7 @@ uint32_t xWalls[31] = {
   0, 0, 0, 0, 0, 0
 };
 
-uint32_t yWalls[31] = {
+volatile uint32_t yWalls[31] = {
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
   0, 0, 0, 0, 0,
@@ -157,5 +157,10 @@ void ReadArray32(uint16_t address, uint32_t* data)
   {
     data[i] = Read32(address + i);
   }
+}
+
+void clearAllData()
+{
+  
 }
 

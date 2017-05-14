@@ -11,7 +11,7 @@ uint8_t debugMode = 3;
    4: állapot és paraméterek
    8: pálya
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 4;
+uint8_t outputMode = 8;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -22,12 +22,14 @@ const String tab = "\t";
 const String newline = "\n";
 //Variable for serial output
 String serialop = "";
+//every X loop
+#define loopNumber 100
 
 //Function to display debug info on serial
 void displayData()
 {
   //Speed, Position, Time
-  if (outputMode % 2 && !(overFloop % 300))
+  if (outputMode % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
       serialop += "Speed, Position, Time" + newline;
@@ -45,7 +47,7 @@ void displayData()
   }
 
   //Infra sensors
-  if ((outputMode >> 1) % 2 && !(overFloop % 300))
+  if ((outputMode >> 1) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
       serialop += "Infra sensors: left, leftdi, front, rightdi, right" + newline;
@@ -63,7 +65,7 @@ void displayData()
   }
 
   //States and params
-  if ((outputMode >> 2) % 2 && !(overFloop % 300))
+  if ((outputMode >> 2) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
       serialop += "States, params, idler" + newline;
@@ -83,7 +85,7 @@ void displayData()
   }
 
   //position
-  if ((outputMode >> 3) % 2 && !(overFloop % 100))
+  if ((outputMode >> 3) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
       serialop += "Map and coordinates, etc." + newline;

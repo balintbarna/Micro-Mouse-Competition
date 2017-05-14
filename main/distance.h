@@ -76,16 +76,6 @@ void _readInfra(int8_t index = -1)
   }
 }
 
-//Infra reading procedure, default value reads all 5 sensors
-//void ReadInfra(int8_t index = -1)
-//{
-//  digitalWrite(infraPin, 1);
-//  delayMicroseconds(500);
-//  _readInfra();
-//  digitalWrite(infraPin, 0);
-//  micro = 0;
-//}
-
 uint8_t _infraCounter = 0;
 void InfraISR()
 {

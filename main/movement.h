@@ -4,10 +4,10 @@
 //PID controllers
 const int32_t PTagSpeed = 400;
 const int32_t ITagSpeed = 2 * myinterval / 1000;
-#define PTagCas 10
+#define PTagCas 40
 
 //Encoder signals / sec
-const int32_t maxSpeed = 1000;
+const int32_t maxSpeed = 1800;
 
 //How far the side walls should be
 const int32_t midDistance = 2010;
@@ -62,7 +62,7 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
     setSpeedRight *= ratio;
     setSpeedRight /= 2000;
   }
-  
+
   //If we want to control wall proximity
   if (doWall)
   {
@@ -74,39 +74,36 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
        3: mindkét fal jó
     */
     //Jobb fal vizsgálata
-    byte wall_fitness = infra[right] < 3500 && infra[rightdi] < 5000 && pastinfra[right] < 4500 && infra_deriv[right] < 4;
+    byte wall_fitness = infra[right] < 3500 && infra[rightdi] < 5000 && pastinfra[right] < 3500 && infra_deriv[right] < 4;
     //Bal fal vizsgálata
-    wall_fitness += (infra[left] < 3500 && infra[leftdi] < 5000 && pastinfra[left] < 4500 && infra_deriv[left] < 4) << 1;
+    wall_fitness += (infra[left] < 3500 && infra[leftdi] < 5000 && pastinfra[left] < 3500 && infra_deriv[left] < 4) << 1;
     //Ha van jó fal
     if (wall_fitness)
     {
+      bool leftwall = true;
       //Ha mindkét fal jó
       if (wall_fitness == 3)
       {
         //Ha a jobb fal közelebb van
         if (infra[right] < infra[left])
         {
-          de = midDistance - infra[right];
-          de_deriv = infra_deriv[right];
-        }
-        //Ha messzebb
-        else
-        {
-          de = infra[left] - midDistance;
-          de_deriv = -infra_deriv[left];
+          leftwall = false;
         }
       }
       //Ha csak a jobb
       else if (wall_fitness == 1)
       {
-        de = midDistance - infra[right];
-        de_deriv = infra_deriv[right];
+        leftwall = false;
       }
-      //Ha csak a bal
-      else if (wall_fitness == 2)
+      if (leftwall)
       {
         de = infra[left] - midDistance;
         de_deriv = -infra_deriv[left];
+      }
+      else
+      {
+        de = midDistance - infra[right];
+        de_deriv = infra_deriv[right];
       }
     }
     setSpeedLeft -= (de * PInfra - de_deriv * DInfra) / 1000;
@@ -164,3 +161,14 @@ void CascadePos(int setPosLeft, int setPosRight, bool doWall = 0)
 
   SetMotorSpeed(opLeft, opRight, doWall);
 }
+
+void ResetMovement()
+{
+  aggrSpeedLeft = 0;
+  aggrSpeedRight = 0;
+  errSumLeft = 0;
+  errSumRight = 0;
+  leftPosOld = 0;
+  rightPosOld = 0;
+}
+

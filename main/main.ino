@@ -33,6 +33,7 @@ void setup()
   stateTimer.priority(254);
   infraTimer.priority(255);
   stateTimer.begin(stateMachine, myinterval);
+  infraTimer.begin(InfraISR, 2000);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -58,9 +59,9 @@ void loop()
   if (!digitalRead(gombPin))
   {
     //setYawCorrection();
-    infraTimer.begin(stateMachine, myinterval);
     state = 'T';
   }
+  //readTurnError();
   overFloop++;
   while (delayTimer < 5);
 }

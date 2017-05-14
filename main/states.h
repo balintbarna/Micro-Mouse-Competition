@@ -1,25 +1,21 @@
 //Parameters for infra based speed control
-const int breakLength = maxSpeed/3;
+const int breakLength = maxSpeed / 3;
 volatile char nextState = 'S';
 
 volatile int idler = 0;
-#define waitTime 100 //in ms
+#define waitTime 0 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
 //Function to erase past stored values
 void ResetAllStoredValues()
 {
   ResetEncoders();
-  aggrSpeedLeft = 0;
-  aggrSpeedRight = 0;
-  errSumLeft = 0;
-  errSumRight = 0;
-  leftPosOld = 0;
-  rightPosOld = 0;
+  ResetMovement();
   for (int i = 0; i < 5; i++)
   {
     infra_deriv[i] = 0;
   }
+  idler = 0;
 }
 
 void checkWalls()
@@ -31,13 +27,13 @@ void checkWalls()
   if (midzone)
   {
     //jobbra van
-    if (infra[right] < 3500 && infra[rightdi] < 6000 && pastinfra[right] < 3500)
+    if (infra[right] < 3000 && infra[rightdi] < 5000 && pastinfra[right] < 3000 && infra_deriv[right] < 4)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 3500 && infra[leftdi] < 6000 && pastinfra[left] < 3500)
+    if (infra[left] < 3000 && infra[leftdi] < 5000 && pastinfra[left] < 3000 && infra_deriv[left] < 4)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }
@@ -80,7 +76,6 @@ void stateR()
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    idler = 0;
     state = 'I';
     nextState = 'T';
   }
@@ -88,6 +83,8 @@ void stateR()
 //Go until wall
 void stateW()
 {
+  updatePosition();
+  checkWalls();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {
@@ -108,14 +105,15 @@ void stateW()
     {
       param1 = -111;
       param2 = 141;
+      turn(-2);
     }
     //Egyébként jobbra
     else
     {
       param1 = 141;
       param2 = -111;
+      turn(2);
     }
-    idler = 0;
     ResetAllStoredValues();
     SetMotorPower(0, 0);
     state = 'I';

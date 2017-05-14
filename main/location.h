@@ -50,7 +50,7 @@ void setYawCorrection()
 }
 
 //Function to modify orientation. Negative means left, 1 increment means 45°
-#define cell_length 107
+#define cell_length 321
 void turn(int8_t _size)
 {
   orientation += _size;
@@ -103,6 +103,7 @@ void updatePosition()
         }
       }
       lastPosEncAvg = posEncAvg;
+      distance = 0;
     }
     //Valós pozíció, ha messze van az elmentetttől
     if (abs(distance) >= cell_length / 2)
