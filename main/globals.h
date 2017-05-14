@@ -36,3 +36,7 @@ elapsedMicros micro = 0;
 String serialCommand = "";
 //Paramteres
 volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
+
+//Movement constants
+const int16_t positiveFullRotation = 564;
+const int16_t negativeFullRotation = -444;

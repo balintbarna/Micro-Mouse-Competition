@@ -88,7 +88,7 @@ void displayData()
   if ((outputMode >> 3) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
-      serialop += "Map and coordinates, etc." + newline;
+      serialop += "Map" + newline;
 
     String temp = "";
     for (int i = 0; i < mapsize; i++)
@@ -119,6 +119,9 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
+    
+    if (infoline)
+      serialop += "Coordinates, orientation, saved coordinates" + newline;
     serialop += posX;
     serialop += tab;
     serialop += posY;

@@ -11,6 +11,7 @@ void ResetAllStoredValues()
 {
   ResetEncoders();
   ResetMovement();
+  ResetLocation();
   for (int i = 0; i < 5; i++)
   {
     infra_deriv[i] = 0;
@@ -40,6 +41,27 @@ void checkWalls()
   }
 }
 
+void setTurn(int16_t degree)
+{
+  int ratio = 360 / degree;
+  //jobbra
+  if (degree >= 0)
+  {
+    param1 = positiveFullRotation / ratio;
+    param2 = negativeFullRotation / ratio;
+  }
+  //balra
+  else
+  {
+    param1 = negativeFullRotation / ratio;
+    param2 = positiveFullRotation / ratio;
+  }
+  turn(degree / 45);
+  state = 'I';
+  nextState = 'R';
+}
+
+//---------------- STATES ---------------
 //Cascade Position
 void stateC()
 {
@@ -100,24 +122,18 @@ void stateW()
   //Most azonnal meg kell állni mert féktávolságon belül van a megállási pont
   else
   {
+    ResetAllStoredValues();
+    SetMotorPower(0, 0);
     //Ha balra nincs fal, arra fordul
     if (infra[left] > 9999)
     {
-      param1 = -111;
-      param2 = 141;
-      turn(-2);
+      setTurn(-90);
     }
     //Egyébként jobbra
     else
     {
-      param1 = 141;
-      param2 = -111;
-      turn(2);
+      setTurn(90);
     }
-    ResetAllStoredValues();
-    SetMotorPower(0, 0);
-    state = 'I';
-    nextState = 'R';
   }
 }
 //

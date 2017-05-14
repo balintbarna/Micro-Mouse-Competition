@@ -153,3 +153,10 @@ void updatePosition()
     midzone = false;
 }
 
+void ResetLocation()
+{
+  lastPosEncAvg = 0;
+  savedPosX = posX;
+  savedPosY = posY;
+}
+
