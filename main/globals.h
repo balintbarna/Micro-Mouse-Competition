@@ -1,5 +1,5 @@
 //map size (32 for competition)
-#define mapsize 5
+#define mapsize 32
 #define originalGoalX 3
 #define originalGoalY 2
 volatile int8_t goalX = originalGoalX;
@@ -35,6 +35,8 @@ volatile char state = 'S';
 elapsedMillis milli = 0;
 elapsedMillis delayTimer = 0;
 elapsedMicros micro = 0;
+elapsedMicros measurer = 0;
+uint32_t measuredTime = 0;
 
 //Variable to read command from serial
 String serialCommand = "";

@@ -92,7 +92,7 @@ void checkWalls()
 //Cascade Position
 void stateC()
 {
-  CascadePos(param1, param2);
+  CascadePos(param1, param2, true);
 }
 //Stop
 void stateS()
@@ -105,7 +105,7 @@ void stateS()
 //Velocity control
 void stateV()
 {
-  SetMotorSpeed(param1, param2);
+  SetMotorSpeed(param1, param2, true);
 }
 //Testing program
 void stateT()
@@ -134,7 +134,7 @@ void stateW()
 {
   updatePosition();
   checkWalls();
-  planMovement();
+  //planMovement();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {

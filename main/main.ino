@@ -45,8 +45,6 @@ void setup()
   pinMode(led2, OUTPUT);
   //Initialize TOF sensor
   //SetupTOF();
-  //start values for maze solver
-  SetupMazeSolver();
 }
 
 //---------------- LOOP ----------------
@@ -65,12 +63,14 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-  computed = false;
-  SetupMazeSolver();
-  SolveMaze();
-  computed = true;
+//  measurer = 0;
+//  computed = false;
+//  SetupMazeSolver();
+//  SolveMaze();
+//  computed = true;
+//  measuredTime = measurer;
   overFloop++;
-  while (delayTimer < 5);
+  while (delayTimer < 2);
 }
 
 void checkBattery()
@@ -81,7 +81,7 @@ void checkBattery()
     if (analogRead(batteryPin) < 780)
     {
       //stateTimer.end();
-      infraTimer.end();
+      //infraTimer.end();
       state = 'O';
       SetMotorPower(0, 0);
     }

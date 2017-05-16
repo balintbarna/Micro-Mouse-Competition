@@ -10,8 +10,10 @@ uint8_t debugMode = 3;
    2: szenzorok
    4: állapot és paraméterek
    8: pálya
+   16: floodfill map
+   32: custom
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 24;
+uint8_t outputMode = 2;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -23,7 +25,7 @@ const String newline = "\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 200
+#define loopNumber 1
 
 //Function to display debug info on serial
 void displayData()
@@ -178,6 +180,12 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
+  }
+
+  //floodfill map
+  if ((outputMode >> 5) % 2 && !(overFloop % loopNumber))
+  {
+    serialop += measuredTime;
   }
 
 
