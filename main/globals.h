@@ -1,5 +1,5 @@
 //map size (32 for competition)
-#define mapsize 32
+#define mapsize 5
 #define originalGoalX 3
 #define originalGoalY 2
 volatile int8_t goalX = originalGoalX;
@@ -51,7 +51,11 @@ const int16_t negativeFullRotation = -444;
 const int16_t sideInfraLimit = 3000;
 const int16_t diagonalInfraLimit = 5000;
 const int16_t derivInfraLimit = 4;
-const int16_t frontInfraLimit = 1500;
+const int16_t frontInfraLimit = 1800;
+const int16_t midInfraValue = 1750;
+
+//Encoder signals / sec  ---  0.28mm/sec
+const int32_t maxSpeed = 1000;
 
 //cell value max
-const int32_t cellValueMax = 99;
+//const int32_t cellValueMax = 99;

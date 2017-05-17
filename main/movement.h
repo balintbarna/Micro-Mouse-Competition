@@ -6,12 +6,6 @@ const int32_t PTagSpeed = 200;
 const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 60
 
-//Encoder signals / sec  ---  0.28mm/sec
-const int32_t maxSpeed = 1500;
-
-//How far the side walls should be
-const int32_t midDistance = 2000;
-
 //Parameters for infra based speed control
 #define PInfraCoeff 0.5
 #define DInfraCoeff 0.3
@@ -97,12 +91,12 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
       }
       if (leftwall)
       {
-        de = infra[left] - midDistance;
+        de = infra[left] - midInfraValue;
         de_deriv = -infra_deriv[left];
       }
       else
       {
-        de = midDistance - infra[right];
+        de = midInfraValue - infra[right];
         de_deriv = infra_deriv[right];
       }
     }

@@ -162,7 +162,7 @@ void clearAllData()
 {
 
 }
-
+/*
 void SetupMazeSolver()
 {
   for (int i = 0; i < mapsize; i++)
@@ -275,4 +275,4 @@ void SolveMaze()
     }
   }
 }
-
+*/

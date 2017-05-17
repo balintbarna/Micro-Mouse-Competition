@@ -1,5 +1,5 @@
 //Parameters for infra based speed control
-const int breakLength = maxSpeed / 3;
+const int breakLength = maxSpeed / 2;
 volatile char nextState = 'S';
 
 volatile int idler = 0;
@@ -40,7 +40,7 @@ void ResetAllStoredValues()
   }
   idler = 0;
 }
-
+/*
 void planMovement()
 {
   if (midzone)
@@ -65,6 +65,7 @@ void planMovement()
     }
   }
 }
+*/
 
 void checkWalls()
 {
