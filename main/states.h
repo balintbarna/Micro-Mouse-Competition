@@ -2,7 +2,7 @@
 volatile char nextState = 'S';
 
 volatile int idler = 0;
-#define waitTime 500 //in ms
+#define waitTime 0 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
 //Function to prepare for turning
@@ -92,8 +92,8 @@ void stateT()
 //Go until wall
 void stateW()
 {
-  //updatePosition();
-  //checkWalls();
+  updatePosition();
+  checkWalls();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {
@@ -116,10 +116,15 @@ void stateW()
     {
       setTurn(-90);
     }
-    //Egyébként jobbra
-    else
+    //Ha jobbra nincs fal
+    else if (infra[right] > 9999)
     {
       setTurn(90);
+    }
+    //Egyébként megfordul
+    else
+    {
+      setTurn(180);
     }
   }
 }
@@ -166,5 +171,8 @@ void stateS()
   if (abs(aggrSpeedLeft) > 30 || abs(aggrSpeedRight) > 30)
     SetMotorSpeed(0, 0);
   else
+  {
+    ResetAllStoredValues();
     SetMotorPower(0, 0);
+  }
 }

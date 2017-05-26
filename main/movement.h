@@ -4,11 +4,11 @@
 //PID controllers
 const int32_t PTagSpeed = 200;
 const int32_t ITagSpeed = 2 * myinterval / 1000;
-#define PTagCas 60
+#define PTagCas 10
 
 //Parameters for infra based speed control
 #define PInfraCoeff 1
-#define DInfraCoeff 0.6
+#define DInfraCoeff 0.8
 const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 
@@ -96,9 +96,9 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
         de = midInfraValue - infra[right];
         de_deriv = infra_deriv[right];
       }
+      setSpeedLeft -= (de * PInfra - de_deriv * DInfra) / 1000;
+      setSpeedRight += (de * PInfra - de_deriv * DInfra) / 1000;
     }
-    setSpeedLeft -= (de * PInfra - de_deriv * DInfra) / 1000;
-    setSpeedRight += (de * PInfra - de_deriv * DInfra) / 1000;
   }
   //Encoder érték kiolvasás
   leftPos = encoderLeft.read();

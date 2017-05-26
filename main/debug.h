@@ -5,15 +5,15 @@
    2: bt
    összegekkel több is megy egyszerre */
 uint8_t debugMode = 3;
-/* 0: semmi
-   1: mozgás
-   2: szenzorok
-   4: állapot és paraméterek
-   8: pálya
+/* 0: nothing
+   1: movement
+   2: sensors
+   4: states and params
+   8: map
    16: floodfill map
    32: custom
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 16;
+uint8_t outputMode = 8;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -25,7 +25,7 @@ const String newline = "\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 1
+#define loopNumber 10
 
 //Function to display debug info on serial
 void displayData()

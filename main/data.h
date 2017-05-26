@@ -166,7 +166,7 @@ void checkWalls()
 
   if (midzone)
   {
-    uint8_t side_walls = getSideWalls();
+    uint8_t side_walls = getSideWalls(false);
     //jobbra van
     if (side_walls % 2)
     {

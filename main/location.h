@@ -98,6 +98,7 @@ void updatePosition()
       posY = savedPosY;
     }
   }
+  
   int infraMidDistance = abs(posX - savedPosX) + abs(posY - savedPosY) * cell_length - distance - 100;
   if (abs(infraMidDistance) < (cell_length / 4))
     midzone = true;

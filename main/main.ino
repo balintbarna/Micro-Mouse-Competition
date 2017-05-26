@@ -83,8 +83,8 @@ void checkBattery()
     {
       //stateTimer.end();
       //infraTimer.end();
-      state = 'O';
-      SetMotorPower(0, 0);
+      //state = 'O';
+      //SetMotorPower(0, 0);
     }
   }
   else
