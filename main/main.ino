@@ -30,8 +30,8 @@ void setup()
   //Initialize Motors
   SetupMotors();
   //Set timer priorities
-  stateTimer.priority(254);
-  infraTimer.priority(255);
+  //stateTimer.priority(254);
+  //infraTimer.priority(255);
   stateTimer.begin(stateMachine, myinterval);
   infraTimer.begin(InfraISR, 2000);
   //infra
@@ -63,12 +63,13 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-//  measurer = 0;
-//  computed = false;
-//  SetupMazeSolver();
-//  SolveMaze();
-//  computed = true;
-//  measuredTime = measurer;
+  if (needPlanning && !planningDone)
+  {
+    SolveMaze();
+    PlanPathToTarget();
+    planningDone = true;
+    needPlanning = false;
+  }
   overFloop++;
   while (delayTimer < 2);
 }
@@ -95,6 +96,12 @@ void stateMachine()
 {
   switch (state)
   {
+    case 'A':
+      stateAI();
+      break;
+    case 'G':
+      stateG();
+      break;
     case 'T':
       stateT();
       break;
@@ -110,20 +117,28 @@ void stateMachine()
     case 'V':
       stateV();
       break;
-    case 'S':
-      stateS();
-      break;
     case 'I':
       stateI();
       break;
     case 'D':
       stateD();
       break;
+    case 'S':
+    case 'E':
     case 'O':
       stateS();
       break;
     default:
       state = 'E';
+  }
+  if (midzone)
+  {
+    needPlanning = true;
+  }
+  else
+  {
+    needPlanning = false;
+    planningDone = false;
   }
   overFirpt++;
 }

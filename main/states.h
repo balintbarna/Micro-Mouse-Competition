@@ -1,18 +1,18 @@
 //Parameters for infra based speed control
-const int breakLength = maxSpeed / 2;
 volatile char nextState = 'S';
 
 volatile int idler = 0;
-#define waitTime 0 //in ms
+#define waitTime 500 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
-bool computed = false;
-
+//Function to prepare for turning
 void setTurn(int16_t degree)
 {
+  if (!degree) return;
+
   int ratio = 360 / abs(degree);
   //jobbra
-  if (degree >= 0)
+  if (degree > 0)
   {
     param1 = positiveFullRotation / ratio;
     param2 = negativeFullRotation / ratio;
@@ -34,79 +34,52 @@ void ResetAllStoredValues()
   ResetEncoders();
   ResetMovement();
   ResetLocation();
-  for (int i = 0; i < 5; i++)
-  {
-    infra_deriv[i] = 0;
-  }
   idler = 0;
-}
-/*
-void planMovement()
-{
-  if (midzone)
-  {
-    //célba jutott
-    if (!cellValues[posX][posY])
-      state = 'S';
-    //még nem jutott célba
-    else
-    {
-      if (computed)
-      {
-        int temp = getBestDirection(posX, posY);
-        int temp2 = temp - orientation;
-        if (!temp2)
-        {
-          ResetAllStoredValues();
-          SetMotorPower(0, 0);
-          setTurn(temp2 * 45);
-        }
-      }
-    }
-  }
-}
-*/
-
-void checkWalls()
-{
-  //Szembe van
-  if (infra[front] < (frontInfraLimit + breakLength))
-    setWall(posX, posY, (orientation / 2) % 4);
-
-  if (midzone)
-  {
-    //jobbra van
-    if (infra[right] < sideInfraLimit && infra[rightdi] < diagonalInfraLimit && pastinfra[right] < sideInfraLimit && infra_deriv[right] < derivInfraLimit)
-    {
-      setWall(posX, posY, (orientation / 2 + 1) % 4);
-    }
-
-    //balra van
-    if (infra[left] < sideInfraLimit && infra[leftdi] < diagonalInfraLimit && pastinfra[left] < sideInfraLimit && infra_deriv[left] < derivInfraLimit)
-    {
-      setWall(posX, posY, (orientation / 2 + 3) % 4);
-    }
-  }
 }
 
 //---------------- STATES ---------------
-//Cascade Position
-void stateC()
+//State that decides what to do next
+void stateAI()
 {
-  CascadePos(param1, param2, true);
+  if (action[0] == 'F')
+  {
+    state = 'G';
+  }
+  else if (action[0] == 'R')
+  {
+    setTurn(90);
+  }
+  else if (action[0] == 'L')
+  {
+    setTurn(-90);
+  }
+  nextState = 'A';
 }
-//Stop
-void stateS()
+//Reach a coordinate, no turning
+void stateG()
 {
-  if (abs(aggrSpeedLeft) > 30 || abs(aggrSpeedRight) > 30)
-    SetMotorSpeed(0, 0);
+  int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
+  int distance = posEncAvg - lastPosEncAvg;
+  distance = abs(posX - savedPosX) + abs(posY - savedPosY) * cell_length - distance;
+  if (nextX != posX && nextY != posY)
+  {
+    SetMotorSpeed(maxSpeed, maxSpeed, true);
+  }
   else
-    SetMotorPower(0, 0);
-}
-//Velocity control
-void stateV()
-{
-  SetMotorSpeed(param1, param2, true);
+  {
+    if (!midzone)
+    {
+      int targetL = distance + leftPos;
+      int targetR = distance + rightPos;
+      CascadePos(targetL, targetR, true);
+    }
+    else
+    {
+      ResetAllStoredValues();
+      SetMotorPower(0, 0);
+      state = nextState;
+    }
+  }
 }
 //Testing program
 void stateT()
@@ -116,36 +89,21 @@ void stateT()
   param1 = maxSpeed;
   param2 = frontInfraLimit;
 }
-//Rotating/Turning (pozitive means left)
-void stateR()
-{
-  //végrehajtás
-  CascadePos(param1, param2);
-  //végállapot ellenőrzés
-  if (abs(leftPos) >= abs(param1) && abs(rightPos) >= abs(param2))
-  {
-    ResetAllStoredValues();
-    SetMotorPower(0, 0);
-    state = 'I';
-    nextState = 'T';
-  }
-}
 //Go until wall
 void stateW()
 {
-  updatePosition();
-  checkWalls();
-  //planMovement();
+  //updatePosition();
+  //checkWalls();
   //Még mehetünk egyenesen bőven
   if (infra[front] > param2 * 4)
   {
     SetMotorSpeed(param1, param1, true);
   }
   //Lassan meg kell állni mert már látok szembe falat
-  else if (infra[front] > param2 + breakLength)
+  else if (infra[front] > (param2 + breakLengthInfra))
   {
-    int targetL = (infra[front] - param2 ) / 100 + leftPos;
-    int targetR = (infra[front] - param2 ) / 100 + rightPos;
+    int targetL = (infra[front] - param2 ) / encoderToInfra + leftPos;
+    int targetR = (infra[front] - param2 ) / encoderToInfra + rightPos;
     CascadePos(targetL, targetR, true);
   }
   //Most azonnal meg kell állni mert féktávolságon belül van a megállási pont
@@ -165,6 +123,20 @@ void stateW()
     }
   }
 }
+//Rotating/Turning (pozitive means left)
+void stateR()
+{
+  //végrehajtás
+  CascadePos(param1, param2);
+  //végállapot ellenőrzés
+  if (abs(leftPos) >= abs(param1) && abs(rightPos) >= abs(param2))
+  {
+    ResetAllStoredValues();
+    SetMotorPower(0, 0);
+    state = 'I';
+    nextState = 'T';
+  }
+}
 //
 void stateD()
 {
@@ -177,4 +149,22 @@ void stateI()
   idler++;
   if (idler > waitCycle)
     state = nextState;
+}
+//Cascade Position
+void stateC()
+{
+  CascadePos(param1, param2, true);
+}
+//Velocity control
+void stateV()
+{
+  SetMotorSpeed(param1, param2, true);
+}
+//Stop
+void stateS()
+{
+  if (abs(aggrSpeedLeft) > 30 || abs(aggrSpeedRight) > 30)
+    SetMotorSpeed(0, 0);
+  else
+    SetMotorPower(0, 0);
 }

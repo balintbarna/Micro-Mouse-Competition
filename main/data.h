@@ -28,7 +28,7 @@ volatile uint32_t yWalls[mapsize - 1];
 //store which cells have been visited
 volatile uint32_t visited[mapsize];
 //store values of cells for maze solving
-volatile uint32_t cellValues[mapsize][mapsize];
+volatile uint16_t cellValues[mapsize][mapsize];
 
 /* which_wall values
     0 means x higher
@@ -158,26 +158,37 @@ uint8_t getVisited(int8_t x, int8_t y)
   return (visited[x] >> y) % 2;
 }
 
+void checkWalls()
+{
+  //Szembe van
+  if (infra[front] < (frontInfraLimit + breakLengthInfra))
+    setWall(posX, posY, (orientation / 2) % 4);
+
+  if (midzone)
+  {
+    uint8_t side_walls = getSideWalls();
+    //jobbra van
+    if (side_walls % 2)
+    {
+      setWall(posX, posY, (orientation / 2 + 1) % 4);
+    }
+
+    //balra van
+    if ((side_walls >> 1) % 2)
+    {
+      setWall(posX, posY, (orientation / 2 + 3) % 4);
+    }
+  }
+}
+
 void clearAllData()
 {
 
 }
-/*
-void SetupMazeSolver()
-{
-  for (int i = 0; i < mapsize; i++)
-  {
-    for (int j = 0; j < mapsize; j++)
-    {
-      cellValues[i][j] = cellValueMax;
-    }
-  }
-  cellValues[goalX][goalY] = 0;
-}
 
 uint8_t getBestDirection(int8_t x, int8_t y)
 {
-  uint32_t lowest = cellValueMax;
+  uint16_t lowest = cellValueMax;
   uint8_t ori = 0;
   //not leftmost and no wall to the left
   if (x && !getWall(x, y, 3))
@@ -255,8 +266,21 @@ uint32_t getLowestNeighbour(int8_t x, int8_t y)
   return lowest;
 }
 
+void SetupMazeSolver()
+{
+  for (int i = 0; i < mapsize; i++)
+  {
+    for (int j = 0; j < mapsize; j++)
+    {
+      cellValues[i][j] = cellValueMax;
+    }
+  }
+  cellValues[goalX][goalY] = 0;
+}
+
 void SolveMaze()
 {
+  SetupMazeSolver();
   bool changed = true;
   while (changed)
   {
@@ -275,4 +299,4 @@ void SolveMaze()
     }
   }
 }
-*/
+

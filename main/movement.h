@@ -7,8 +7,8 @@ const int32_t ITagSpeed = 2 * myinterval / 1000;
 #define PTagCas 60
 
 //Parameters for infra based speed control
-#define PInfraCoeff 0.5
-#define DInfraCoeff 0.3
+#define PInfraCoeff 1
+#define DInfraCoeff 0.6
 const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 
@@ -67,10 +67,7 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
        2: bal fal jó
        3: mindkét fal jó
     */
-    //Jobb fal vizsgálata
-    byte wall_fitness = infra[right] < 3500 && infra[rightdi] < 5000 && pastinfra[right] < 3500 && infra_deriv[right] < 4;
-    //Bal fal vizsgálata
-    wall_fitness += (infra[left] < 3500 && infra[leftdi] < 5000 && pastinfra[left] < 3500 && infra_deriv[left] < 4) << 1;
+    uint8_t wall_fitness = getSideWalls();
     //Ha van jó fal
     if (wall_fitness)
     {
@@ -113,9 +110,9 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
 
   //Setting filter
   int lesserSpeed = abs(aggrSpeedLeft) < abs(aggrSpeedRight) ? abs(aggrSpeedLeft) : abs(aggrSpeedRight);
-  if (lesserSpeed > filterHighSpeed)
+  if (lesserSpeed >= filterHighSpeed)
     newPart = wholePart;
-  else if (lesserSpeed < filterLowSpeed)
+  else if (lesserSpeed <= filterLowSpeed)
     newPart = minNewPart;
   else
     newPart = map(lesserSpeed, filterLowSpeed, filterHighSpeed, minNewPart, wholePart);

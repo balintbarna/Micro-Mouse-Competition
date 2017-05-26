@@ -2,22 +2,6 @@
 int16_t baseYaw = 0;
 volatile int16_t relativeTurnError = 0;
 
-//Variables for position in a 2D matrix
-//0;0 a kiindulási pont
-volatile int8_t posX = 0;
-volatile int8_t posY = 0;
-volatile int8_t savedPosX = 0;
-volatile int8_t savedPosY = 0;
-volatile int32_t lastPosEncAvg = 0;
-//A cella közepéről induljon
-volatile bool midzone = true;
-
-//0 az előre, -3től 4-ig irányt mutat
-/*    7  0  1
-      6     2
-      5  4  3 */
-volatile uint8_t orientation = 0;
-
 void readTurnError()
 {
   while (mpuready())
@@ -67,6 +51,7 @@ void updatePosition()
 {
   int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
   int distance = posEncAvg - lastPosEncAvg;
+  //savedPos frissítése
   //Ha merőleges irányok
   if (!(orientation % 2))
   {
@@ -113,9 +98,8 @@ void updatePosition()
       posY = savedPosY;
     }
   }
-  distance += 100;
-  int newdistance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
-  if (abs(newdistance) < (cell_length / 4))
+  int infraMidDistance = abs(posX - savedPosX) + abs(posY - savedPosY) * cell_length - distance - 100;
+  if (abs(infraMidDistance) < (cell_length / 4))
     midzone = true;
   else
     midzone = false;
