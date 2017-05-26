@@ -13,7 +13,7 @@ uint8_t debugMode = 3;
    16: floodfill map
    32: custom
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 2;
+uint8_t outputMode = 16;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -86,37 +86,55 @@ void displayData()
     serialop += newline;
   }
 
-  //position
+  //map
   if ((outputMode >> 3) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
       serialop += "Map" + newline;
 
+    //init line holder
     String temp = "";
+    //top line
     for (int i = 0; i < mapsize; i++)
       temp += " ---";
     labi[0] = temp;
+    //for all rows
     for (int i = 0; i < mapsize; i++)
     {
+      uint8_t realI = mapsize - 1 - i;
       temp = "";
+      //for all columns
       for (int j = 0; j < mapsize; j++)
       {
-        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
-        else temp += "  ";
-        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
-        else if (getVisited(j, mapsize - 1 - i)) temp += "- ";
-        else temp += "  ";
+        //If there's a wall to the left, add wall symbol
+        if (getWall(j, realI, 3)) temp += "|";
+        //else add space
+        else temp += " ";
+        //if that is current position add x marker
+        if (posX == j && posY == realI) temp += " x ";
+        //if that position has been visited add "-" marker
+        else if (getVisited(j, realI)) temp += " - ";
+        //else add spaces
+        else temp += "   ";
       }
+      //add line ending wall symbol
       temp += "|";
+      //add line holder to array
       labi[2 * i + 1] = temp;
+      //init line holder for horizontal walls
       temp = " ";
+      //for all columns
       for (int j = 0; j < mapsize; j++)
       {
+        //if there's a wall to the bottom, add wall symbol and space
         if (getWall(j, mapsize - 1 - i, 2)) temp += "--- ";
+        //else add spaces
         else temp += "    ";
       }
+      //add line holder to array
       labi[2 * (i + 1)] = temp;
     }
+    //add array to output string
     serialop += newline;
     for (int i = 0; i < labisize; i++)
     {
@@ -143,7 +161,7 @@ void displayData()
   if ((outputMode >> 4) % 2 && !(overFloop % loopNumber))
   {
     if (infoline)
-      serialop += "Floodfill Values Map" + newline;
+      serialop += "Floodfill Values Map + Path" + newline;
 
     String temp = "";
     for (int i = 0; i < mapsize; i++)
@@ -180,9 +198,11 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
+    serialop += path;
+    serialop += newline;
   }
 
-  //floodfill map
+  //custom
   if ((outputMode >> 5) % 2 && !(overFloop % loopNumber))
   {
     serialop += measuredTime;
@@ -193,8 +213,10 @@ void displayData()
   if (serialop.length())
   {
     if (debugMode % 2)
+    {
       Serial.println(serialop);
-    Serial.send_now();
+      Serial.send_now();
+    }
     if ((debugMode >> 1) % 2)
       Serial3.println(serialop);
     serialop = "";
