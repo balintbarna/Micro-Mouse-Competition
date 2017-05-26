@@ -8,7 +8,7 @@ const int32_t ITagSpeed = 2 * myinterval / 1000;
 
 //Parameters for infra based speed control
 #define PInfraCoeff 1
-#define DInfraCoeff 0.8
+#define DInfraCoeff 0.9
 const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 

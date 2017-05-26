@@ -168,13 +168,13 @@ void checkWalls()
   {
     uint8_t side_walls = getSideWalls(false);
     //jobbra van
-    if (side_walls % 2)
+    if (infra[right] < 3500)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if ((side_walls >> 1) % 2)
+    if (infra[left] < 3500)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }

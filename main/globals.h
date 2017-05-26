@@ -74,8 +74,8 @@ const int16_t encoderToInfra = encoderToMicro / infraToMicro;
 const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 100;
 
 //Infra constants
-const int16_t sideInfraLimit = 3500;
-const int16_t diagonalInfraLimit = 5500;
+const int16_t sideInfraLimit = 3000;
+const int16_t diagonalInfraLimit = 5000;
 const int16_t derivInfraLimit = 4;
 const int16_t frontInfraLimit = 1000;
 const int16_t midInfraValue = 1750;
