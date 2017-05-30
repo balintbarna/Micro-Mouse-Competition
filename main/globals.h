@@ -61,12 +61,12 @@ String serialCommand = "";
 volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //Encoder signals / sec  ---  0.28mm/sec
-const int32_t maxSpeed = 1555;
+const int32_t maxSpeed = 1500;
 
 //Movement constants
 #define rotationCoeff 1.4
-const int16_t fullRotationSum = 1045;
-const int16_t positiveFullRotation = 1045 * rotationCoeff / (rotationCoeff + 1);
+const int16_t fullRotationSum = 1100;
+const int16_t positiveFullRotation = 1100 * rotationCoeff / (rotationCoeff + 1);
 const int16_t negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
 const int16_t encoderToMicro = 280;
 const int16_t infraToMicro = 10;
@@ -74,10 +74,10 @@ const int16_t encoderToInfra = encoderToMicro / infraToMicro;
 const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 100;
 
 //Infra constants
-const int16_t sideInfraLimit = 3000;
-const int16_t diagonalInfraLimit = 5000;
+const int16_t sideInfraLimit = 2700;
+const int16_t diagonalInfraLimit = 3000;
 const int16_t derivInfraLimit = 4;
-const int16_t frontInfraLimit = 1000;
+const int16_t frontInfraLimit = 1150;
 const int16_t midInfraValue = 1750;
 
 //cell value max
