@@ -52,8 +52,9 @@ void loop()
 {
   delayTimer = 0;
 #if DEBUG
-  digitalWrite(led1, leftwall_debug);
-  digitalWrite(led2, rightwall_debug);
+  //digitalWrite(led1, leftwall_debug);
+  //digitalWrite(led2, rightwall_debug);
+  digitalWrite(led1, planningDone);
 
   serialToValue();
   displayData();
@@ -68,7 +69,8 @@ void loop()
   //readTurnError();
   if (cellMidZone && !planningDone)
   {
-    PlanPathToTarget();
+    PlanNextStep();
+    //PlanPathToTarget();
     planningDone = true;
   }
   overFloop++;
@@ -97,12 +99,6 @@ void stateMachine()
 {
   switch (state)
   {
-    case 'A':
-      stateAI();
-      break;
-    case 'G':
-      stateG();
-      break;
     case 'T':
       stateT();
       break;
@@ -132,13 +128,13 @@ void stateMachine()
     default:
       state = 'E';
   }
-  if (posX == goalX && posY == goalY && cellMidZone)
-  {
-    state = 'S';
-  }
   if (!cellMidZone)
   {
     planningDone = false;
+  }
+  if (posX == goalX && posY == goalY)
+  {
+    state = 'S';
   }
   overFirpt++;
 }

@@ -7,9 +7,10 @@ volatile bool planningDone = false;
 //#include <QueueList.h>
 //QueueList<char> path;
 String path = "";
+char nextStep = 'S';
 
 //map size (32 for competition)
-#define mapsize 10
+#define mapsize 11
 
 //Goal coordinates
 #define originalGoalX 7
@@ -69,7 +70,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 //----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 1500;
+const int32_t maxSpeed = 500;
 
 //PID controllers
 const int32_t PTagSpeed = 400;
@@ -89,8 +90,8 @@ const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
 
 //----------- Infra constants ---------------
 //Parameters for infra based speed control
-#define PInfraCoeff 2
-#define DInfraCoeff 2
+#define PInfraCoeff 1
+#define DInfraCoeff 1
 const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 

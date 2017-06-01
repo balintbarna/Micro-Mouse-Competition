@@ -21,11 +21,11 @@ const uint8_t labisize = mapsize * 2 + 1;
 String labi[labisize];
 //string constants
 const String tab = "\t";
-const String newline = "\n";
+const String newline = "\r\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 10
+#define loopNumber 200
 
 //Function to display debug info on serial
 void displayData()

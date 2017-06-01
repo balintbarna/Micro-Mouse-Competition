@@ -1,6 +1,8 @@
 //Parameters for infra based speed control
 volatile char nextState = 'S';
 
+volatile bool pulled = false;
+
 volatile int idler = 0;
 #define waitTime 0 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
@@ -26,17 +28,17 @@ void setTurn(int16_t degree)
   if (true)
   {
     /*
-    if (degree == 90)
-    {
+      if (degree == 90)
+      {
       param1 = 150;
       param2 = -126;
 
-    }
-    if (degree == -90)
-    {
+      }
+      if (degree == -90)
+      {
       param1 = -126;
       param2 = 150;
-    }
+      }
     */
     if (degree == 180)
     {
@@ -46,8 +48,8 @@ void setTurn(int16_t degree)
   }
 
   turn(degree / 45);
-  state = 'I';
-  nextState = 'R';
+  state = 'R';
+  //nextState = 'R';
 }
 
 //Function to erase past stored values
@@ -59,50 +61,102 @@ void ResetAllStoredValues()
   idler = 0;
 }
 
+void SetAllToDefault()
+{
+  posX = 0;
+  posY = 0;
+  savedPosX = 0;
+  savedPosY = 0;
+  orientation = 0;
+  cellMidZone = true;
+  for (int i = 0; i < mapsize - 1; i++)
+  {
+    xWalls[i] = 0;
+    yWalls[i] = 0;
+  }
+  for (int i = 0; i < mapsize; i++)
+  {
+    visited[i] = 0;
+  }
+  state = 'S';
+  nextState = 'S';
+}
+
+bool shouldTurn()
+{
+  if (cellMidZone)
+  {
+    if (pulled)
+      return false;
+
+    int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
+    int distance = posEncAvg - lastPosEncAvg;
+    distance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+    if (distance > cell_length / 50)
+      return false;
+
+    if (!planningDone)
+      return false;
+
+    if (nextStep == 'F')
+      return false;
+
+    pulled = true;
+    return true;
+  }
+  return false;
+}
+
+bool FollowPath()
+{
+  if (cellMidZone)
+  {
+    if (pulled)
+      return false;
+
+    int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
+    int distance = posEncAvg - lastPosEncAvg;
+    distance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+    if (distance > cell_length / 50)
+      return false;
+
+    if (!path.length())
+      return false;
+
+    if (!planningDone)
+      return false;
+
+    nextStep = path[0];
+    //path = path.substring(1);
+    pulled = true;
+    return true;
+    if (nextStep == 'F')
+    {
+      //nothing
+      return false;
+    }
+    else if (nextStep == 'R')
+    {
+      //jobbra
+
+    }
+    else if (nextStep == 'L')
+    {
+      //balra
+
+    }
+    else if (nextStep == 'B')
+    {
+      //hátra
+
+    }
+    return true;
+
+  }
+  return false;
+}
+
 //---------------- STATES ---------------
-//State that decides what to do next
-void stateAI()
-{
-  if (action[0] == 'F')
-  {
-    state = 'G';
-  }
-  else if (action[0] == 'R')
-  {
-    setTurn(90);
-  }
-  else if (action[0] == 'L')
-  {
-    setTurn(-90);
-  }
-  nextState = 'A';
-}
-//Reach a coordinate, no turning
-void stateG()
-{
-  int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
-  int distance = posEncAvg - lastPosEncAvg;
-  distance = abs(posX - savedPosX) + abs(posY - savedPosY) * cell_length - distance;
-  if (nextX != posX && nextY != posY)
-  {
-    SetMotorSpeed(maxSpeed, maxSpeed, true);
-  }
-  else
-  {
-    if (!cellMidZone)
-    {
-      int targetL = distance + leftPos;
-      int targetR = distance + rightPos;
-      CascadePos(targetL, targetR, true);
-    }
-    else
-    {
-      ResetAllStoredValues();
-      SetMotorPower(0, 0);
-      state = nextState;
-    }
-  }
-}
 //Testing program
 void stateT()
 {
@@ -116,37 +170,51 @@ void stateW()
 {
   checkWalls();
   updatePosition();
-  //Még mehetünk egyenesen bőven
-  if (infra[front] > param2 * 4)
-  {
-    SetMotorSpeed(param1, param1, true);
-  }
-  //Lassan meg kell állni mert már látok szembe falat
-  else if (infra[front] > (param2 + breakLengthInfra))
-  {
-    int targetL = (infra[front] - param2 ) / encoderToInfra + leftPos;
-    int targetR = (infra[front] - param2 ) / encoderToInfra + rightPos;
-    CascadePos(targetL, targetR, true);
-  }
-  //Most azonnal meg kell állni mert féktávolságon belül van a megállási pont
-  else
+  if (shouldTurn())
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    //Ha balra nincs fal, arra fordul
-    if (infra[left] > 4000)
-    {
+    if (nextStep == 'L')
       setTurn(-90);
-    }
-    //Ha jobbra nincs fal
-    else if (infra[right] > 4000)
-    {
+    else if (nextStep == 'R')
       setTurn(90);
+    else if (nextStep == 'B')
+      setTurn(180);
+  }
+  else
+  {
+    //Még mehetünk egyenesen bőven
+    if (infra[front] > param2 * 4)
+    {
+      SetMotorSpeed(param1, param1, true);
     }
-    //Egyébként megfordul
+    //Lassan meg kell állni mert már látok szembe falat
+    else if (infra[front] > (param2 + breakLengthInfra))
+    {
+      int targetL = (infra[front] - param2 ) / encoderToInfra + leftPos;
+      int targetR = (infra[front] - param2 ) / encoderToInfra + rightPos;
+      CascadePos(targetL, targetR, true);
+    }
+    //Most azonnal meg kell állni mert féktávolságon belül van a megállási pont
     else
     {
-      setTurn(180);
+      ResetAllStoredValues();
+      SetMotorPower(0, 0);
+      //Ha balra nincs fal, arra fordul
+      if (infra[left] > 4000)
+      {
+        setTurn(-90);
+      }
+      //Ha jobbra nincs fal
+      else if (infra[right] > 4000)
+      {
+        setTurn(90);
+      }
+      //Egyébként megfordul
+      else
+      {
+        setTurn(180);
+      }
     }
   }
 }
@@ -160,15 +228,15 @@ void stateR()
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    state = 'I';
-    nextState = 'T';
+    state = 'T';
+    pulled = false;
   }
 }
 //
 void stateD()
 {
   ResetAllStoredValues();
-  state = 'S';
+  SetAllToDefault();
 }
 //Waiting/Idle
 void stateI()
