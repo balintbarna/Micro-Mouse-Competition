@@ -33,7 +33,7 @@ void setup()
   //stateTimer.priority(254);
   //infraTimer.priority(255);
   stateTimer.begin(stateMachine, myinterval);
-  infraTimer.begin(InfraISR, 2000);
+  infraTimer.begin(InfraISR, 500);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -65,7 +65,6 @@ void loop()
   //readTurnError();
   if (needPlanning && !planningDone)
   {
-    SolveMaze();
     PlanPathToTarget();
     planningDone = true;
     needPlanning = false;

@@ -13,7 +13,7 @@ uint8_t debugMode = 3;
    16: floodfill map
    32: custom
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 12;
+uint8_t outputMode = 2;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output

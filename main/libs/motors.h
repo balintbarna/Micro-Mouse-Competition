@@ -7,7 +7,7 @@
 //jobb motor enable
 #define motorRightE 6
 //max power stuff
-#define powerDuty 0.5
+#define powerDuty 0.7
 #define absoluteMaxPower 1000000
 //maximum érték (max 1000000)
 const int maxPower = absoluteMaxPower * powerDuty;

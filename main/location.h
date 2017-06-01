@@ -81,14 +81,12 @@ void updatePosition()
       {
         int adder = -(orientation / 2 - 2) * sign(distance);
         posX = savedPosX + adder;
-        posY = savedPosY;
       }
       //Y irányú
       else
       {
         int adder = -(orientation / 2 - 1) * sign(distance);
         posY = savedPosY + adder;
-        posX = savedPosX;
       }
     }
     //Ha még ott van
