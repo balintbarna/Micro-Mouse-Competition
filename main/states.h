@@ -47,7 +47,8 @@ void setTurn(int16_t degree)
     }
   }
 
-  turn(degree / 45);
+  setOrientation(degree / 45);
+  planningDone = false;
   state = 'R';
   //nextState = 'R';
 }
@@ -86,9 +87,6 @@ bool shouldTurn()
 {
   if (cellMidZone)
   {
-    if (pulled)
-      return false;
-
     int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
     int distance = posEncAvg - lastPosEncAvg;
     distance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
@@ -101,7 +99,6 @@ bool shouldTurn()
     if (nextStep == 'F')
       return false;
 
-    pulled = true;
     return true;
   }
   return false;
@@ -266,3 +263,10 @@ void stateS()
     SetMotorPower(0, 0);
   }
 }
+void stateGoalSet()
+{
+  goalX = param1;
+  goalY = param2;
+  state = 'T';
+}
+

@@ -25,7 +25,7 @@ const String newline = "\r\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 200
+#define loopNumber 50
 
 //Function to display debug info on serial
 void displayData()
@@ -198,6 +198,8 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
+    serialop += nextStep;
+    serialop += newline;
     serialop += path;
     serialop += newline;
   }

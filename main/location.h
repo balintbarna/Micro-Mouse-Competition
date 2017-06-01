@@ -34,7 +34,7 @@ void setYawCorrection()
 
 //Function to modify orientation. Negative means left, 1 increment means 45°
 #define cell_length 318
-void turn(int8_t _size)
+void setOrientation(int8_t _size)
 {
   orientation += _size;
   orientation += 8;

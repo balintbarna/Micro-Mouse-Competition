@@ -99,6 +99,9 @@ void stateMachine()
 {
   switch (state)
   {
+    case 'G':
+      stateGoalSet();
+      break;
     case 'T':
       stateT();
       break;
@@ -132,7 +135,7 @@ void stateMachine()
   {
     planningDone = false;
   }
-  if (posX == goalX && posY == goalY)
+  else if (posX == goalX && posY == goalY)
   {
     state = 'S';
   }
