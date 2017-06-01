@@ -66,11 +66,10 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-  if (needPlanning && !planningDone)
+  if (cellMidZone && !planningDone)
   {
-    //PlanPathToTarget();
+    PlanPathToTarget();
     planningDone = true;
-    needPlanning = false;
   }
   overFloop++;
   while (delayTimer < 2);
@@ -133,13 +132,12 @@ void stateMachine()
     default:
       state = 'E';
   }
-  if (cellMidZone)
+  if (posX == goalX && posY == goalY && cellMidZone)
   {
-    needPlanning = true;
+    state = 'S';
   }
-  else
+  if (!cellMidZone)
   {
-    needPlanning = false;
     planningDone = false;
   }
   overFirpt++;

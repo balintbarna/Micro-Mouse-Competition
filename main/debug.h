@@ -13,7 +13,7 @@ uint8_t debugMode = 3;
    16: floodfill map
    32: custom
    összegekkel több is megy egyszerre */
-uint8_t outputMode = 15;
+uint8_t outputMode = 23;
 //Should the output include only data or title lines too
 bool infoline = true;
 //storage size for an output
@@ -172,15 +172,15 @@ void displayData()
       temp = "";
       for (int j = 0; j < mapsize; j++)
       {
-        if (getWall(j, mapsize - 1 - i, 3)) temp += "| ";
-        else temp += "  ";
-        if (posX == j && posY == mapsize - 1 - i) temp += "x ";
+        if (getWall(j, mapsize - 1 - i, 3)) temp += "|";
+        else temp += " ";
+        if (posX == j && posY == mapsize - 1 - i) temp += " x ";
         else
         {
           String t = cellValues[j][mapsize - 1 - i];
+          while (t.length() < 3)
+            t += " ";
           temp += t;
-          if (t.length() < 2)
-            temp += " ";
         }
       }
       temp += "|";

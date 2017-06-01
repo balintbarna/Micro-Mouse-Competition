@@ -33,7 +33,7 @@ void setYawCorrection()
 }
 
 //Function to modify orientation. Negative means left, 1 increment means 45°
-#define cell_length 300
+#define cell_length 318
 void turn(int8_t _size)
 {
   orientation += _size;
@@ -103,8 +103,8 @@ void updatePosition()
   else
     cellMidZone = false;
 
-  int infraMidDistance = cellMidDistance - 100;
-  if (abs(infraMidDistance) < (cell_length / 5))
+  int infraMidDistance = cellMidDistance - 80;
+  if (abs(infraMidDistance) < (cell_length / 50))
     infraMidZone = true;
   else
     infraMidZone = false;

@@ -3,7 +3,6 @@
 const uint32_t myinterval = 1000000 / timerFrequency;
 
 //Variables for maze solver
-volatile bool needPlanning = false;
 volatile bool planningDone = false;
 //#include <QueueList.h>
 //QueueList<char> path;
@@ -13,8 +12,8 @@ String path = "";
 #define mapsize 10
 
 //Goal coordinates
-#define originalGoalX 3
-#define originalGoalY 2
+#define originalGoalX 7
+#define originalGoalY 4
 volatile int8_t goalX = originalGoalX;
 volatile int8_t goalY = originalGoalY;
 
@@ -50,7 +49,7 @@ const uint16_t pwmMid = pwmMax / 2;
 volatile int32_t infra[5];
 volatile int32_t pastinfra[5];
 volatile int32_t infra_deriv[5];
-volatile int32_t TOFread = 0;
+//volatile int32_t TOFread = 0;
 
 //states
 volatile char state = 'S';
@@ -73,12 +72,12 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 const int32_t maxSpeed = 1500;
 
 //PID controllers
-const int32_t PTagSpeed = 700;
+const int32_t PTagSpeed = 400;
 const int32_t ITagSpeed = 6 * myinterval / 1000;
 const int32_t PTagCas = 15;
 
 #define rotationCoeff 1.4
-const int16_t fullRotationSum = 1120;
+const int16_t fullRotationSum = 1100;
 const int16_t positiveFullRotation = fullRotationSum * rotationCoeff / (rotationCoeff + 1);
 const int16_t negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
 
@@ -90,19 +89,19 @@ const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
 
 //----------- Infra constants ---------------
 //Parameters for infra based speed control
-#define PInfraCoeff 0.9
-#define DInfraCoeff 0.75
+#define PInfraCoeff 2
+#define DInfraCoeff 2
 const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 
-const int16_t sideInfraLimit = 2800;
-const int16_t diagonalInfraLimit = 6000;
+const int16_t sideInfraLimit = 3000;
+const int16_t diagonalInfraLimit = 5500;
 const int16_t derivInfraLimit = 4;
-const int16_t frontInfraLimit = 1300;
-const int16_t midInfraValue = 1675;
+const int16_t frontInfraLimit = 1000;
+const int16_t midInfraValue = 1700;
 
 //cell value max
-const uint16_t cellValueMax = 9999;
+const uint16_t cellValueMax = 999;
 
 //general pins
 #define infraPin 22

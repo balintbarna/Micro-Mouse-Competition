@@ -2,25 +2,27 @@
 
 void PlanPathToTarget()
 {
+  CalculateFloodfill();
   path = "";
   int calcX = posX;
   int calcY = posY;
   int calcOr = orientation;
 
-  while (!cellValues[calcX][calcY])
+  while (cellValues[calcX][calcY])
   {
-    uint8_t turn = getBestDirection(calcX, calcY) - calcOr; turn += 8; turn %= 8;
+    int8_t turn = getBestDirection(calcX, calcY) - calcOr;
+    turn += 8; turn %= 8;
     if (turn == 0)
     {
       path += "F";
       if (calcOr == 0)
-        calcX++;
-      else if (calcOr == 2)
         calcY++;
+      else if (calcOr == 2)
+        calcX++;
       else if (calcOr == 4)
-        calcX--;
-      else if (calcOr == 6)
         calcY--;
+      else if (calcOr == 6)
+        calcX--;
     }
     else
     { if (turn == 2)
@@ -29,7 +31,7 @@ void PlanPathToTarget()
       }
       else if (turn == 4)
       {
-        path += "RR";
+        path += "B";
       }
       else if (turn == 6)
       {

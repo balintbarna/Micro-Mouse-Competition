@@ -168,13 +168,13 @@ void checkWalls()
   {
     uint8_t side_walls = getSideWalls(false);
     //jobbra van
-    if (infra[right] < 3500)
+    if (infra[right] < 2500)
     {
       setWall(posX, posY, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 3500)
+    if (infra[left] < 2500)
     {
       setWall(posX, posY, (orientation / 2 + 3) % 4);
     }
@@ -186,10 +186,10 @@ void clearAllData()
 
 }
 
-uint8_t getBestDirection(int8_t x, int8_t y)
+int8_t getBestDirection(int8_t x, int8_t y)
 {
   uint16_t lowest = cellValueMax;
-  uint8_t ori = 0;
+  int8_t ori = 0;
   //not leftmost and no wall to the left
   if (x && !getWall(x, y, 3))
   {
@@ -202,7 +202,7 @@ uint8_t getBestDirection(int8_t x, int8_t y)
     }
   }
   //not rightmost and no wall to the right
-  if (x - mapsize + 1 && !getWall(x, y, 1))
+  if (x < (mapsize - 1) && !getWall(x, y, 1))
   {
     //check cell to the right
     int temp = cellValues[x + 1][y];
@@ -224,7 +224,7 @@ uint8_t getBestDirection(int8_t x, int8_t y)
     }
   }
   //not top and no wall to the top
-  if (y - mapsize + 1 && !getWall(x, y, 0))
+  if (y < (mapsize - 1) && !getWall(x, y, 0))
   {
     //check cell to the top
     int temp = cellValues[x][y + 1];
@@ -237,7 +237,7 @@ uint8_t getBestDirection(int8_t x, int8_t y)
   return ori;
 }
 
-uint32_t getLowestNeighbour(int8_t x, int8_t y)
+uint16_t getLowestNeighbour(int8_t x, int8_t y)
 {
   uint32_t lowest = cellValueMax;
   //not leftmost and no wall to the left
@@ -266,7 +266,7 @@ uint32_t getLowestNeighbour(int8_t x, int8_t y)
   return lowest;
 }
 
-void SetupMazeSolver()
+void SetupFloodfill()
 {
   for (int i = 0; i < mapsize; i++)
   {
@@ -278,9 +278,9 @@ void SetupMazeSolver()
   cellValues[goalX][goalY] = 0;
 }
 
-void SolveMaze()
+void CalculateFloodfill()
 {
-  SetupMazeSolver();
+  SetupFloodfill();
   bool changed = true;
   while (changed)
   {
