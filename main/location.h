@@ -96,12 +96,18 @@ void updatePosition()
       posY = savedPosY;
     }
   }
-  
-  int infraMidDistance = abs(posX - savedPosX) + abs(posY - savedPosY) * cell_length - distance - 100;
-  if (abs(infraMidDistance) < (cell_length / 4))
-    midzone = true;
+
+  int cellMidDistance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+  if (abs(cellMidDistance) < (cell_length / 5))
+    cellMidZone = true;
   else
-    midzone = false;
+    cellMidZone = false;
+
+  int infraMidDistance = cellMidDistance - 100;
+  if (abs(infraMidDistance) < (cell_length / 5))
+    infraMidZone = true;
+  else
+    infraMidZone = false;
   setVisited(posX, posY);
 }
 

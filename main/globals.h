@@ -1,3 +1,7 @@
+//timer frequency and interval (microsec)
+#define timerFrequency 500
+const uint32_t myinterval = 1000000 / timerFrequency;
+
 //Variables for maze solver
 volatile bool needPlanning = false;
 volatile bool planningDone = false;
@@ -6,7 +10,7 @@ volatile bool planningDone = false;
 String path = "";
 
 //map size (32 for competition)
-#define mapsize 8
+#define mapsize 10
 
 //Goal coordinates
 #define originalGoalX 3
@@ -28,7 +32,8 @@ volatile int8_t savedPosY = 0;
 volatile int32_t lastPosEncAvg = 0;
 
 //Is it in the mid area of a cell
-volatile bool midzone = true;
+volatile uint8_t cellMidZone = 1;
+volatile uint8_t infraMidZone = 1;
 
 //0 az előre, -3től 4-ig irányt mutat
 /*    7  0  1
@@ -62,13 +67,18 @@ String serialCommand = "";
 //Paramteres
 volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
+//----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
 const int32_t maxSpeed = 1500;
 
-//----------- Movement constants -----------
+//PID controllers
+const int32_t PTagSpeed = 700;
+const int32_t ITagSpeed = 6 * myinterval / 1000;
+const int32_t PTagCas = 15;
+
 #define rotationCoeff 1.4
-const int16_t fullRotationSum = 1050;
+const int16_t fullRotationSum = 1120;
 const int16_t positiveFullRotation = fullRotationSum * rotationCoeff / (rotationCoeff + 1);
 const int16_t negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
 
@@ -76,21 +86,23 @@ const int16_t encoderToMicro = 280;
 const int16_t infraToMicro = 10;
 const int16_t encoderToInfra = encoderToMicro / infraToMicro;
 
-const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 100;
+const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
 
 //----------- Infra constants ---------------
-const int16_t sideInfraLimit = 3000;
-const int16_t diagonalInfraLimit = 5000;
+//Parameters for infra based speed control
+#define PInfraCoeff 0.9
+#define DInfraCoeff 0.75
+const int32_t PInfra = 1000 * PInfraCoeff;
+const int32_t DInfra = 1000 * DInfraCoeff;
+
+const int16_t sideInfraLimit = 2800;
+const int16_t diagonalInfraLimit = 6000;
 const int16_t derivInfraLimit = 4;
 const int16_t frontInfraLimit = 1300;
-const int16_t midInfraValue = 1750;
+const int16_t midInfraValue = 1675;
 
 //cell value max
 const uint16_t cellValueMax = 9999;
-
-//timer frequency and interval (microsec)
-#define timerFrequency 500
-const uint32_t myinterval = 1000000 / timerFrequency;
 
 //general pins
 #define infraPin 22
@@ -99,3 +111,7 @@ const uint32_t myinterval = 1000000 / timerFrequency;
 #define gombPin 21
 #define led1 2
 #define led2 23
+
+//-------------- DEBUG ------------
+volatile bool leftwall_debug = false;
+volatile bool rightwall_debug = false;

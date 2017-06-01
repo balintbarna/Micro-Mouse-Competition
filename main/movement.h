@@ -1,17 +1,6 @@
 #include "libs/encoders.h"
 #include "libs/motors.h"
 
-//PID controllers
-const int32_t PTagSpeed = 500;
-const int32_t ITagSpeed = 5 * myinterval / 1000;
-#define PTagCas 10
-
-//Parameters for infra based speed control
-#define PInfraCoeff 1
-#define DInfraCoeff 1
-const int32_t PInfra = 1000 * PInfraCoeff;
-const int32_t DInfra = 1000 * DInfraCoeff;
-
 //constants for recursive filter
 #define wholePart 100000
 #define filterDutyDefault 0.1
@@ -57,6 +46,10 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
     setSpeedRight /= 2000;
   }
 
+  //------- DEBUG -------
+  leftwall_debug = false;
+  rightwall_debug = false;
+  //---------------------
   //If we want to control wall proximity
   if (doWall)
   {
@@ -90,11 +83,15 @@ void SetMotorSpeed(int setSpeedLeft, int setSpeedRight, bool doWall = 0)
       {
         de = infra[left] - midInfraValue;
         de_deriv = -infra_deriv[left];
+
+        leftwall_debug = true;
       }
       else
       {
         de = midInfraValue - infra[right];
         de_deriv = infra_deriv[right];
+
+        rightwall_debug = true;
       }
       setSpeedLeft -= (de * PInfra - de_deriv * DInfra) / 1000;
       setSpeedRight += (de * PInfra - de_deriv * DInfra) / 1000;

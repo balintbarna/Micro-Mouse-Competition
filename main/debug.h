@@ -142,7 +142,7 @@ void displayData()
     }
 
     if (infoline)
-      serialop += "Coordinates, orientation, saved coordinates and midzone" + newline;
+      serialop += "Coordinates, orientation, saved coordinates and infra midzone" + newline;
     serialop += posX;
     serialop += tab;
     serialop += posY;
@@ -153,7 +153,7 @@ void displayData()
     serialop += tab;
     serialop += savedPosY;
     serialop += tab;
-    serialop += midzone;
+    serialop += infraMidZone;
     serialop += newline;
   }
 

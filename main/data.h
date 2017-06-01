@@ -164,7 +164,7 @@ void checkWalls()
   if (infra[front] < (frontInfraLimit + breakLengthInfra))
     setWall(posX, posY, (orientation / 2) % 4);
 
-  if (midzone)
+  if (infraMidZone)
   {
     uint8_t side_walls = getSideWalls(false);
     //jobbra van

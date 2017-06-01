@@ -23,6 +23,26 @@ void setTurn(int16_t degree)
     param1 = negativeFullRotation / ratio;
     param2 = positiveFullRotation / ratio;
   }
+  if (false)
+  {
+    if (degree == 90)
+    {
+      param1 = 150;
+      param2 = -126;
+
+    }
+    if (degree == -90)
+    {
+      param1 = -126;
+      param2 = 150;
+    }
+    if (degree == 180)
+    {
+      param1 = 282;
+      param2 = -252;
+    }
+  }
+
   turn(degree / 45);
   state = 'I';
   nextState = 'R';
@@ -67,7 +87,7 @@ void stateG()
   }
   else
   {
-    if (!midzone)
+    if (!cellMidZone)
     {
       int targetL = distance + leftPos;
       int targetR = distance + rightPos;
@@ -112,12 +132,12 @@ void stateW()
     ResetAllStoredValues();
     SetMotorPower(0, 0);
     //Ha balra nincs fal, arra fordul
-    if (infra[left] > 9999)
+    if (infra[left] > 4000)
     {
       setTurn(-90);
     }
     //Ha jobbra nincs fal
-    else if (infra[right] > 9999)
+    else if (infra[right] > 4000)
     {
       setTurn(90);
     }

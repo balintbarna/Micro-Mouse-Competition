@@ -52,6 +52,9 @@ void loop()
 {
   delayTimer = 0;
 #if DEBUG
+  digitalWrite(led1, leftwall_debug);
+  digitalWrite(led2, rightwall_debug);
+
   serialToValue();
   displayData();
 #endif
@@ -65,7 +68,7 @@ void loop()
   //readTurnError();
   if (needPlanning && !planningDone)
   {
-    PlanPathToTarget();
+    //PlanPathToTarget();
     planningDone = true;
     needPlanning = false;
   }
@@ -130,7 +133,7 @@ void stateMachine()
     default:
       state = 'E';
   }
-  if (midzone)
+  if (cellMidZone)
   {
     needPlanning = true;
   }

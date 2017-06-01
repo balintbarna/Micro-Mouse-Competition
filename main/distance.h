@@ -121,9 +121,9 @@ void InfraISR()
 uint8_t getSideWalls(bool with_deriv = true)
 {
   //Jobb fal vizsgálata
-  uint8_t side_walls = infra[right] < sideInfraLimit && infra[rightdi] < diagonalInfraLimit && pastinfra[right] < sideInfraLimit && (with_deriv ? (infra_deriv[right] < derivInfraLimit) : 1);
+  uint8_t side_walls = infra[right] < sideInfraLimit && infra[rightdi] < diagonalInfraLimit && pastinfra[right] < sideInfraLimit && infra_deriv[right] < derivInfraLimit;
   //Bal fal vizsgálata
-  side_walls += (infra[left] < sideInfraLimit && infra[leftdi] < diagonalInfraLimit && pastinfra[left] < sideInfraLimit && (with_deriv ? (infra_deriv[left] < derivInfraLimit) : 1)) << 1;
+  side_walls += (infra[left] < sideInfraLimit && infra[leftdi] < diagonalInfraLimit && pastinfra[left] < sideInfraLimit && infra_deriv[left] < derivInfraLimit) << 1;
   return side_walls;
 }
 
