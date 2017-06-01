@@ -40,7 +40,7 @@ volatile uint16_t cellValues[mapsize][mapsize];
    3     1
       2
 */
-int8_t getWall(int8_t x, int8_t y, uint8_t which_wall)
+uint8_t getWall(uint8_t x, uint8_t y, uint8_t which_wall)
 {
   //yWalls
   if (which_wall % 2)
@@ -75,7 +75,7 @@ int8_t getWall(int8_t x, int8_t y, uint8_t which_wall)
     }
   }
 }
-void setWall(int8_t x, int8_t y, uint8_t which_wall)
+void setWall(uint8_t x, uint8_t y, uint8_t which_wall)
 {
   //yWalls
   if (which_wall % 2)
@@ -148,12 +148,12 @@ void ReadArray32(uint16_t address, uint32_t* data)
   }
 }
 
-void setVisited(int8_t x, int8_t y)
+void setVisited(uint8_t x, uint8_t y)
 {
   visited[x] |= 1 << y;
 }
 
-uint8_t getVisited(int8_t x, int8_t y)
+uint8_t getVisited(uint8_t x, uint8_t y)
 {
   return (visited[x] >> y) % 2;
 }

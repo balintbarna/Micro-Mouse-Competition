@@ -1,11 +1,12 @@
 //Variables for maze solver
 volatile bool needPlanning = false;
 volatile bool planningDone = false;
-#include <QueueList.h>
-QueueList<char> path;
+//#include <QueueList.h>
+//QueueList<char> path;
+String path = "";
 
 //map size (32 for competition)
-#define mapsize 5
+#define mapsize 8
 
 //Goal coordinates
 #define originalGoalX 3
@@ -63,7 +64,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 2000;
+const int32_t maxSpeed = 1500;
 
 //----------- Movement constants -----------
 #define rotationCoeff 1.4
