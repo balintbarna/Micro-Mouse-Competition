@@ -1,4 +1,6 @@
 #include <EEPROM.h>
+QueueList<Coord>queue;
+
 /*   xWalls       y
   --- --- --- ---
                   2
@@ -162,7 +164,7 @@ void checkWalls()
 {
   //Szembe van
   if (infra[front] < (frontInfraLimit + breakLengthInfra))
-    setWall(posX, posY, (orientation / 2) % 4);
+    setWall(pos.x, pos.y, (orientation / 2) % 4);
 
   if (infraMidZone)
   {
@@ -170,13 +172,13 @@ void checkWalls()
     //jobbra van
     if (infra[right] < 2500)
     {
-      setWall(posX, posY, (orientation / 2 + 1) % 4);
+      setWall(pos.x, pos.y, (orientation / 2 + 1) % 4);
     }
 
     //balra van
     if (infra[left] < 2500)
     {
-      setWall(posX, posY, (orientation / 2 + 3) % 4);
+      setWall(pos.x, pos.y, (orientation / 2 + 3) % 4);
     }
   }
 }
@@ -275,9 +277,9 @@ void SetupFloodfill()
       cellValues[i][j] = cellValueMax;
     }
   }
-  cellValues[goalX][goalY] = 0;
+  cellValues[goal.x][goal.y] = 0;
 }
-
+/*
 void CalculateFloodfill()
 {
   SetupFloodfill();
@@ -294,6 +296,73 @@ void CalculateFloodfill()
         {
           cellValues[i][j] = temp;
           changed = true;
+        }
+      }
+    }
+  }
+}
+*/
+void CalculateBreathFirst()
+{
+  SetupFloodfill();
+  queue.push(goal);
+  while (!queue.isEmpty())
+  {
+    Coord cell = queue.pop();
+    if (cell.x == pos.x && cell.y == goal.y)
+    {
+      while (!queue.isEmpty())
+        queue.pop();
+    }
+    else
+    {
+      uint16_t cellvalue = cellValues[cell.x][cell.y];
+      //not leftmost and no wall to the left
+      if (cell.x && !getWall(cell.x, cell.y, 3))
+      {
+        //check if value is higher than own+1
+        if (cellValues[cell.x - 1][cell.y] > (cellvalue + 1))
+        {
+          //set value to own+1
+          cellValues[cell.x - 1][cell.y] = cellvalue + 1;
+          //add to queue
+          queue.push({cell.x - 1, cell.y});
+        }
+      }
+      //not rightmost and no wall to the right
+      if (cell.x - mapsize + 1 && !getWall(cell.x, cell.y, 1))
+      {
+        //check if value is higher than own+1
+        if (cellValues[cell.x + 1][cell.y] > (cellvalue + 1))
+        {
+          //set value to own+1
+          cellValues[cell.x + 1][cell.y] = cellvalue + 1;
+          //add to queue
+          queue.push({cell.x + 1, cell.y});
+        }
+      }
+      //not bottom and no wall to the bottom
+      if (cell.y && !getWall(cell.x, cell.y, 2))
+      {
+        //check if value is higher than own+1
+        if (cellValues[cell.x][cell.y - 1] > (cellvalue + 1))
+        {
+          //set value to own+1
+          cellValues[cell.x][cell.y - 1] = cellvalue + 1;
+          //add to queue
+          queue.push({cell.x, cell.y - 1});
+        }
+      }
+      //not top and no wall to the top
+      if (cell.y - mapsize + 1 && !getWall(cell.x, cell.y, 0))
+      {
+        //check if value is higher than own+1
+        if (cellValues[cell.x][cell.y + 1] > (cellvalue + 1))
+        {
+          //set value to own+1
+          cellValues[cell.x][cell.y + 1] = cellvalue + 1;
+          //add to queue
+          queue.push({cell.x, cell.y + 1});
         }
       }
     }

@@ -1,3 +1,4 @@
+#include "Coord.h"
 //timer frequency and interval (microsec)
 #define timerFrequency 500
 const uint32_t myinterval = 1000000 / timerFrequency;
@@ -15,20 +16,15 @@ char nextStep = 'S';
 //Goal coordinates
 #define originalGoalX 7
 #define originalGoalY 4
-volatile int8_t goalX = originalGoalX;
-volatile int8_t goalY = originalGoalY;
+Coord goal = {originalGoalX, originalGoalY};
 
 //Coordinates and commands used for movement
-volatile int8_t nextX = 0;
-volatile int8_t nextY = 0;
 String action = "";
 
 //Variables for position in a 2D matrix
 //0;0 a kiindulási pont
-volatile int8_t posX = 0;
-volatile int8_t posY = 0;
-volatile int8_t savedPosX = 0;
-volatile int8_t savedPosY = 0;
+volatile Coord pos = {0, 0};
+volatile Coord savedPos = {0, 0};
 volatile int32_t lastPosEncAvg = 0;
 
 //Is it in the mid area of a cell

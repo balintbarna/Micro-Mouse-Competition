@@ -1,11 +1,12 @@
 void PlanNextStep()
 {
-  CalculateFloodfill();
-  int calcX = posX;
-  int calcY = posY;
+  CalculateBreathFirst();
+  Coord calc;
+  calc.x = pos.x;
+  calc.y = pos.y;
   int calcOr = orientation;
 
-  int8_t turn = getBestDirection(calcX, calcY) - calcOr;
+  int8_t turn = getBestDirection(calc.x, calc.y) - calcOr;
   turn += 8; turn %= 8;
 
   if (turn == 0)
@@ -28,27 +29,28 @@ void PlanNextStep()
 
 void PlanPathToTarget()
 {
-  CalculateFloodfill();
+  CalculateBreathFirst();
   path = "";
-  int calcX = posX;
-  int calcY = posY;
+  Coord calc;
+  calc.x = pos.x;
+  calc.y = pos.y;
   int calcOr = orientation;
 
-  while (cellValues[calcX][calcY])
+  while (cellValues[calc.x][calc.y])
   {
-    int8_t turn = getBestDirection(calcX, calcY) - calcOr;
+    int8_t turn = getBestDirection(calc.x, calc.y) - calcOr;
     turn += 8; turn %= 8;
     if (turn == 0)
     {
       path += "F";
       if (calcOr == 0)
-        calcY++;
+        calc.y++;
       else if (calcOr == 2)
-        calcX++;
+        calc.x++;
       else if (calcOr == 4)
-        calcY--;
+        calc.y--;
       else if (calcOr == 6)
-        calcX--;
+        calc.x--;
     }
     else
     {

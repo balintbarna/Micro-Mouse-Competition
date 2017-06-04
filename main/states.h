@@ -64,10 +64,10 @@ void ResetAllStoredValues()
 
 void SetAllToDefault()
 {
-  posX = 0;
-  posY = 0;
-  savedPosX = 0;
-  savedPosY = 0;
+  pos.x = 0;
+  pos.y = 0;
+  savedPos.x = 0;
+  savedPos.y = 0;
   orientation = 0;
   cellMidZone = true;
   for (int i = 0; i < mapsize - 1; i++)
@@ -89,7 +89,7 @@ bool shouldTurn()
   {
     int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
     int distance = posEncAvg - lastPosEncAvg;
-    distance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+    distance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
     if (distance > cell_length / 50)
       return false;
 
@@ -113,7 +113,7 @@ bool FollowPath()
 
     int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
     int distance = posEncAvg - lastPosEncAvg;
-    distance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+    distance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
     if (distance > cell_length / 50)
       return false;
 
@@ -265,8 +265,8 @@ void stateS()
 }
 void stateGoalSet()
 {
-  goalX = param1;
-  goalY = param2;
+  goal.x = param1;
+  goal.y = param2;
   state = 'T';
 }
 

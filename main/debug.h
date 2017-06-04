@@ -111,7 +111,7 @@ void displayData()
         //else add space
         else temp += " ";
         //if that is current position add x marker
-        if (posX == j && posY == realI) temp += " x ";
+        if (pos.x == j && pos.y == realI) temp += " x ";
         //if that position has been visited add "-" marker
         else if (getVisited(j, realI)) temp += " - ";
         //else add spaces
@@ -143,15 +143,15 @@ void displayData()
 
     if (infoline)
       serialop += "Coordinates, orientation, saved coordinates and infra midzone" + newline;
-    serialop += posX;
+    serialop += pos.x;
     serialop += tab;
-    serialop += posY;
+    serialop += pos.y;
     serialop += tab;
     serialop += orientation;
     serialop += newline;
-    serialop += savedPosX;
+    serialop += savedPos.x;
     serialop += tab;
-    serialop += savedPosY;
+    serialop += savedPos.y;
     serialop += tab;
     serialop += infraMidZone;
     serialop += newline;
@@ -174,7 +174,7 @@ void displayData()
       {
         if (getWall(j, mapsize - 1 - i, 3)) temp += "|";
         else temp += " ";
-        if (posX == j && posY == mapsize - 1 - i) temp += " x ";
+        if (pos.x == j && pos.y == mapsize - 1 - i) temp += " x ";
         else
         {
           String t = cellValues[j][mapsize - 1 - i];

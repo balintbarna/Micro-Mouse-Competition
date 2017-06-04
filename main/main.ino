@@ -135,7 +135,7 @@ void stateMachine()
   {
     planningDone = false;
   }
-  else if (posX == goalX && posY == goalY)
+  else if (pos.x == goal.x && pos.y == goal.y)
   {
     state = 'S';
   }

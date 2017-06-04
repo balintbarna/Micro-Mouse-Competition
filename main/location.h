@@ -62,13 +62,13 @@ void updatePosition()
       if (orientation % 4)
       {
         int adder = -(orientation / 2 - 2) * sign(distance);
-        savedPosX += adder;
+        savedPos.x += adder;
       }
       //Y irányú
       else
       {
         int adder = -(orientation / 2 - 1) * sign(distance);
-        savedPosY += adder;
+        savedPos.y += adder;
       }
       lastPosEncAvg = posEncAvg;
       distance = 0;
@@ -80,24 +80,24 @@ void updatePosition()
       if (orientation % 4)
       {
         int adder = -(orientation / 2 - 2) * sign(distance);
-        posX = savedPosX + adder;
+        pos.x = savedPos.x + adder;
       }
       //Y irányú
       else
       {
         int adder = -(orientation / 2 - 1) * sign(distance);
-        posY = savedPosY + adder;
+        pos.y = savedPos.y + adder;
       }
     }
     //Ha még ott van
     else
     {
-      posX = savedPosX;
-      posY = savedPosY;
+      pos.y = savedPos.x;
+      pos.y = savedPos.y;
     }
   }
 
-  int cellMidDistance = (abs(posX - savedPosX) + abs(posY - savedPosY)) * cell_length - distance;
+  int cellMidDistance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
   if (abs(cellMidDistance) < (cell_length / 4))
     cellMidZone = true;
   else
@@ -108,13 +108,13 @@ void updatePosition()
     infraMidZone = true;
   else
     infraMidZone = false;
-  setVisited(posX, posY);
+  setVisited(pos.x, pos.y);
 }
 
 void ResetLocation()
 {
   lastPosEncAvg = 0;
-  savedPosX = posX;
-  savedPosY = posY;
+  savedPos.x = pos.x;
+  savedPos.y = pos.y;
 }
 
