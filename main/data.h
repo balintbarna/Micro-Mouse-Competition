@@ -168,7 +168,6 @@ void checkWalls()
 
   if (infraMidZone)
   {
-    uint8_t side_walls = getSideWalls(false);
     //jobbra van
     if (infra[right] < 2500)
     {
@@ -187,6 +186,78 @@ void clearAllData()
 {
 
 }
+
+int8_t getBestDirectionOpt(int8_t x, int8_t y, int8_t ori)
+{
+  uint8_t counter = 0;
+  while (true)
+  {
+    if (ori == 0)
+    {
+      //not top and no wall to the top
+      if (y < (mapsize - 1) && !getWall(x, y, 0))
+      {
+        //check cell to the top
+        if (cellValues[x][y + 1] < cellValueMax)
+        {
+          return ori;
+        }
+      }
+    }
+    if (ori == 2)
+    {
+      //not rightmost and no wall to the right
+      if (x < (mapsize - 1) && !getWall(x, y, 1))
+      {
+        //check cell to the right
+        if (cellValues[x + 1][y] < cellValueMax)
+        {
+          return ori;
+        }
+      }
+    }
+    if (ori == 4)
+    {
+      //not bottom and no wall to the bottom
+      if (y && !getWall(x, y, 2))
+      {
+        //check cell to the bottom
+        if (cellValues[x][y - 1] < cellValueMax)
+        {
+          return ori;
+        }
+      }
+    }
+    if (ori == 6)
+    {
+      //not leftmost and no wall to the left
+      if (x && !getWall(x, y, 3))
+      {
+        //check cell to the left
+        if (cellValues[x - 1][y] < cellValueMax)
+        {
+          return ori;
+        }
+      }
+    }
+    if (counter == 0)
+      ori += 2;
+    else if (counter == 1)
+      ori += 4;
+    else if (counter == 2)
+      ori += 6;
+    else
+    {
+      ori += 4;
+      ori %= 8;
+      return ori;
+    }
+
+    ori %= 8;
+    counter++;
+  }
+}
+
 
 int8_t getBestDirection(int8_t x, int8_t y)
 {

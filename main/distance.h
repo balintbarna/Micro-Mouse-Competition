@@ -126,7 +126,7 @@ void InfraISR()
 //  return temp;
 //}
 
-uint8_t getSideWalls(bool with_deriv = true)
+uint8_t getSideWalls()
 {
   //Jobb fal vizsgálata
   uint8_t side_walls = infra[right] < sideInfraLimit && infra[rightdi] < diagonalInfraLimit && pastinfra[right] < sideInfraLimit && infra_deriv[right] < derivInfraLimit;

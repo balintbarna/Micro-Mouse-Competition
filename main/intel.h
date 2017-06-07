@@ -6,7 +6,7 @@ void PlanNextStep()
   calc.y = pos.y;
   int calcOr = orientation;
 
-  int8_t turn = getBestDirection(calc.x, calc.y) - calcOr;
+  int8_t turn = getBestDirectionOpt(calc.x, calc.y, calcOr) - calcOr;
   turn += 8; turn %= 8;
 
   if (turn == 0)
@@ -38,7 +38,7 @@ void PlanPathToTarget()
 
   while (cellValues[calc.x][calc.y])
   {
-    int8_t turn = getBestDirection(calc.x, calc.y) - calcOr;
+    int8_t turn = getBestDirectionOpt(calc.x, calc.y, calcOr) - calcOr;
     turn += 8; turn %= 8;
     if (turn == 0)
     {

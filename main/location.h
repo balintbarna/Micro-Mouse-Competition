@@ -98,13 +98,13 @@ void updatePosition()
   }
 
   int cellMidDistance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
-  if (abs(cellMidDistance) < (cell_length / 4))
+  if (abs(cellMidDistance) < (cell_length / 3))
     cellMidZone = true;
   else
     cellMidZone = false;
 
-  int infraMidDistance = cellMidDistance - 160;
-  if (abs(infraMidDistance) < (cell_length / 50))
+  int infraMidDistance = cellMidDistance - 225;
+  if (abs(infraMidDistance) < (cell_length / 40))
     infraMidZone = true;
   else
     infraMidZone = false;

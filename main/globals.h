@@ -14,8 +14,8 @@ char nextStep = 'S';
 #define mapsize 11
 
 //Goal coordinates
-#define originalGoalX 5
-#define originalGoalY 4
+#define originalGoalX 3
+#define originalGoalY 7
 Coord goal = {originalGoalX, originalGoalY};
 
 //Coordinates and commands used for movement
@@ -66,7 +66,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 //----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 500;
+const int32_t maxSpeed = 1000;
 
 //PID controllers
 const int32_t PTagSpeed = 400;

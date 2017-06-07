@@ -90,7 +90,7 @@ bool shouldTurn()
     int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
     int distance = posEncAvg - lastPosEncAvg;
     distance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
-    if (distance > cell_length / 50)
+    if (distance > cell_length / 10)
       return false;
 
     if (!planningDone)

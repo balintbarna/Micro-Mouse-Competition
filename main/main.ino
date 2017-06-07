@@ -74,7 +74,7 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-  if (cellMidZone && !planningDone)
+  if (cellMidZone && !planningDone && !infraMidZone)
   {
     PlanNextStep();
     //PlanPathToTarget();
