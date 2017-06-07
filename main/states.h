@@ -42,15 +42,15 @@ void setTurn(int16_t degree)
     */
     if (degree == 180)
     {
-      param1 = 282;
-      param2 = -252;
+      param1 = 247;
+      param2 = -287;
     }
   }
 
   setOrientation(degree / 45);
   planningDone = false;
-  state = 'R';
-  //nextState = 'R';
+  nextState='R';
+  state = 'I';
 }
 
 //Function to erase past stored values
@@ -225,7 +225,8 @@ void stateR()
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    state = 'T';
+    nextState='T';
+    state = 'I';
     pulled = false;
   }
 }
