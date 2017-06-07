@@ -3,6 +3,24 @@
 #define front 2
 #define rightdi 3
 #define right 4
+#define maxValueIndex 16
+const uint8_t infraValueNumber = maxValueIndex + 1;
+
+//Values array
+const uint32_t analogInfraValues[5][infraValueNumber] =
+{
+  //left
+  {},
+  //left diagonal
+  {},
+  //front
+  {},
+  //right diagonal
+  {},
+  //right
+  {}
+};
+
 //Meredekség tömb
 const int32_t m[5][16] = {
   {55555, 1976, 1785, 3424, 6756, 10416, 15625, 21739, 31250, 38461, 45454, 62500, 71428, 100000, 125000, 166666},
@@ -23,11 +41,11 @@ const int32_t b[5][16] = {
 
 //Threshold tömb
 const int32_t thr[5][17] = {
-  {57,66,319,599,745,819,867,899,922,938,951,962,970,977,982,986,989},
-  {60,108,384,582,715,805,855,891,915,933,947,957,965,971,976,979,982},
-  {61,106,485,682,785,839,885,911,932,946,957,967,973,979,984,988,992},
-  {68,264,529,693,782,868,901,921,937,951,960,968,977,980,985,989,992},
-  {58,72,417,659,780,846,888,920,940,952,963,972,979,984,988,992,996}
+  {57, 66, 319, 599, 745, 819, 867, 899, 922, 938, 951, 962, 970, 977, 982, 986, 989},
+  {60, 108, 384, 582, 715, 805, 855, 891, 915, 933, 947, 957, 965, 971, 976, 979, 982},
+  {61, 106, 485, 682, 785, 839, 885, 911, 932, 946, 957, 967, 973, 979, 984, 988, 992},
+  {68, 264, 529, 693, 782, 868, 901, 921, 937, 951, 960, 968, 977, 980, 985, 989, 992},
+  {58, 72, 417, 659, 780, 846, 888, 920, 940, 952, 963, 972, 979, 984, 988, 992, 996}
 };
 
 
@@ -36,24 +54,27 @@ const int32_t inputs[5] = {A3, A6, A2, A1, A0};
 volatile int32_t _calib = 0;
 void _calibrateInfra()
 {
-    digitalWrite(infraPin, HIGH);
-    delay(1);
-    _calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
-    digitalWrite(infraPin, LOW);
+  _calib = 0;
+  digitalWrite(infraPin, HIGH);
+  delay(1);
+  _calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+  digitalWrite(infraPin, LOW);
 }
 
 
 //Read infra values, index: 0:left, 1:left-diagonal, 2:front, 3:right-diagonal, 4:right
 void _readInfraPin(int8_t index)
 {
+  //store last value
   pastinfra[index] = infra[index];
-
-  int32_t value = analogRead(inputs[index]) + _calib;
-  if (value > thr[index][16])
+  //read analog value
+  //int32_t value = analogRead(inputs[index]) + _calib;
+  int32_t value = analogRead(inputs[index]);
+  if (value > analogInfraValues[index][maxValueIndex])
   {
     infra[index] = 999999;
   }
-  else if (value < thr[index][0])
+  else if (value < analogInfraValues[index][0])
   {
     infra[index] = 0;
   }
@@ -65,6 +86,21 @@ void _readInfraPin(int8_t index)
       {
         infra[index] = (value * m[index][i] + b[index][i]) / 1000;
         break;
+      }
+    }
+    for (int8_t i = 0; i < infraValueNumber; i++)
+    {
+      if (value > analogInfraValues[index][i])
+      {
+        int rightValue = analogInfraValues[index][i + 1];
+        int leftValue = analogInfraValues[index][i];
+        int fulldiff = rightValue - leftValue;
+        int valdiff = value - leftValue;
+        int adddist = valdiff * 500 / fulldiff;
+        int leftdistance = i * 500;
+        int distance = leftdistance + adddist;
+
+        infra[index] = distance;
       }
     }
   }
