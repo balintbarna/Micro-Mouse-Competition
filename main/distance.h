@@ -38,7 +38,7 @@ void _calibrateInfra()
 {
     digitalWrite(infraPin, HIGH);
     delay(1);
-    calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+    _calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
     digitalWrite(infraPin, LOW);
 }
 
