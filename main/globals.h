@@ -95,7 +95,7 @@ const int16_t sideInfraLimit = 3000;
 const int16_t diagonalInfraLimit = 10000;
 const int16_t derivInfraLimit = 4;
 const int16_t frontInfraLimit = 1500;
-const int16_t midInfraValue = 1930;
+const int16_t midInfraValue = 1780;
 //cell value max
 const uint16_t cellValueMax = 999;
 

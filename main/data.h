@@ -169,13 +169,13 @@ void checkWalls()
   if (infraMidZone)
   {
     //jobbra van
-    if (infra[right] < 2500)
+    if (infra[right] < sideInfraLimit)
     {
       setWall(pos.x, pos.y, (orientation / 2 + 1) % 4);
     }
 
     //balra van
-    if (infra[left] < 2500)
+    if (infra[left] < sideInfraLimit)
     {
       setWall(pos.x, pos.y, (orientation / 2 + 3) % 4);
     }

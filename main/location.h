@@ -103,7 +103,7 @@ void updatePosition()
   else
     cellMidZone = false;
 
-  int infraMidDistance = cellMidDistance - 225;
+  int infraMidDistance = cellMidDistance - 135;
   if (abs(infraMidDistance) < (cell_length / 40))
     infraMidZone = true;
   else
