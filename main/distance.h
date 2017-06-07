@@ -3,58 +3,67 @@
 #define front 2
 #define rightdi 3
 #define right 4
-//Meredekség tömb
-const int32_t m[5][16] = {
-  {55555, 1976, 1785, 3424, 6756, 10416, 15625, 21739, 31250, 38461, 45454, 62500, 71428, 100000, 125000, 166666},
-  {10416, 1811, 2525, 3759, 5555, 10000, 13888, 20833, 27777, 35714, 50000, 62500, 83333, 100000, 166666, 166666},
-  {11111, 1319, 2538, 4854, 9259, 10869, 19230, 23809, 35714, 45454, 50000, 83333, 83333, 100000, 125000, 125000},
-  {2551, 1886, 3048, 5617, 5813, 15151, 25000, 31250, 35714, 55555, 62500, 55555, 166666, 100000, 125000, 166666},
-  {35714, 1449, 2066, 4132, 7575, 11904, 15625, 25000, 41666, 45454, 55555, 71428, 100000, 125000, 125000, 125000}
-};
+#define maxValueIndex 16
+const uint8_t infraValueNumber = maxValueIndex + 1;
 
-//Y offset tömb
-const int32_t b[5][16] = {
-  { -3166666, 369565, 430357, -551369, -3033783, -6031250, -10546875, -16043478, -24812500, -31576923, -38227272, -54625000, -63285714, -91200000, -115750000, -156833333},
-  { -625000, 304347, 30303, -687969, -1972222, -5550000, -8875000, -15062500, -21416666, -28821428, -42350000, -54312500, -74416666, -90600000, -155666666, -155666666},
-  { -677777, 360158, -230964, -1810679, -5268518, -6619565, -14019230, -18190476, -29285714, -38500000, -42850000, -75083333, -75083333, -91400000, -116000000, -116000000},
-  { -173469, 1886, -612804, -2393258, -2546511, -10651515, -19525000, -25281250, -29464285, -48333333, -55000000, -48277777, -156833333, -91500000, -116125000, -157333333},
-  { -2071428, 395652, 138429, -1223140, -3909090, -7571428, -10875000, -19500000, -35166666, -38772727, -48500000, -63928571, -91900000, -116500000, -116500000, -116500000}
+//Values array
+const uint16_t analogInfraValues[][infraValueNumber] = {
+  {58, 64, 302, 593, 735, 816, 865, 895, 916, 934, 946, 956, 964, 970, 975, 978, 980},
+  {58, 64, 302, 593, 735, 816, 865, 895, 916, 934, 946, 956, 964, 970, 975, 978, 990},
+  {57, 66, 228, 510, 684, 771, 822, 857, 883, 905, 922, 933, 942, 950, 956, 961, 965},
+  {58, 64, 302, 593, 735, 816, 865, 895, 916, 934, 946, 956, 964, 970, 975, 978, 990},
+  {57, 64, 230, 561, 730, 815, 873, 904, 925, 940, 952, 960, 965, 971, 975, 977, 978}
 };
-
-//Threshold tömb
-const int32_t thr[5][17] = {
-  {57,66,319,599,745,819,867,899,922,938,951,962,970,977,982,986,989},
-  {60,108,384,582,715,805,855,891,915,933,947,957,965,971,976,979,982},
-  {61,106,485,682,785,839,885,911,932,946,957,967,973,979,984,988,992},
-  {68,264,529,693,782,868,901,921,937,951,960,968,977,980,985,989,992},
-  {58,72,417,659,780,846,888,920,940,952,963,972,979,984,988,992,996}
-};
-
 
 //Analog input pins
-const int32_t inputs[5] = {A3, A6, A2, A1, A0};
+const int32_t inputs[] = {A3, A6, A2, A1, A0};
+volatile int32_t _calib = 0;
+void _calibrateInfra()
+{
+  _calib = 0;
+  digitalWrite(infraPin, HIGH);
+  delay(1);
+  _calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+  digitalWrite(infraPin, LOW);
+}
+
 
 //Read infra values, index: 0:left, 1:left-diagonal, 2:front, 3:right-diagonal, 4:right
-void _readInfraPin(int8_t index)
+void _readInfraPin(uint8_t index)
 {
+  //store last value
   pastinfra[index] = infra[index];
-
-  int16_t value = analogRead(inputs[index]);
-  if (value > thr[index][16])
+  //read analog value
+  //int32_t value = analogRead(inputs[index]) + _calib;
+  uint16_t value = analogRead(inputs[index]);
+  if (value > analogInfraValues[index][maxValueIndex])
   {
     infra[index] = 999999;
   }
-  else if (value < thr[index][0])
+  else if (value < analogInfraValues[index][0])
   {
     infra[index] = 0;
   }
   else
   {
-    for (int8_t i = 15; i >= 0; i--)
+    for (uint8_t i = 0; i < maxValueIndex; i++)
     {
-      if (value > thr[index][i])
+      int leftValue = analogInfraValues[index][i];
+      int leftdistance = i * 500;
+      int rightValue = analogInfraValues[index][i + 1];
+      if (value == leftValue)
       {
-        infra[index] = (value * m[index][i] + b[index][i]) / 1000;
+        infra[index] = leftdistance;
+        break;
+      }
+      else if (value < rightValue)
+      {
+        int fulldiff = rightValue - leftValue;
+        int partdiff = value - leftValue;
+        int adddist = partdiff * 500 / fulldiff;
+        int distance = leftdistance + adddist;
+
+        infra[index] = distance;
         break;
       }
     }
@@ -77,24 +86,23 @@ void _readInfra(int8_t index = -1)
   }
 }
 
-uint8_t _infraCounter = 0;
+volatile uint8_t _infraCounter = 0;
 void InfraISR()
 {
-  if (_infraCounter == 1)
+  if (_infraCounter == 0)
   {
     digitalWrite(infraPin, 1);
+    _infraCounter = 1;
+    return;
   }
-  if (_infraCounter == 2)
+  if (_infraCounter == 1)
   {
     _readInfra();
     digitalWrite(infraPin, 0);
     micro = 0;
-  }
-  if (_infraCounter == 4)
-  {
     _infraCounter = 0;
+    return;
   }
-  _infraCounter++;
 }
 
 //#include <VL53L0X.h>
@@ -126,4 +134,5 @@ uint8_t getSideWalls(bool with_deriv = true)
   side_walls += (infra[left] < sideInfraLimit && infra[leftdi] < diagonalInfraLimit && pastinfra[left] < sideInfraLimit && infra_deriv[left] < derivInfraLimit) << 1;
   return side_walls;
 }
+
 

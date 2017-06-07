@@ -280,8 +280,8 @@ void SetupFloodfill()
   cellValues[goal.x][goal.y] = 0;
 }
 /*
-void CalculateFloodfill()
-{
+  void CalculateFloodfill()
+  {
   SetupFloodfill();
   bool changed = true;
   while (changed)
@@ -300,70 +300,84 @@ void CalculateFloodfill()
       }
     }
   }
-}
+  }
 */
 void CalculateBreathFirst()
 {
+  while (!queue.isEmpty())
+    queue.pop();
   SetupFloodfill();
   queue.push(goal);
   while (!queue.isEmpty())
   {
     Coord cell = queue.pop();
-    if (cell.x == pos.x && cell.y == goal.y)
+    if (cell.x == pos.x && cell.y == pos.y)
     {
-      while (!queue.isEmpty())
-        queue.pop();
+      return;
     }
-    else
+    uint16_t cellvalue = cellValues[cell.x][cell.y];
+    //not leftmost and no wall to the left
+    if (cell.x && !getWall(cell.x, cell.y, 3))
     {
-      uint16_t cellvalue = cellValues[cell.x][cell.y];
-      //not leftmost and no wall to the left
-      if (cell.x && !getWall(cell.x, cell.y, 3))
+      if (cell.x - 1 == pos.x && cell.y == pos.y)
       {
-        //check if value is higher than own+1
-        if (cellValues[cell.x - 1][cell.y] > (cellvalue + 1))
-        {
-          //set value to own+1
-          cellValues[cell.x - 1][cell.y] = cellvalue + 1;
-          //add to queue
-          queue.push({cell.x - 1, cell.y});
-        }
+        return;
       }
-      //not rightmost and no wall to the right
-      if (cell.x - mapsize + 1 && !getWall(cell.x, cell.y, 1))
+      //check if value is higher than own+1
+      if (cellValues[cell.x - 1][cell.y] > (cellvalue + 1))
       {
-        //check if value is higher than own+1
-        if (cellValues[cell.x + 1][cell.y] > (cellvalue + 1))
-        {
-          //set value to own+1
-          cellValues[cell.x + 1][cell.y] = cellvalue + 1;
-          //add to queue
-          queue.push({cell.x + 1, cell.y});
-        }
+        //set value to own+1
+        cellValues[cell.x - 1][cell.y] = cellvalue + 1;
+        //add to queue
+        queue.push({cell.x - 1, cell.y});
       }
-      //not bottom and no wall to the bottom
-      if (cell.y && !getWall(cell.x, cell.y, 2))
+    }
+    //not rightmost and no wall to the right
+    if (cell.x - mapsize + 1 && !getWall(cell.x, cell.y, 1))
+    {
+      if (cell.x + 1 == pos.x && cell.y == pos.y)
       {
-        //check if value is higher than own+1
-        if (cellValues[cell.x][cell.y - 1] > (cellvalue + 1))
-        {
-          //set value to own+1
-          cellValues[cell.x][cell.y - 1] = cellvalue + 1;
-          //add to queue
-          queue.push({cell.x, cell.y - 1});
-        }
+        return;
       }
-      //not top and no wall to the top
-      if (cell.y - mapsize + 1 && !getWall(cell.x, cell.y, 0))
+      //check if value is higher than own+1
+      if (cellValues[cell.x + 1][cell.y] > (cellvalue + 1))
       {
-        //check if value is higher than own+1
-        if (cellValues[cell.x][cell.y + 1] > (cellvalue + 1))
-        {
-          //set value to own+1
-          cellValues[cell.x][cell.y + 1] = cellvalue + 1;
-          //add to queue
-          queue.push({cell.x, cell.y + 1});
-        }
+        //set value to own+1
+        cellValues[cell.x + 1][cell.y] = cellvalue + 1;
+        //add to queue
+        queue.push({cell.x + 1, cell.y});
+      }
+    }
+    //not bottom and no wall to the bottom
+    if (cell.y && !getWall(cell.x, cell.y, 2))
+    {
+      if (cell.x == pos.x && cell.y - 1 == pos.y)
+      {
+        return;
+      }
+      //check if value is higher than own+1
+      if (cellValues[cell.x][cell.y - 1] > (cellvalue + 1))
+      {
+        //set value to own+1
+        cellValues[cell.x][cell.y - 1] = cellvalue + 1;
+        //add to queue
+        queue.push({cell.x, cell.y - 1});
+      }
+    }
+    //not top and no wall to the top
+    if (cell.y - mapsize + 1 && !getWall(cell.x, cell.y, 0))
+    {
+      if (cell.x == pos.x && cell.y + 1 == pos.y)
+      {
+        return;
+      }
+      //check if value is higher than own+1
+      if (cellValues[cell.x][cell.y + 1] > (cellvalue + 1))
+      {
+        //set value to own+1
+        cellValues[cell.x][cell.y + 1] = cellvalue + 1;
+        //add to queue
+        queue.push({cell.x, cell.y + 1});
       }
     }
   }
