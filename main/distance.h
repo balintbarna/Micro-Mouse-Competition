@@ -36,12 +36,10 @@ const int32_t inputs[5] = {A3, A6, A2, A1, A0};
 volatile int32_t _calib = 0;
 void _calibrateInfra()
 {
-  /*
     digitalWrite(infraPin, HIGH);
     delay(1);
-    calib = (1355 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+    calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
     digitalWrite(infraPin, LOW);
-  */
 }
 
 

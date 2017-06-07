@@ -12,8 +12,8 @@ String path = "";
 #define mapsize 10
 
 //Goal coordinates
-#define originalGoalX 7
-#define originalGoalY 4
+#define originalGoalX 5
+#define originalGoalY 5
 volatile int8_t goalX = originalGoalX;
 volatile int8_t goalY = originalGoalY;
 

@@ -64,9 +64,9 @@ void loop()
   {
     while (delayTimer < 300);
     //setYawCorrection();
-    _calibrateInfra();
     if (!infraon)
     {
+      _calibrateInfra();
       infraTimer.begin(InfraISR, 1000);
       infraon = true;
     }
