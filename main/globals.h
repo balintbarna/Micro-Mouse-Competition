@@ -95,10 +95,10 @@ const int32_t PInfra = 1000 * PInfraCoeff;
 const int32_t DInfra = 1000 * DInfraCoeff;
 
 const int16_t sideInfraLimit = 3000;
-const int16_t diagonalInfraLimit = 5500;
+const int16_t diagonalInfraLimit = 10000;
 const int16_t derivInfraLimit = 4;
-const int16_t frontInfraLimit = 1000;
-const int16_t midInfraValue = 1700;
+const int16_t frontInfraLimit = 1500;
+const int16_t midInfraValue = 1930;
 
 //cell value max
 const uint16_t cellValueMax = 999;
