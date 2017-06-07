@@ -46,7 +46,6 @@ const uint16_t pwmMax = pow(2, pwmRes);
 const uint16_t pwmMid = pwmMax / 2;
 
 //infra sensor values and TOF
-volatile int32_t calib = 0;
 volatile int32_t infra[5];
 volatile int32_t pastinfra[5];
 volatile int32_t infra_deriv[5];

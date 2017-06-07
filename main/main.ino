@@ -8,6 +8,8 @@ IntervalTimer infraTimer;
 uint16_t overFloop = 0;
 volatile uint16_t overFirpt = 0;
 
+bool infraon = false;
+
 #include "includes.h"
 
 //---------------- SETUP ---------------
@@ -63,7 +65,11 @@ void loop()
     while (delayTimer < 300);
     //setYawCorrection();
     _calibrateInfra();
-    infraTimer.begin(InfraISR, 1000);
+    if (!infraon)
+    {
+      infraTimer.begin(InfraISR, 1000);
+      infraon = true;
+    }
     state = 'T';
   }
   //readTurnError();

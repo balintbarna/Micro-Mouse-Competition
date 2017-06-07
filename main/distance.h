@@ -33,12 +33,15 @@ const int32_t thr[5][17] = {
 
 //Analog input pins
 const int32_t inputs[5] = {A3, A6, A2, A1, A0};
+volatile int32_t _calib = 0;
 void _calibrateInfra()
 {
-  digitalWrite(infraPin, HIGH);
-  delay(1);
-  calib = (1355 - (analogRead(A3) + analogRead(A0))) / 2;
-  digitalWrite(infraPin, LOW);
+  /*
+    digitalWrite(infraPin, HIGH);
+    delay(1);
+    calib = (1355 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+    digitalWrite(infraPin, LOW);
+  */
 }
 
 
@@ -47,7 +50,7 @@ void _readInfraPin(int8_t index)
 {
   pastinfra[index] = infra[index];
 
-  int32_t value = analogRead(inputs[index]) + calib;
+  int32_t value = analogRead(inputs[index]) + _calib;
   if (value > thr[index][16])
   {
     infra[index] = 999999;
@@ -91,7 +94,8 @@ void InfraISR()
   if (_infraCounter == 0)
   {
     digitalWrite(infraPin, 1);
-    _infraCounter++;
+    _infraCounter = 1;
+    return;
   }
   if (_infraCounter == 1)
   {
@@ -99,6 +103,7 @@ void InfraISR()
     digitalWrite(infraPin, 0);
     micro = 0;
     _infraCounter = 0;
+    return;
   }
 }
 
