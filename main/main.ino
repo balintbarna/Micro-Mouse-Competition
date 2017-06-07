@@ -55,7 +55,7 @@ void loop()
 #if DEBUG
   //digitalWrite(led1, leftwall_debug);
   //digitalWrite(led2, rightwall_debug);
-  digitalWrite(led1, planningDone);
+  digitalWrite(led2, planningDone);
 
   serialToValue();
   displayData();
@@ -74,7 +74,7 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-  if (cellMidZone && !planningDone && !infraMidZone)
+  if (planningZone && !planningDone && !infraMidZone)
   {
     PlanNextStep();
     //PlanPathToTarget();

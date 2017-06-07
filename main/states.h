@@ -245,7 +245,7 @@ void stateI()
 //Cascade Position
 void stateC()
 {
-  CascadePos(param1, param2, true);
+  CascadePos(param1, param2);
 }
 //Velocity control
 void stateV()

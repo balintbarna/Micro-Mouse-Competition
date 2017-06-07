@@ -97,8 +97,13 @@ void updatePosition()
     }
   }
 
+  if (distance > 184)
+    planningZone = true;
+  else
+    planningZone = false;
+
   int cellMidDistance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
-  if (abs(cellMidDistance) < (cell_length / 3))
+  if (abs(cellMidDistance) < (cell_length / 4))
     cellMidZone = true;
   else
     cellMidZone = false;

@@ -28,6 +28,7 @@ volatile Coord savedPos = {0, 0};
 volatile int32_t lastPosEncAvg = 0;
 
 //Is it in the mid area of a cell
+volatile uint8_t planningZone = 1;
 volatile uint8_t cellMidZone = 1;
 volatile uint8_t infraMidZone = 1;
 
