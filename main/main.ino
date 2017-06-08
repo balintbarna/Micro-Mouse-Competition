@@ -9,12 +9,14 @@ uint16_t overFloop = 0;
 volatile uint16_t overFirpt = 0;
 
 volatile bool sendInfo = false;
+volatile bool shouldDelete = false;
 
 #include "includes.h"
 
 //---------------- SETUP ---------------
 void setup()
 {
+  ReadAllFromEEPROM();
   //Initialize Serial comm
 #if DEBUG
   Serial.begin(115200);
@@ -68,6 +70,11 @@ void loop()
   }
 
 #endif
+  if (shouldDelete)
+  {
+    shouldDelete = false;
+    ClearData();
+  }
   checkBattery();
   if (!digitalRead(gombPin))
   {
@@ -79,7 +86,9 @@ void loop()
     //      infraTimer.begin(InfraISR, 1000);
     //      infraon = true;
     //    }
+    displayData();
     state = 'T';
+    milli = 0;
   }
   //readTurnError();
   if (!infraMidZone && shouldPlan)
@@ -88,8 +97,35 @@ void loop()
     //PlanPathToTarget();
     shouldPlan = false;
   }
+
+
+
+  if (milli > stopTime)
+  {
+    delay(100);
+    infraTimer.end();
+    stateTimer.end();
+    digitalWrite(infraPin, 0);
+    SetMotorPower(0, 0);
+    SaveAllToEEPROM();
+    while (true)
+    {
+      blinker();
+    }
+  }
+
   overFloop++;
   while (delayTimer < 2);
+}
+
+void blinker()
+{
+  digitalWrite(led1, 0);
+  digitalWrite(led2, 1);
+  delay(500);
+  digitalWrite(led1, 1);
+  digitalWrite(led2, 0);
+  delay(500);
 }
 
 void checkBattery()
@@ -147,12 +183,12 @@ void stateMachine()
       state = 'E';
   }
   //Ha letelt kb 5 perc
-  if (milli > 280000)
+  if (milli > stopTime)
   {
     state = 'S';
   }
   //Ha letelt kb 4 perc
-  else if (milli > 240000)
+  else if (milli > goHomeTime)
   {
     //Set goal
     goal.x = 0;
@@ -170,7 +206,7 @@ void stateMachine()
       digitalWrite(led2, 1);
     }
   }
-  //ha midzone
+  //ha midzone és cél koordinátákon van
   else if (cellMidZone && pos.x == goal.x && pos.y == goal.y)
   {
     //Startnál van
@@ -182,8 +218,6 @@ void stateMachine()
       //debug
       digitalWrite(led1, 1);
       digitalWrite(led2, 0);
-      sendInfo = true;
-      shouldPlan = true;
     }
     //Célbaért
     else
@@ -194,9 +228,15 @@ void stateMachine()
       //debug
       digitalWrite(led1, 0);
       digitalWrite(led2, 1);
-      sendInfo = true;
-      shouldPlan = true;
     }
+
+    idler = 2000;
+    state = 'I';
+    nextState = 'T';
+    SetMotorPower(0, 0);
+
+    sendInfo = true;
+    shouldPlan = true;
   }
   overFirpt++;
 }

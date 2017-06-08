@@ -7,12 +7,18 @@ const uint32_t myinterval = 1000000 / timerFrequency;
 String path = "";
 char nextStep = 'S';
 
+const uint32_t roundTimeMilli = 60000;
+const uint32_t stopTime = roundTimeMilli * 0.9;
+const uint32_t goHomeTime = roundTimeMilli * 0.8;
+
+volatile uint8_t currentRound = 0;
+
 //map size (32 for competition)
 #define mapsize 32
 
 //Goal coordinates
-#define originalGoalX 0
-#define originalGoalY 10
+#define originalGoalX 3
+#define originalGoalY 3
 Coord goal = {originalGoalX, originalGoalY};
 
 //Coordinates and commands used for movement

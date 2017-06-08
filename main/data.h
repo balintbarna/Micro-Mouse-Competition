@@ -116,7 +116,7 @@ void setWall(uint8_t x, uint8_t y, uint8_t which_wall)
 //Store 32 bit to EEPROM
 void Store32 (uint16_t address, uint32_t value)
 {
-  for (int i = 0; i < 4; i++)
+  for (uint8_t i = 0; i < 4; i++)
   {
     EEPROM.write(i + address * 4, value);
     value >>= 8;
@@ -126,14 +126,14 @@ void Store32 (uint16_t address, uint32_t value)
 uint32_t Read32(uint16_t address)
 {
   uint32_t readval = 0;
-  for (uint8_t i = 3; i >= 0; i--)
+  for (int8_t i = 3; i >= 0; i--)
   {
-    readval = readval << 8;
+    readval <<= 8;
     readval += EEPROM.read(i + 4 * address);
   }
   return readval;
 }
-void StoreArray32(uint16_t address, uint32_t* data)
+void StoreArray32(uint16_t address, volatile uint32_t data[])
 {
   uint8_t datasize = sizeof(data) / 4;
   for (uint8_t i = 0; i < datasize; i++ )
@@ -141,13 +141,48 @@ void StoreArray32(uint16_t address, uint32_t* data)
     Store32(address + i, data[i]);
   }
 }
-void ReadArray32(uint16_t address, uint32_t* data)
+void ReadArray32(uint16_t address, volatile uint32_t data[])
 {
   uint8_t datasize = sizeof(data) / 4;
   for (uint8_t i = 0; i < datasize; i++)
   {
     data[i] = Read32(address + i);
   }
+}
+
+void SaveAllToEEPROM()
+{
+  if (currentRound < 2)
+  {
+    //Save xWalls
+    for (int i = 0; i < 31; i++)
+    {
+      Store32(0 + i, xWalls[i]);
+    }
+
+    //Save yWalls
+    for (int i = 0; i < 31; i++)
+    {
+      Store32(31 + i, yWalls[i]);
+    }
+  }
+  currentRound++;
+  Store32(62, currentRound);
+}
+
+void ReadAllFromEEPROM()
+{
+  //Read xWalls
+  for (int i = 0; i < 31; i++)
+  {
+    xWalls[i] = Read32(0 + i);
+  }
+  //Read yWalls
+  for (int i = 0; i < 31; i++)
+  {
+    yWalls[i] = Read32(31 + i);
+  }
+  currentRound = Read32(62);
 }
 
 void setVisited(uint8_t x, uint8_t y)
@@ -182,9 +217,12 @@ void checkWalls()
   }
 }
 
-void clearAllData()
+void ClearData()
 {
-
+  for (int i = 0 ; i < EEPROM.length() ; i++)
+  {
+    EEPROM.write(i, 0);
+  }
 }
 
 int8_t getBestDirectionOpt(int8_t x, int8_t y, int8_t ori)

@@ -228,13 +228,17 @@ void stateD()
 {
   ResetAllStoredValues();
   SetAllToDefault();
+  shouldDelete = true;
 }
 //Waiting/Idle
 void stateI()
 {
   idler++;
   if (idler > waitCycle)
+  {
     state = nextState;
+    idler = 0;
+  }
 }
 //Cascade Position
 void stateC()
