@@ -33,7 +33,7 @@ void setYawCorrection()
 }
 
 //Function to modify orientation. Negative means left, 1 increment means 45°
-#define cell_length 318
+#define cell_length 320
 void setOrientation(int8_t _size)
 {
   orientation += _size;
@@ -95,24 +95,48 @@ void updatePosition()
       pos.y = savedPos.x;
       pos.y = savedPos.y;
     }
+
+    //Robot's nose's position
+    if (abs(distance + 100) >= cell_length / 2)
+    {
+      //Ha X irányú
+      if (orientation % 4)
+      {
+        int adder = -(orientation / 2 - 2) * sign(distance);
+        nose.x = savedPos.x + adder;
+      }
+      //Y irányú
+      else
+      {
+        int adder = -(orientation / 2 - 1) * sign(distance);
+        nose.y = savedPos.y + adder;
+      }
+    }
+    //Ha még ott van
+    else
+    {
+      nose.x = savedPos.x;
+      nose.y = savedPos.y;
+    }
   }
 
-  if (distance > 184)
+  if (distance > 110)
     planningZone = true;
   else
     planningZone = false;
 
-  int cellMidDistance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
-  if (abs(cellMidDistance) < (cell_length / 4))
+  int cellMidDistance = distance - (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length;
+  if (abs(cellMidDistance) < (cell_length / 10))
     cellMidZone = true;
   else
     cellMidZone = false;
 
-  int infraMidDistance = cellMidDistance - 135;
-  if (abs(infraMidDistance) < (cell_length / 40))
+  int infraDistance = abs(distance - 100);
+  if (infraDistance < (cell_length / 50))
     infraMidZone = true;
   else
     infraMidZone = false;
+
   setVisited(pos.x, pos.y);
 }
 

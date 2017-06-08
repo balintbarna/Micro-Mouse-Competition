@@ -1,4 +1,4 @@
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 /* 0: semmi
    1: soros
@@ -153,7 +153,11 @@ void displayData()
     serialop += tab;
     serialop += savedPos.y;
     serialop += tab;
-    serialop += infraMidZone;
+    serialop += newline;
+    serialop += nose.x;
+    serialop += tab;
+    serialop += nose.y;
+    serialop += tab;
     serialop += newline;
   }
 
@@ -198,6 +202,25 @@ void displayData()
     {
       serialop += labi[i] + newline;
     }
+    if (infoline)
+      serialop += "Coordinates, orientation, saved coordinates and infra midzone" + newline;
+    serialop += pos.x;
+    serialop += tab;
+    serialop += pos.y;
+    serialop += tab;
+    serialop += orientation;
+    serialop += newline;
+    serialop += savedPos.x;
+    serialop += tab;
+    serialop += savedPos.y;
+    serialop += tab;
+    serialop += newline;
+    serialop += nose.x;
+    serialop += tab;
+    serialop += nose.y;
+    serialop += tab;
+    
+    serialop += newline;
     serialop += nextStep;
     serialop += newline;
     serialop += path;
@@ -207,7 +230,7 @@ void displayData()
   //custom
   if ((outputMode >> 5) % 2 && !(overFloop % loopNumber))
   {
-    serialop += measuredTime;
+    serialop += ffcounter;
   }
 
 

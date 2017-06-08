@@ -11,11 +11,11 @@ String path = "";
 char nextStep = 'S';
 
 //map size (32 for competition)
-#define mapsize 11
+#define mapsize 32
 
 //Goal coordinates
-#define originalGoalX 3
-#define originalGoalY 7
+#define originalGoalX 0
+#define originalGoalY 10
 Coord goal = {originalGoalX, originalGoalY};
 
 //Coordinates and commands used for movement
@@ -23,8 +23,9 @@ String action = "";
 
 //Variables for position in a 2D matrix
 //0;0 a kiindulási pont
-volatile Coord pos = {0, 0};
-volatile Coord savedPos = {0, 0};
+Coord pos = {0, 0};
+Coord savedPos = {0, 0};
+Coord nose = {0, 0};
 volatile int32_t lastPosEncAvg = 0;
 
 //Is it in the mid area of a cell
@@ -67,7 +68,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 //----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 1000;
+const int32_t maxSpeed = 500;
 
 //PID controllers
 const int32_t PTagSpeed = 400;

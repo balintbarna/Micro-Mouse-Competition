@@ -2,8 +2,8 @@ void PlanNextStep()
 {
   CalculateBreathFirst();
   Coord calc;
-  calc.x = pos.x;
-  calc.y = pos.y;
+  calc.x = nose.x;
+  calc.y = nose.y;
   int calcOr = orientation;
 
   int8_t turn = getBestDirectionOpt(calc.x, calc.y, calcOr) - calcOr;

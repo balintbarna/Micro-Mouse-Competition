@@ -28,17 +28,17 @@ void setTurn(int16_t degree)
   if (true)
   {
     /*
-      if (degree == 90)
-      {
-      param1 = 150;
-      param2 = -126;
+        if (degree == 90)
+        {
+          param1 = 123;
+          param2 = -143;
 
-      }
-      if (degree == -90)
-      {
-      param1 = -126;
-      param2 = 150;
-      }
+        }
+        if (degree == -90)
+        {
+          param1 = -143;
+          param2 = 123;
+        }
     */
     if (degree == 180)
     {
@@ -49,7 +49,7 @@ void setTurn(int16_t degree)
 
   setOrientation(degree / 45);
   planningDone = false;
-  nextState='R';
+  nextState = 'R';
   state = 'I';
 }
 
@@ -87,12 +87,6 @@ bool shouldTurn()
 {
   if (cellMidZone)
   {
-    int posEncAvg = (encoderLeft.read() + encoderRight.read()) / 2;
-    int distance = posEncAvg - lastPosEncAvg;
-    distance = (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length - distance;
-    if (distance > cell_length / 10)
-      return false;
-
     if (!planningDone)
       return false;
 
@@ -225,7 +219,7 @@ void stateR()
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    nextState='T';
+    nextState = 'T';
     state = 'I';
     pulled = false;
   }
@@ -246,7 +240,7 @@ void stateI()
 //Cascade Position
 void stateC()
 {
-  CascadePos(param1, param2);
+  CascadePos(param1, param1, true);
 }
 //Velocity control
 void stateV()

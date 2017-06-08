@@ -164,20 +164,20 @@ void checkWalls()
 {
   //Szembe van
   if (infra[front] < 3000)
-    setWall(pos.x, pos.y, (orientation / 2) % 4);
+    setWall(nose.x, nose.y, (orientation / 2) % 4);
 
   if (infraMidZone)
   {
     //jobbra van
     if (infra[right] < sideInfraLimit)
     {
-      setWall(pos.x, pos.y, (orientation / 2 + 1) % 4);
+      setWall(nose.x, nose.y, (orientation / 2 + 1) % 4);
     }
 
     //balra van
     if (infra[left] < sideInfraLimit)
     {
-      setWall(pos.x, pos.y, (orientation / 2 + 3) % 4);
+      setWall(nose.x, nose.y, (orientation / 2 + 3) % 4);
     }
   }
 }
@@ -382,7 +382,7 @@ void CalculateBreathFirst()
   while (!queue.isEmpty())
   {
     Coord cell = queue.pop();
-    if (cell.x == pos.x && cell.y == pos.y)
+    if (cell.x == nose.x && cell.y == nose.y)
     {
       return;
     }
@@ -390,7 +390,7 @@ void CalculateBreathFirst()
     //not leftmost and no wall to the left
     if (cell.x && !getWall(cell.x, cell.y, 3))
     {
-      if (cell.x - 1 == pos.x && cell.y == pos.y)
+      if (cell.x - 1 == nose.x && cell.y == nose.y)
       {
         return;
       }
@@ -406,7 +406,7 @@ void CalculateBreathFirst()
     //not rightmost and no wall to the right
     if (cell.x - mapsize + 1 && !getWall(cell.x, cell.y, 1))
     {
-      if (cell.x + 1 == pos.x && cell.y == pos.y)
+      if (cell.x + 1 == nose.x && cell.y == nose.y)
       {
         return;
       }
@@ -422,7 +422,7 @@ void CalculateBreathFirst()
     //not bottom and no wall to the bottom
     if (cell.y && !getWall(cell.x, cell.y, 2))
     {
-      if (cell.x == pos.x && cell.y - 1 == pos.y)
+      if (cell.x == nose.x && cell.y - 1 == nose.y)
       {
         return;
       }
@@ -438,7 +438,7 @@ void CalculateBreathFirst()
     //not top and no wall to the top
     if (cell.y - mapsize + 1 && !getWall(cell.x, cell.y, 0))
     {
-      if (cell.x == pos.x && cell.y + 1 == pos.y)
+      if (cell.x == nose.x && cell.y + 1 == nose.y)
       {
         return;
       }

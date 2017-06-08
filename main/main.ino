@@ -10,6 +10,8 @@ volatile uint16_t overFirpt = 0;
 
 bool infraon = false;
 
+int ffcounter = 0;
+
 #include "includes.h"
 
 //---------------- SETUP ---------------
@@ -32,9 +34,10 @@ void setup()
   //Initialize Motors
   SetupMotors();
   //Set timer priorities
-  //stateTimer.priority(254);
-  //infraTimer.priority(255);
+  //stateTimer.priority(100);
+  //infraTimer.priority(105);
   stateTimer.begin(stateMachine, myinterval);
+  infraTimer.begin(InfraISR, 1000);
   //infra
   pinMode(infraPin, OUTPUT);
   digitalWrite(infraPin, 0);
@@ -55,7 +58,7 @@ void loop()
 #if DEBUG
   //digitalWrite(led1, leftwall_debug);
   //digitalWrite(led2, rightwall_debug);
-  digitalWrite(led2, planningDone);
+  //digitalWrite(led2, planningDone);
 
   serialToValue();
   displayData();
@@ -65,20 +68,25 @@ void loop()
   {
     while (delayTimer < 300);
     //setYawCorrection();
-    if (!infraon)
-    {
-      //_calibrateInfra();
-      infraTimer.begin(InfraISR, 1000);
-      infraon = true;
-    }
+    //    if (!infraon)
+    //    {
+    //      //_calibrateInfra();
+    //      infraTimer.begin(InfraISR, 1000);
+    //      infraon = true;
+    //    }
     state = 'T';
   }
   //readTurnError();
   if (planningZone && !planningDone && !infraMidZone)
   {
+    measurer = 0;
+    digitalWrite(led1, 1);
     PlanNextStep();
     //PlanPathToTarget();
     planningDone = true;
+    ffcounter++;
+    digitalWrite(led1, 0);
+    measuredTime = measurer;
   }
   overFloop++;
   while (delayTimer < 2);
@@ -138,11 +146,11 @@ void stateMachine()
     default:
       state = 'E';
   }
-  if (!cellMidZone)
+  if (!cellMidZone && !planningZone)
   {
     planningDone = false;
   }
-  else if (pos.x == goal.x && pos.y == goal.y)
+  else if (pos.x == goal.x && pos.y == goal.y && cellMidZone)
   {
     state = 'S';
   }
