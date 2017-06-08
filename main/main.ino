@@ -10,6 +10,7 @@ volatile uint16_t overFirpt = 0;
 
 volatile bool sendInfo = false;
 volatile bool shouldDelete = false;
+volatile bool shouldSave = false;
 
 #include "includes.h"
 
@@ -78,17 +79,20 @@ void loop()
   checkBattery();
   if (!digitalRead(gombPin))
   {
-    while (delayTimer < 300);
-    //setYawCorrection();
-    //    if (!infraon)
-    //    {
-    //      //_calibrateInfra();
-    //      infraTimer.begin(InfraISR, 1000);
-    //      infraon = true;
-    //    }
-    displayData();
-    state = 'T';
-    milli = 0;
+    while (delayTimer < 500);
+    if (!digitalRead(gombPin))
+    {
+      ResetAllStoredValues();
+      SetAllToDefault();
+      ClearData();
+      blinker(); blinker();
+    }
+    else
+    {
+      displayData();
+      state = 'T';
+      milli = 0;
+    }
   }
   //readTurnError();
   if (!infraMidZone && shouldPlan)
@@ -96,6 +100,12 @@ void loop()
     PlanNextStep();
     //PlanPathToTarget();
     shouldPlan = false;
+  }
+
+  if (shouldSave)
+  {
+    SaveAllToEEPROM();
+    shouldSave = false;
   }
 
 
@@ -107,6 +117,7 @@ void loop()
     stateTimer.end();
     digitalWrite(infraPin, 0);
     SetMotorPower(0, 0);
+    currentRound++;
     SaveAllToEEPROM();
     while (true)
     {
@@ -233,6 +244,8 @@ void stateMachine()
     state = 'I';
     nextState = 'T';
     SetMotorPower(0, 0);
+
+    shouldSave = true;
 
     sendInfo = true;
     shouldPlan = true;

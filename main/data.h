@@ -166,7 +166,6 @@ void SaveAllToEEPROM()
       Store32(31 + i, yWalls[i]);
     }
   }
-  currentRound++;
   Store32(62, currentRound);
 }
 

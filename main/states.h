@@ -4,7 +4,7 @@ volatile char nextState = 'S';
 volatile bool pulled = false;
 
 volatile int idler = 0;
-#define waitTime 1000 //in ms
+#define waitTime 2000 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
 //Function to prepare for turning
