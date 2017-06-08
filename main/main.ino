@@ -8,9 +8,7 @@ IntervalTimer infraTimer;
 uint16_t overFloop = 0;
 volatile uint16_t overFirpt = 0;
 
-bool infraon = false;
-
-int ffcounter = 0;
+volatile bool sendInfo = false;
 
 #include "includes.h"
 
@@ -58,10 +56,17 @@ void loop()
 #if DEBUG
   //digitalWrite(led1, leftwall_debug);
   //digitalWrite(led2, rightwall_debug);
-  //digitalWrite(led2, planningDone);
+  //digitalWrite(led2, shouldPlan);
 
   serialToValue();
-  displayData();
+
+  //sendInfo = true;
+  if (sendInfo)
+  {
+    displayData();
+    sendInfo = false;
+  }
+
 #endif
   checkBattery();
   if (!digitalRead(gombPin))
@@ -77,16 +82,11 @@ void loop()
     state = 'T';
   }
   //readTurnError();
-  if (planningZone && !planningDone && !infraMidZone)
+  if (!infraMidZone && shouldPlan)
   {
-    measurer = 0;
-    digitalWrite(led1, 1);
     PlanNextStep();
     //PlanPathToTarget();
-    planningDone = true;
-    ffcounter++;
-    digitalWrite(led1, 0);
-    measuredTime = measurer;
+    shouldPlan = false;
   }
   overFloop++;
   while (delayTimer < 2);
@@ -146,13 +146,57 @@ void stateMachine()
     default:
       state = 'E';
   }
-  if (!cellMidZone && !planningZone)
-  {
-    planningDone = false;
-  }
-  else if (pos.x == goal.x && pos.y == goal.y && cellMidZone)
+  //Ha letelt kb 5 perc
+  if (milli > 280000)
   {
     state = 'S';
+  }
+  //Ha letelt kb 4 perc
+  else if (milli > 240000)
+  {
+    //Set goal
+    goal.x = 0;
+    goal.y = 0;
+    //stop
+    if (cellMidZone && !pos.x && !pos.y)
+    {
+      state = 'S';
+      digitalWrite(led1, 0);
+      digitalWrite(led2, 0);
+    }
+    else
+    {
+      digitalWrite(led1, 0);
+      digitalWrite(led2, 1);
+    }
+  }
+  //ha midzone
+  else if (cellMidZone && pos.x == goal.x && pos.y == goal.y)
+  {
+    //Startnál van
+    if (!pos.x && !pos.y)
+    {
+      //Set goal
+      goal.x = originalGoalX;
+      goal.y = originalGoalY;
+      //debug
+      digitalWrite(led1, 1);
+      digitalWrite(led2, 0);
+      sendInfo = true;
+      shouldPlan = true;
+    }
+    //Célbaért
+    else
+    {
+      //Set goal
+      goal.x = 0;
+      goal.y = 0;
+      //debug
+      digitalWrite(led1, 0);
+      digitalWrite(led2, 1);
+      sendInfo = true;
+      shouldPlan = true;
+    }
   }
   overFirpt++;
 }

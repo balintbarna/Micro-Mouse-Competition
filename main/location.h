@@ -120,20 +120,18 @@ void updatePosition()
     }
   }
 
-  if (distance > 110)
-    planningZone = true;
-  else
-    planningZone = false;
-
   int cellMidDistance = distance - (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length;
   if (abs(cellMidDistance) < (cell_length / 10))
     cellMidZone = true;
   else
     cellMidZone = false;
 
-  int infraDistance = abs(distance - 100);
+  int infraDistance = abs(distance - 110);
   if (infraDistance < (cell_length / 50))
+  {
     infraMidZone = true;
+    shouldPlan = true;
+  }
   else
     infraMidZone = false;
 

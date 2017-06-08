@@ -48,7 +48,7 @@ void setTurn(int16_t degree)
   }
 
   setOrientation(degree / 45);
-  planningDone = false;
+  shouldPlan = true;
   nextState = 'R';
   state = 'I';
 }
@@ -85,17 +85,16 @@ void SetAllToDefault()
 
 bool shouldTurn()
 {
-  if (cellMidZone)
-  {
-    if (!planningDone)
-      return false;
+  if (!cellMidZone)
+    return false;
 
-    if (nextStep == 'F')
-      return false;
+  if (shouldPlan)
+    return false;
 
-    return true;
-  }
-  return false;
+  if (nextStep == 'F')
+    return false;
+
+  return true;
 }
 
 bool FollowPath()
@@ -114,7 +113,7 @@ bool FollowPath()
     if (!path.length())
       return false;
 
-    if (!planningDone)
+    if (shouldPlan)
       return false;
 
     nextStep = path[0];

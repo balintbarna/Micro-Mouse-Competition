@@ -4,9 +4,6 @@
 const uint32_t myinterval = 1000000 / timerFrequency;
 
 //Variables for maze solver
-volatile bool planningDone = false;
-//#include <QueueList.h>
-//QueueList<char> path;
 String path = "";
 char nextStep = 'S';
 
@@ -29,7 +26,7 @@ Coord nose = {0, 0};
 volatile int32_t lastPosEncAvg = 0;
 
 //Is it in the mid area of a cell
-volatile uint8_t planningZone = 1;
+volatile uint8_t shouldPlan = 1;
 volatile uint8_t cellMidZone = 1;
 volatile uint8_t infraMidZone = 1;
 

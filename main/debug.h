@@ -1,4 +1,4 @@
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
 /* 0: semmi
    1: soros
@@ -25,7 +25,7 @@ const String newline = "\r\n";
 //Variable for serial output
 String serialop = "";
 //every X loop
-#define loopNumber 100
+#define loopNumber 1
 
 //Function to display debug info on serial
 void displayData()
@@ -230,7 +230,7 @@ void displayData()
   //custom
   if ((outputMode >> 5) % 2 && !(overFloop % loopNumber))
   {
-    serialop += ffcounter;
+    //serialop += ffcounter;
   }
 
 
@@ -270,7 +270,6 @@ void serialToValue() {
     {
       delayMicroseconds(100);
       serialCommand = Serial.readString();
-      milli = 0;
       Serial.println(serialCommand);
       newInfo = true;
     }
@@ -281,7 +280,6 @@ void serialToValue() {
     {
       delayMicroseconds(100);
       serialCommand = Serial3.readString();
-      milli = 0;
       Serial3.println(serialCommand);
       newInfo = true;
     }
