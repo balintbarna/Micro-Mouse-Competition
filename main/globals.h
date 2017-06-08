@@ -71,7 +71,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 //----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 500;
+const int32_t maxSpeed = 750;
 
 //PID controllers
 const int32_t PTagSpeed = 400;
@@ -100,7 +100,7 @@ const int16_t sideInfraLimit = 3000;
 const int16_t diagonalInfraLimit = 10000;
 const int16_t derivInfraLimit = 4;
 const int16_t frontInfraLimit = 1500;
-const int16_t midInfraValue = 1780;
+const int16_t midInfraValue = 1750;
 //cell value max
 const uint16_t cellValueMax = 999;
 
