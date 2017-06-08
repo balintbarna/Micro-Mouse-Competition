@@ -230,7 +230,6 @@ void stateMachine()
       digitalWrite(led2, 1);
     }
 
-    idler = 2000;
     state = 'I';
     nextState = 'T';
     SetMotorPower(0, 0);

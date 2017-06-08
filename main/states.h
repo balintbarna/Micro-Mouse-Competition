@@ -4,7 +4,7 @@ volatile char nextState = 'S';
 volatile bool pulled = false;
 
 volatile int idler = 0;
-#define waitTime 0 //in ms
+#define waitTime 1000 //in ms
 const int waitCycle = waitTime * timerFrequency / 1000;
 
 //Function to prepare for turning
@@ -49,8 +49,9 @@ void setTurn(int16_t degree)
 
   setOrientation(degree / 45);
   shouldPlan = true;
-  nextState = 'R';
-  state = 'I';
+  //nextState = 'R';
+  //state = 'I';
+  state = 'R';
 }
 
 //Function to erase past stored values
@@ -179,7 +180,7 @@ void stateW()
       SetMotorSpeed(param1, param1, true);
     }
     //Lassan meg kell állni mert már látok szembe falat
-    else if (infra[front] > (param2 + breakLengthInfra))
+    else if (infra[front] > param2 + 50)
     {
       int targetL = (infra[front] - param2 ) / encoderToInfra + leftPos;
       int targetR = (infra[front] - param2 ) / encoderToInfra + rightPos;
@@ -218,8 +219,9 @@ void stateR()
   {
     ResetAllStoredValues();
     SetMotorPower(0, 0);
-    nextState = 'T';
-    state = 'I';
+    //nextState = 'T';
+    //state = 'I';
+    state = 'T';
     pulled = false;
   }
 }

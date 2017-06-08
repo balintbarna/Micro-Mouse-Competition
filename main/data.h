@@ -198,7 +198,7 @@ uint8_t getVisited(uint8_t x, uint8_t y)
 void checkWalls()
 {
   //Szembe van
-  if (infra[front] < 3000)
+  if (infra[front] < 3500)
     setWall(nose.x, nose.y, (orientation / 2) % 4);
 
   if (infraMidZone)
