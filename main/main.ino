@@ -90,12 +90,15 @@ void loop()
   if (!digitalRead(gombPin))
   {
     while (delayTimer < 500);
+    //Long press to reset
     if (!digitalRead(gombPin))
     {
       ResetAllStoredValues();
       SetAllToDefault();
+      currentRound = 0;
       ClearData();
-      blinker(); blinker();
+      for (int i = 0; i < 3; i++)
+        blinker();
     }
     else
     {

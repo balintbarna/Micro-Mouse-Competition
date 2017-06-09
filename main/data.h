@@ -152,7 +152,7 @@ void ReadArray32(uint16_t address, volatile uint32_t data[])
 
 void SaveAllToEEPROM()
 {
-  if (currentRound < 2)
+  if ((currentRound - (increasedRound ? 1 : 0)) < 2)
   {
     //Save xWalls
     for (int i = 0; i < 31; i++)
