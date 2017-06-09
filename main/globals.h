@@ -71,7 +71,7 @@ volatile int32_t param1 = 0, param2 = 0, param3 = 0, param4 = 0;
 //----------- Movement constants -----------
 //Encoder signals / sec  ---  0.28mm/sec
 //Theoretical maximum is 6000
-const int32_t maxSpeed = 600;
+volatile int32_t maxSpeed = 600;
 
 //PID controllers
 const int32_t PTagSpeed = 400;
@@ -87,7 +87,7 @@ const int16_t encoderToMicro = 280;
 const int16_t infraToMicro = 10;
 const int16_t encoderToInfra = encoderToMicro / infraToMicro;
 
-const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
+//const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
 
 //----------- Infra constants ---------------
 //Parameters for infra based speed control

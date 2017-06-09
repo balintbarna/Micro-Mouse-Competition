@@ -8,9 +8,14 @@ IntervalTimer infraTimer;
 uint16_t overFloop = 0;
 volatile uint16_t overFirpt = 0;
 
+//Flag: only send debug info when in goal position, once
 volatile bool sendInfo = false;
+//Flag: mark EEPROM for emptying in ISR
 volatile bool shouldDelete = false;
+//Flag: Mark for saving to EEPROM from ISR
 volatile bool shouldSave = false;
+//Flag: increase currentRound if in goal position, only once per round
+volatile bool increasedRound = false;
 
 #include "includes.h"
 
@@ -18,6 +23,11 @@ volatile bool shouldSave = false;
 void setup()
 {
   ReadAllFromEEPROM();
+  int temp = currentRound - 1;;
+  if (temp > 0)
+  {
+    maxSpeed += temp * 200;
+  }
   //Initialize Serial comm
 #if DEBUG
   Serial.begin(115200);
@@ -104,6 +114,11 @@ void loop()
 
   if (shouldSave)
   {
+    if (!increasedRound)
+    {
+      increasedRound = true;
+      currentRound++;
+    }
     SaveAllToEEPROM();
     shouldSave = false;
   }
@@ -117,7 +132,11 @@ void loop()
     stateTimer.end();
     digitalWrite(infraPin, 0);
     SetMotorPower(0, 0);
-    currentRound++;
+    if (!increasedRound)
+    {
+      increasedRound = true;
+      currentRound++;
+    }
     SaveAllToEEPROM();
     while (true)
     {
