@@ -120,7 +120,7 @@ void updatePosition()
     }
   }
 
-  int cellMidDistance = distance - (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length + 7;
+  int cellMidDistance = distance - (abs(pos.x - savedPos.x) + abs(pos.y - savedPos.y)) * cell_length + 25;
   if (abs(cellMidDistance) < (cell_length / 53))
     cellMidZone = true;
   else
