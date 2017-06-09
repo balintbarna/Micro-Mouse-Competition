@@ -18,12 +18,12 @@ const uint16_t analogInfraValues[][infraValueNumber] = {
 //Analog input pins
 const int32_t inputs[] = {A3, A6, A2, A1, A0};
 volatile int32_t _calib = 0;
-void _calibrateInfra()
+void CalibrateInfra()
 {
   _calib = 0;
   digitalWrite(infraPin, HIGH);
   delay(1);
-  _calib = (1400 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
+  _calib = (1320 - (analogRead(inputs[left]) + analogRead(inputs[right]))) / 2;
   digitalWrite(infraPin, LOW);
 }
 
@@ -34,8 +34,8 @@ void _readInfraPin(uint8_t index)
   //store last value
   pastinfra[index] = infra[index];
   //read analog value
-  //int32_t value = analogRead(inputs[index]) + _calib;
-  uint16_t value = analogRead(inputs[index]);
+  int16_t value = analogRead(inputs[index]) + _calib;
+  //uint16_t value = analogRead(inputs[index]);
   if (value > analogInfraValues[index][maxValueIndex])
   {
     infra[index] = 999999;

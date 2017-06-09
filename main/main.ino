@@ -16,6 +16,8 @@ volatile bool shouldDelete = false;
 volatile bool shouldSave = false;
 //Flag: increase currentRound if in goal position, only once per round
 volatile bool increasedRound = false;
+//Flag: mark if infra interrupt is on
+//bool infraOn = false;
 
 #include "includes.h"
 
@@ -27,7 +29,28 @@ void setup()
   if (temp > 0)
   {
     maxSpeed += temp * 200;
+    if (maxSpeed >= 800)
+    {
+      fullRotationSum = 1100;
+      PInfra = 750;
+      DInfra = 460;
+    }
+    else if (maxSpeed >= 1000)
+    {
+      fullRotationSum = 1140;
+      PInfra = 680;
+      DInfra = 400;
+      breakLength = 30;
+    }
+    else if (maxSpeed >= 1200)
+    {
+      fullRotationSum = 1140;
+      PInfra = 640;
+      DInfra = 380;
+      breakLength = 60;
+    }
   }
+  calculateRotations();
   //Initialize Serial comm
 #if DEBUG
   Serial.begin(115200);
@@ -102,6 +125,12 @@ void loop()
     }
     else
     {
+      //if (infraOn)
+//      infraTimer.end();
+//      CalibrateInfra();
+//      infraTimer.begin(InfraISR, 1000);
+      //infraOn = true;
+
       displayData();
       state = 'T';
       milli = 0;

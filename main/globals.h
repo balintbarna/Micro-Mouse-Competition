@@ -18,7 +18,7 @@ volatile uint8_t currentRound = 0;
 
 //Goal coordinates
 #define originalGoalX 7
-#define originalGoalY 23
+#define originalGoalY 10
 Coord goal = {originalGoalX, originalGoalY};
 
 //Coordinates and commands used for movement
@@ -80,24 +80,33 @@ const int32_t PTagCas = 15;
 
 #define rotationCoeff 1.4
 #define alternativeRotCoeff 0.86
-const int16_t fullRotationSum = 1075;
-const int16_t positiveFullRotation = fullRotationSum * rotationCoeff / (rotationCoeff + 1);
-const int16_t negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
-const int16_t positiveFullRotationAlt = fullRotationSum * alternativeRotCoeff / (alternativeRotCoeff + 1);
-const int16_t negativeFullRotationAlt = -(fullRotationSum / (alternativeRotCoeff + 1));
+volatile int16_t fullRotationSum = 1075;
+
+volatile int16_t positiveFullRotation;
+volatile int16_t negativeFullRotation;
+volatile int16_t positiveFullRotationAlt;
+volatile int16_t negativeFullRotationAlt;
+void calculateRotations()
+{
+  positiveFullRotation = fullRotationSum * rotationCoeff / (rotationCoeff + 1);
+  negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
+  positiveFullRotationAlt = fullRotationSum * alternativeRotCoeff / (alternativeRotCoeff + 1);
+  negativeFullRotationAlt = -(fullRotationSum / (alternativeRotCoeff + 1));
+}
 
 const int16_t encoderToMicro = 280;
 const int16_t infraToMicro = 10;
 const int16_t encoderToInfra = encoderToMicro / infraToMicro;
 
 //const int16_t breakLengthInfra = maxSpeed * encoderToInfra / 500;
+volatile uint8_t breakLength = 25;
 
 //----------- Infra constants ---------------
 //Parameters for infra based speed control
 #define PInfraCoeff 0.8
 #define DInfraCoeff 0.5
-const int32_t PInfra = 1000 * PInfraCoeff;
-const int32_t DInfra = 1000 * DInfraCoeff;
+volatile int32_t PInfra = 1000 * PInfraCoeff;
+volatile int32_t DInfra = 1000 * DInfraCoeff;
 
 const int16_t sideInfraLimit = 3000;
 const int16_t diagonalInfraLimit = 10000;
