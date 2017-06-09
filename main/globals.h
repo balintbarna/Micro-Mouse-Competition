@@ -79,9 +79,12 @@ const int32_t ITagSpeed = 6 * myinterval / 1000;
 const int32_t PTagCas = 15;
 
 #define rotationCoeff 1.4
+#define alternativeRotCoeff 0.86
 const int16_t fullRotationSum = 1075;
 const int16_t positiveFullRotation = fullRotationSum * rotationCoeff / (rotationCoeff + 1);
 const int16_t negativeFullRotation = -(fullRotationSum / (rotationCoeff + 1));
+const int16_t positiveFullRotationAlt = fullRotationSum * alternativeRotCoeff / (alternativeRotCoeff + 1);
+const int16_t negativeFullRotationAlt = -(fullRotationSum / (alternativeRotCoeff + 1));
 
 const int16_t encoderToMicro = 280;
 const int16_t infraToMicro = 10;

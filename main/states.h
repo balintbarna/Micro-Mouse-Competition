@@ -27,23 +27,10 @@ void setTurn(int16_t degree)
   }
   if (true)
   {
-    /*
-        if (degree == 90)
-        {
-          param1 = 123;
-          param2 = -143;
-
-        }
-        if (degree == -90)
-        {
-          param1 = -143;
-          param2 = 123;
-        }
-    */
     if (degree == 180)
     {
-      param1 = 247;
-      param2 = -287;
+      param1 = positiveFullRotationAlt / ratio;
+      param2 = negativeFullRotationAlt / ratio;
     }
   }
 
